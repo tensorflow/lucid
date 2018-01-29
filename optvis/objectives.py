@@ -70,8 +70,7 @@ class Objective(object):
     else:
       objective_func = lambda T: self(T) + other(T)
       name = ", ".join([self.name, other.name])
-      description = "Sum(" + " +
-".join([self.description, other.description]) + ")"
+      description = "Sum(" + " +\n".join([self.description, other.description]) + ")"
     return Objective(objective_func, name=name, description=description)
 
   def __neg__(self):
@@ -84,8 +83,7 @@ class Objective(object):
   def sum(objs):
     objective_func = lambda T: sum([obj(T) for obj in objs])
     descriptions = [obj.description for obj in objs]
-    description = "Sum(" + " +
-".join(descriptions) + ")"
+    description = "Sum(" + " +\n".join(descriptions) + ")"
     names = [obj.name for obj in objs]
     name = ", ".join(names)
     return Objective(objective_func, name=name, description=description)
@@ -109,8 +107,7 @@ class Objective(object):
 
 def _make_arg_str(arg):
   arg = str(arg)
-  too_big = len(arg) > 15 or "
-" in arg
+  too_big = len(arg) > 15 or "\n" in arg
   return "..." if too_big else arg
 
 
