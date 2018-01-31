@@ -70,7 +70,7 @@ def read_path(path):
 
 
 def save(bytes, url):
-  assert not is_web_url(url)
+  assert urlparse(url).scheme not in ('http', 'https')
   save_to_path(bytes, url)
 
 
