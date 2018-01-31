@@ -13,25 +13,15 @@
 # limitations under the License.
 # ==============================================================================
 
+from __future__ import absolute_import, division, print_function
 
-import urllib2
 import tensorflow as tf
+from lucid.misc import uio
 
-
-def read_resource(path):
-  if '://' in path:
-    protocol, resource = path.split('://')
-    if protocol == 'gs':
-      url = 'https://storage.googleapis.com/' + resource
-    else:
-      url = resource
-    return urllib2.urlopen(url).read()
-  else:
-    return tf.gfile.GFile(path).read()
 
 def load_graphdef(model_url, reset_device=True):
   """Load GraphDef from a binary proto file."""
-  graph_def_str = read_resource(model_url)
+  graph_def_str = uio.read_and_cache(model_url)
   graph_def = tf.GraphDef.FromString(graph_def_str)
   if reset_device:
     for n in graph_def.node:

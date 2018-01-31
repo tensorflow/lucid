@@ -13,10 +13,10 @@
 # limitations under the License.
 # ==============================================================================
 
+from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
-
-from util import load_graphdef, forget_xy
+from lucid.modelzoo.util import load_graphdef, forget_xy
 
 class Model(object):
   """Base pretrained model importer."""
@@ -30,6 +30,9 @@ class Model(object):
 
   def load_graphdef(self):
     self.graph_def = load_graphdef(self.model_path)
+
+  def post_import(self, scope):
+    pass
 
   def create_input(self, t_input=None, forget_xy_shape=True):
     """Create input tensor."""
@@ -52,7 +55,5 @@ class Model(object):
         'importing multiple instances of the model.') % scope
     t_input, t_prep_input = self.create_input(t_input, forget_xy_shape)
     tf.import_graph_def(
-        self.graph_def, {self.input_name: t_prep_input},
-        name=scope)
-
-  
+        self.graph_def, {self.input_name: t_prep_input}, name=scope)
+    self.post_import(scope)

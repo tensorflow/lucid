@@ -26,7 +26,7 @@ tensorflow tensor. The functions are of the form:
 import tensorflow as tf
 import numpy as np
 
-import param
+from lucid.optvis import param
 
 
 def jitter(d, seed=None):

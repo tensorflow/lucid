@@ -28,7 +28,7 @@ construct a graph within the session the render function declares.
 import numpy as np
 import tensorflow as tf
 
-from resize_bilinear_nd import resize_bilinear_nd
+from lucid.optvis.resize_bilinear_nd import resize_bilinear_nd
 
 
 # def fft_tensor(shape, scale_freqs=True):

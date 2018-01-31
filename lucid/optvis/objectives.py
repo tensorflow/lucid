@@ -29,6 +29,8 @@ This allows objectives to be declared outside the rendering function, but then
 actually constructed within its graph/session.
 """
 
+from __future__ import absolute_import, division, print_function
+
 from decorator import decorator
 import numpy as np
 import tensorflow as tf
@@ -134,9 +136,9 @@ def neuron(layer_name, channel_n, x=None, y=None, batch=None):
     layer = T(layer_name)
     shape = tf.shape(layer)
     if x is None:
-      x_ = shape[1] / 2
+      x_ = shape[1] // 2
     if y is None:
-      y_ = shape[2] / 2
+      y_ = shape[2] // 2
     if batch is None:
       return layer[:, x_, y_, channel_n]
     else:

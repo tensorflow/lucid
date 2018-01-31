@@ -20,19 +20,20 @@ This module primarily provides render_vis() for rendering visualizations.
 It also provides some utilities in case you need to create your own rendering
 function.
 """
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
+from future.standard_library import install_aliases
+install_aliases()
+from builtins import range
 
-from cStringIO import StringIO
-from IPython.display import display
-from IPython.display import Image
+# from cStringIO import StringIO
+# from IPython.display import display
+# from IPython.display import Image
 
 import numpy as np
-import PIL.Image
+# import PIL.Image
 import tensorflow as tf
 
-import objectives 
-import param 
-import transform 
+from lucid.optvis import objectives, param, transform
 
 # pylint: disable=invalid-name
 
@@ -85,7 +86,7 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
 
     images = []
     try:
-      for i in xrange(max(thresholds)+1):
+      for i in range(max(thresholds)+1):
         loss_, _ = sess.run([loss, vis_op])
         if i in thresholds:
           vis = t_image.eval()
@@ -93,11 +94,11 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
           if verbose:
             print(i, loss_)
             print_objective_func(sess)
-            showarray(np.hstack(vis), "png")
+            # showarray(np.hstack(vis), "png")
     except KeyboardInterrupt:
       print("Interrupted optimization at step {:d}.".format(i+1))
       vis = t_image.eval()
-      showarray(np.hstack(vis), "png")
+      # showarray(np.hstack(vis), "png")
 
     return images
 
@@ -229,51 +230,39 @@ def make_optimizer(optimizer, args):
 
 def import_model(model, t_image, t_image_raw):
 
-  model.import_graph(t_image, forget_xy_shape=True)
+  model.import_graph(t_image, scope="import", forget_xy_shape=True)
 
   def T(layer):
     if layer == "input": return t_image_raw
     if layer == "labels": return model.labels
     return t_image.graph.get_tensor_by_name("import/%s:0"%layer)
 
-  if model.__class__.__name__ == "GoogleNet":
-    names = ["mixed3a", "mixed3b",
-             "mixed4a", "mixed4b", "mixed4c", "mixed4d", "mixed4e",
-             "mixed5a", "mixed5b"]
-
-    exts = ["1x1_pre_relu", "3x3_pre_relu",
-            "5x5_pre_relu", "pool_reduce_pre_relu"]
-
-    for name in names:
-      concat_name = "import/"+name+"_pre_relu"
-      tf.concat([T(name+"_"+ext) for ext in exts], 3, name=concat_name)
-
   return T
 
 
-def showarray(a, fmt="png", s=None):
-  # squeeze helps both with batch=1 and B/W
-  a = np.squeeze(np.asarray(a))
-
-  # check dtype
-  if a.dtype in [np.float32, np.float64]:
-    a = np.uint8(np.clip(a, 0, 1)*255)
-
-  # infer mode from shape
-  if len(a.shape) == 2:
-    mode = "L"
-  else:
-    depth = a.shape[-1]
-    if depth == 3:
-      mode = "RGB"
-    elif depth == 4:
-      mode = "RGBA"
-    else:
-      raise "showarray only supports 2D, 3D & 4D images, not this shape: " + a.shape
-
-  # serialize
-  f = StringIO()
-  pil = PIL.Image.fromarray(a, mode=mode)
-  pil.save(f, fmt)
-  data = f.getvalue()
-  display(Image(data=data))
+# def showarray(a, fmt="png", s=None):
+#   # squeeze helps both with batch=1 and B/W
+#   a = np.squeeze(np.asarray(a))
+#
+#   # check dtype
+#   if a.dtype in [np.float32, np.float64]:
+#     a = np.uint8(np.clip(a, 0, 1)*255)
+#
+#   # infer mode from shape
+#   if len(a.shape) == 2:
+#     mode = "L"
+#   else:
+#     depth = a.shape[-1]
+#     if depth == 3:
+#       mode = "RGB"
+#     elif depth == 4:
+#       mode = "RGBA"
+#     else:
+#       raise "showarray only supports 2D, 3D & 4D images, not this shape: " + a.shape
+#
+#   # serialize
+#   f = StringIO()
+#   pil = PIL.Image.fromarray(a, mode=mode)
+#   pil.save(f, fmt)
+#   data = f.getvalue()
+#   display(Image(data=data))
