@@ -188,7 +188,7 @@ def make_print_objective_func(print_objectives, T):
 
 def make_t_image(param_f):
   if param_f is None:
-    t_image = param.rgb_sigmoid(param.naive([1, 128, 128, 3]))
+    t_image = param.image(128)
   elif callable(param_f):
     t_image = param_f()
   elif isinstance(param_f, tf.Tensor):
