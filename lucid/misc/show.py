@@ -1,4 +1,4 @@
-# Copyright 2018 The Deepviz Authors. All Rights Reserved.
+# Copyright 2018 The Lucid Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,20 +16,38 @@
 
 """Methods for displaying images from Numpy arrays."""
 
+from __future__ import absolute_import, division, print_function
+
 import base64
-from cStringIO import StringIO
+import io
 import numpy as np
 import PIL.Image
-import scipy.ndimage as nd
-from IPython.core.display import display, HTML
 
 
-def _dispaly_html(html_str):
+# For tests
+_last_html_output = None
+
+try:
+  from IPython.core.display import display, HTML
+  
+  def _dispaly_html(html_str):
+    global _last_html_output
+    _last_html_output = html_str
     display(HTML(html_str))
+  
+except ImportError:
+  print('IPython is no present, HTML output from '
+        'lucid.misc.show will be ignored.')
+  
+  def _dispaly_html(html_str):
+    global _last_html_output
+    _last_html_output = html_str
+    pass
+  
 
 
 def _prep_image(a, domain=(0, 1), w=None, verbose=True):
-  """Normalize an image pixel values and width.
+  """Normalize an image pixel values and width and convert to PIL.Image.
 
   Args:
     a: NumPy array representing the image
@@ -38,7 +56,7 @@ def _prep_image(a, domain=(0, 1), w=None, verbose=True):
       size unchanged if None
 
   Returns:
-    normalized image array
+    normalized PIL.Image
   """
   # squeeze helps both with batch=1 and B/W
   a = np.squeeze(np.asarray(a))
@@ -48,30 +66,28 @@ def _prep_image(a, domain=(0, 1), w=None, verbose=True):
   if domain is None:
     domain = (a.min(), a.max())
     if verbose:
-        print "Inferring pixel value domain of ", domain
+        print("Inferring pixel value domain of ", domain)
 
   if a.min() < domain[0] or a.max() > domain[1]:
     if verbose:
-        print "clipping domain from", (a.min(), a.max()), "to", domain
+        print("clipping domain from", (a.min(), a.max()), "to", domain)
     a = a.clip(*domain)
   a = (a - domain[0]) / (domain[1] - domain[0]) * 255
   a = np.uint8(a)
 
+  im = PIL.Image.fromarray(a)
   if w is not None:
-    original_w = min(a.shape[0], a.shape[1])
-    ratio = w / float(original_w)
-    if len(a.shape) == 2:
-      a = nd.zoom(a, [ratio, ratio], order=0)
-    else:
-      a = nd.zoom(a, [ratio, ratio, 1], order=0)
-  return a
+    aspect = float(im.size[0]) / im.size[1]
+    h = int(w / aspect)
+    im = im.resize((w, h), PIL.Image.NEAREST)
+  return im
 
 
-def _image_url(a, fmt="png", mode="data"):
-  """Create a data URL representing an image from a NumPy array.
+def _image_url(im, fmt="png", mode="data"):
+  """Create a data URL representing an image from a PIL.Image.
 
   Args:
-    a: NumPy array
+    im: PIL.Image
     fmt: Format of output image
     mode: presently only supports "data" for data URL
 
@@ -82,25 +98,15 @@ def _image_url(a, fmt="png", mode="data"):
   # potential params: cns="tmp", name="foo.png"
   # think about saving to Cloud Storage
 
-  # infer image mode from shape
-  if len(a.shape) == 2:
-    image_mode = "L"
-  else:
-    depth = a.shape[-1]
-    if depth == 3:
-      image_mode = "RGB"
-    elif depth == 4:
-      image_mode = "RGBA"
-    else:
-      raise RuntimeError("""show.image only supports 2D, 3D & 4D images,
-                         invalid shape: """ + str(a.shape))
-
   if mode == "data":
-    f = StringIO()
     if fmt == "jpg":
       fmt = "jpeg"
-    PIL.Image.fromarray(a, mode=image_mode).save(f, fmt)
-    return "data:image/" + fmt + ";base64," + base64.b64encode(f.getvalue())
+    f = io.BytesIO()
+    im.save(f, fmt, quality=95)
+    return ("data:image/" + fmt + ";base64," 
+            + base64.b64encode(f.getvalue()).decode('ascii'))
+  else:
+    assert False, "unsupported mode"
   # elif mode == "cns":
   #   cns.save()
 
@@ -114,13 +120,14 @@ def image(array, fmt="png", domain=(0, 1), w=None, verbose=True):
     domain: Domain of pixel values, inferred from min & max values if None
     w: width of output image, scaled using nearest neighbor interpolation.
       size unchanged if None
-  """
-  array = _prep_image(array, domain, w, verbose=verbose)
-  url = _image_url(array, fmt)
+"""
+  im = _prep_image(array, domain, w, verbose=verbose)
+  url = _image_url(im, fmt)
   _dispaly_html('<img src="' + url + '">')
 
 
-def images(arrays, labels=None, fmt="png", domain=(0, 1), w=None, verbose=True):
+def images(arrays, labels=None, fmt="png", domain=(0, 1), w=None,
+           verbose=True):
   """Display a list of images with optional labels.
 
   Args:
@@ -128,15 +135,15 @@ def images(arrays, labels=None, fmt="png", domain=(0, 1), w=None, verbose=True):
     labels: A list of strings to label each image.
       Defaults to show index if None
     fmt: Image format e.g. png, jpeg
-    domain: Domain of pixel values, inferred from min & max values if None
     w: width of output image, scaled using nearest neighbor interpolation.
       size unchanged if None
+    domain: Domain of pixel values, inferred from min & max values if None
   """
 
   s = '<div style="display:flex;flex-direction:row;">'
   for i, a in enumerate(arrays):
-    a = _prep_image(a, domain, w, verbose=verbose)
-    url = _image_url(a, fmt)
+    im = _prep_image(a, domain, w, verbose=verbose)
+    url = _image_url(im, fmt)
     label = labels[i] if labels is not None else i
     label = str(label)
 

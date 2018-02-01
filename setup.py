@@ -46,6 +46,7 @@ setup(
     'decorator',
     'tensorflow',
     'numpy',
+    'pillow',
   ],
   tests_require = test_deps,
   extras_require=extras,
