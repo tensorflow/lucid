@@ -47,6 +47,7 @@ setup(
     'tensorflow',
     'numpy',
     'pillow',
+    'pyopengl',
   ],
   tests_require = test_deps,
   extras_require=extras,
