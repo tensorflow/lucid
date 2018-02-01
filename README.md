@@ -5,7 +5,20 @@ Lucid is a collection of infrastructure and tools for research in neural network
 
 In particular, it provides state of the art implementations of [feature visualization techniques](https://distill.pub/2017/feature-visualization/), and flexible abstractions that make it very easy to explore new research directions.
 
-Quick start: [lucid tutorial]() (TODO) -- runs in your web browser, get started visualizing neural networks in <5 min.
+
+# Dive In with Colab Notebooks
+
+Start visualizing neural networks ***with no setup***. The following notebooks run in your browser.
+
+**Beginner notebooks**:
+
+* [lucid tutorial]() (TODO) -- Introduction to the core ideas of lucid. 
+* [DeepDream]() (TODO) -- Make some dog slugs and crazy art.
+
+**More advanced**:
+* [Aligned interpolation]() (TODO(colah))
+* [xy2rgb???]() (???)
+* [3d???]() (???)
 
 
 # Project Structure
