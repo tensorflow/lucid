@@ -13,16 +13,18 @@
 # limitations under the License.
 # ==============================================================================
 
+"""Utility functions for modelzoo models."""
+
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
-from lucid.misc import uio
+from lucid.util import read
 
 
 def load_graphdef(model_url, reset_device=True):
   """Load GraphDef from a binary proto file."""
-  graph_def_str = uio.read_and_cache(model_url)
-  graph_def = tf.GraphDef.FromString(graph_def_str)
+  graphdef_string = read(model_url)
+  graph_def = tf.GraphDef.FromString(graphdef_string)
   if reset_device:
     for n in graph_def.node:
       n.device = ""
