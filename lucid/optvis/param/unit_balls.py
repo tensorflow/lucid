@@ -65,11 +65,12 @@ def unit_ball_L2(shape):
 def _constrain_L_inf_grad(precondition=True):
 
   def grad_f(op, grad):
-    """Gradient for constrained preconditioned optimization on an L_inf unit ball.
+    """Gradient for constrained preconditioned optimization on an L_inf unit
+    ball.
 
-    This function projects the gradient onto the ball if you are on the boundary
-    (or outside!). It always preconditions the gradient so it is the direction
-    of steepest descent under L_inf.
+    This function projects the gradient onto the ball if you are on the
+    boundary (or outside!). It always preconditions the gradient so it is the
+    direction of steepest descent under L_inf.
 
     Args:
       op: the tensorflow op we're computing the gradient for.
@@ -79,7 +80,6 @@ def _constrain_L_inf_grad(precondition=True):
       (projected if necessary) preconditioned gradient.
     """
     inp = op.inputs[0]
-    inp_norm = tf.norm(inp)
     dim_at_edge = tf.greater_equal(tf.abs(inp), 1.0)
     dim_outward = tf.greater(inp * grad, 0.0)
     if precondition:
