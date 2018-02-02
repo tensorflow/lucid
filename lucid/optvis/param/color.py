@@ -19,6 +19,8 @@
 import numpy as np
 import tensorflow as tf
 
+from lucid.optvis.param.unit_balls import constrain_L_inf
+
 color_correlation_svd_sqrt = np.asarray([[0.26, 0.09, 0.02],
                                          [0.27, 0.00, -0.05],
                                          [0.27, -0.09, 0.03]]).astype("float32")
@@ -70,4 +72,4 @@ def to_valid_rgb(t, decorrelate=False, sigmoid=True):
   if sigmoid:
     return tf.nn.sigmoid(t)
   else:
-    return tf.clip_by_value(t, 0, 1)
+    return constrain_L_inf(2*t-1)/2 + 0.5
