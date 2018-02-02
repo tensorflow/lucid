@@ -164,9 +164,11 @@ def use_gradient(grad_f):
         return state["out_value"]
       
       with tf.control_dependencies([store]):
-        with gradient_override({"PyFunc": grad_f_name}):
+        with gradient_override_map({"PyFunc": grad_f_name}):
           mock_out = tf.py_func(mock_f, inputs, out.dtype, stateful=True,
                                 name = "mock" + f.__name__ )
+          mock_out.set_shape(out.get_shape())
+      
       
       # Finally, we can return the mock.
       
