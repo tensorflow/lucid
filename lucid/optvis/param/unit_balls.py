@@ -54,7 +54,7 @@ def constrain_L2(x):
 
 def unit_ball_L2(shape):
   """A tensorflow variable tranfomed to be constrained in a L2 unit ball.
-  
+
   EXPERIMENTAL: Do not use for adverserial examples if you need to be confident
   they are strong attacks. We are not yet confident in this code.
   """
@@ -82,7 +82,8 @@ def _constrain_L_inf_grad(precondition=True):
     inp_norm = tf.norm(inp)
     dim_at_edge = tf.greater_equal(tf.abs(inp), 1.0)
     dim_outward = tf.greater(inp * grad, 0.0)
-    if precondition: grad = tf.sign(grad)
+    if precondition:
+      grad = tf.sign(grad)
 
     return tf.where(
         tf.logical_and(dim_at_edge, dim_outward),
@@ -96,6 +97,7 @@ def _constrain_L_inf_grad(precondition=True):
 def constrain_L_inf_precondition(x):
   return x / tf.maximum(1.0, tf.abs(x))
 
+
 @use_gradient(_constrain_L_inf_grad(precondition=False))
 def constrain_L_inf(x):
   return x / tf.maximum(1.0, tf.abs(x))
@@ -103,10 +105,10 @@ def constrain_L_inf(x):
 
 def unit_ball_L_inf(shape, precondition=True):
   """A tensorflow variable tranfomed to be constrained in a L_inf unit ball.
-  
+
   Note that this code also preconditions the gradient to go in the L_inf
   direction of steepest descent.
-  
+
   EXPERIMENTAL: Do not use for adverserial examples if you need to be confident
   they are strong attacks. We are not yet confident in this code.
   """
