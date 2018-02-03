@@ -38,14 +38,11 @@ from lucid.util.write import write
 # create logger with module name, e.g. lucid.util.read
 log = logging.getLogger(__name__)
 
-RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
+
+# Public functions
 
 
-def _supports_binary_reading(url):
-  return True
-
-
-def read(url, mode='rb', cache=True):
+def read(url, mode='rb', cache=None):
   """Read from any URL.
 
   Internally differentiates between URLs supported by tf.gfile, such as URLs
@@ -57,38 +54,90 @@ def read(url, mode='rb', cache=True):
   Returns:
     All bytes form the specified resource if it could be reached.
   """
-  if cache and not is_local(url):
-    return read_and_cache(url)
-
-  scheme = urlparse(url).scheme
-  if scheme in ('http', 'https'):
-    return read_web_url(url)
-  elif scheme == 'gs':
-    return read_gcs_url(url)
-  else:
-    return read_path(url, mode=mode)
+  with reading(url, mode, cache) as handle:
+    return handle.read()
 
 
 @contextmanager
-def reading(path, mode=None):
+def reading(url, mode=None, cache=None):
+  """Read from any URL with a file handle.
+
+  Use this to get a handle to a file rather than eagerly load the data:
+
+  ```
+  with reading(url) as handle:
+    result = something.load(handle)
+
+  result.do_something()
+
+  ```
+
+  When program execution leaves this `with` block, the handle will be closed
+  automatically.
+
+  Args:
+    url: a URL including scheme or a local path
+  Returns:
+    A file handle to the specified resource if it could be reached.
+    The handle will be closed automatically once execution leaves this context.
+  """
+  scheme = urlparse(url).scheme
+
+  if _is_remote(scheme) and cache is None:
+    cache = True
+
   if mode is None:
-    if _supports_binary_reading(path):
+    if _supports_binary_mode(scheme):
       mode = 'rb'
     else:
-      mode = 'rt'
+      mode = 'r'
 
-  handle = gfile.Open(path, mode)
+  if scheme in ('http', 'https'):
+    handle = _handle_web_url(url, mode)
+  elif scheme == 'gs':
+    handle = _handle_gcs_url(url, mode)
+  else:
+    handle = _handle_gfile(url, mode)
+
   yield handle
   handle.close()
 
 
-def is_local(url):
-  scheme = urlparse(url).scheme
-  print("scheme", scheme)
-  return scheme not in ('http', 'https', 'gs')
+# Handlers
 
 
-def read_and_cache(url):
+def _handle_gfile(url, mode):
+  return gfile.Open(url, mode)
+
+
+def _handle_web_url(url, mode):
+  del mode  # unused
+  return urlopen(url)
+
+
+def _handle_gcs_url(url, mode):
+  # TODO: transparently allow authenticated access through storage API
+  _, resource_name = url.split('://')
+  base_url = 'https://storage.googleapis.com/'
+  url = urljoin(base_url, resource_name)
+  return _handle_web_url(url, mode)
+
+
+# Helper Functions
+
+
+def _supports_binary_mode(scheme):
+  return True
+
+
+def _is_remote(scheme):
+  return scheme in ('http', 'https', 'gs')
+
+
+RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
+
+
+def _read_and_cache(url):
   local_name = RESERVED_PATH_CHARS.sub('_', url)
   local_path = os.path.join(gettempdir(), local_name)
   if os.path.exists(local_path):
@@ -99,24 +148,3 @@ def read_and_cache(url):
     result = read(url, cache=False)  # important to avoid endless loop
     write(result, local_path)
     return result
-
-
-def read_web_url(url):
-  log.debug('read_web_url s', url)
-  return urlopen(url).read()
-
-
-def read_gcs_url(url):
-  log.debug('read_gcs_url s', url)
-  # TODO: transparantly allow authenticated access through storage API
-  _, resource_name = url.split('://')
-  base_url = 'https://storage.googleapis.com/'
-  url = urljoin(base_url, resource_name)
-  return read_web_url(url)
-
-
-def read_path(path, mode='rb'):
-  log.debug('read_path %s %s', path, mode)
-  with gfile.Open(path, mode) as handle:
-    result = handle.read()
-  return result
