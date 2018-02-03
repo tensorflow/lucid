@@ -35,6 +35,9 @@ from tempfile import gettempdir
 from lucid.util.write import write
 
 
+# create logger with module name, e.g. lucid.util.read
+log = logging.getLogger(__name__)
+
 RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
 
 
@@ -89,22 +92,22 @@ def read_and_cache(url):
   local_name = RESERVED_PATH_CHARS.sub('_', url)
   local_path = os.path.join(gettempdir(), local_name)
   if os.path.exists(local_path):
-    logging.info("Found cached file '%s'.", local_path)
+    log.info("Found cached file '%s'.", local_path)
     return read_path(local_path)
   else:
-    logging.info("Caching URL '%s' locally at 's'.", url, local_path)
+    log.info("Caching URL '%s' locally at 's'.", url, local_path)
     result = read(url, cache=False)  # important to avoid endless loop
     write(result, local_path)
     return result
 
 
 def read_web_url(url):
-  logging.debug('read_web_url s', url)
+  log.debug('read_web_url s', url)
   return urlopen(url).read()
 
 
 def read_gcs_url(url):
-  logging.debug('read_gcs_url s', url)
+  log.debug('read_gcs_url s', url)
   # TODO: transparantly allow authenticated access through storage API
   _, resource_name = url.split('://')
   base_url = 'https://storage.googleapis.com/'
@@ -113,7 +116,7 @@ def read_gcs_url(url):
 
 
 def read_path(path, mode='rb'):
-  logging.debug('read_path %s %s', path, mode)
+  log.debug('read_path %s %s', path, mode)
   with gfile.Open(path, mode) as handle:
     result = handle.read()
   return result

@@ -26,12 +26,18 @@ Possible extension: if not given a URL this could create one and return it?
 
 from __future__ import absolute_import, division, print_function
 
+import logging
 import os.path
 import json
 import numpy as np
 
 from lucid.util.write import write, writing
-from lucid.util.array_to_image import _infer_domain_from_array, _normalize_array_and_convert_to_image
+from lucid.util.array_to_image import _infer_domain_from_array
+from lucid.util.array_to_image import _normalize_array_and_convert_to_image
+
+
+# create logger with module name, e.g. lucid.util.save
+log = logging.getLogger(__name__)
 
 
 def save_json(object, url, indent=2):
@@ -53,7 +59,7 @@ def save_npz(object, url):
   elif type(object) is list:
     np.savez(url, *object)
   else:
-    logging.warn("Saving non dict or list as npz file, did you maybe want npy?")
+    log.warn("Saving non dict or list as npz file, did you maybe want npy?")
     np.savez(url, object)
 
 

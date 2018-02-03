@@ -22,6 +22,10 @@ import numpy as np
 import PIL.Image
 
 
+# create logger with module name, e.g. lucid.util.array_to_image
+log = logging.getLogger(__name__)
+
+
 class CouldNotInfer(Exception):
   pass
 
@@ -57,7 +61,7 @@ def _infer_image_mode_from_shape(shape):
       You may be trying to infer from an image with batch dimension?""")
 
   message = "Inferred image mode '{}' from rank-{:d} shape {}"
-  logging.info(message.format(image_mode, rank, shape))
+  log.info(message.format(image_mode, rank, shape))
   return image_mode
 
 
@@ -93,11 +97,11 @@ def _infer_domain_from_array(array):
       raise CouldNotInfer
   except CouldNotInfer:
     message = "Could not infer canonical domain from (~{:.2f}, ~{:.2f})"
-    logging.warn(message.format(low, high))
+    log.warn(message.format(low, high))
     domain = (low, high)
   else:
     message = "Inferred canonical domain {} from (~{:.2f}, ~{:.2f})"
-    logging.info(message.format(domain, low, high))
+    log.info(message.format(domain, low, high))
   finally:
     assert domain is not None
   return domain
@@ -125,7 +129,7 @@ def _normalize_array_and_convert_to_image(array, domain=None, w=None):
   low, high = np.min(array), np.max(array)
   if low < domain[0] or high > domain[1]:
     message = "Clipping domain from (~{:.2f}, ~{:.2f}) to (~{:.2f}, ~{:.2f})"
-    logging.info(message.format(low, high, domain[0], domain[1]))
+    log.info(message.format(low, high, domain[0], domain[1]))
     array = array.clip(*domain)
 
   force_stretching_to_domain = False
@@ -137,7 +141,7 @@ def _normalize_array_and_convert_to_image(array, domain=None, w=None):
 
   if np.issubdtype(array.dtype, np.inexact) or force_stretching_to_domain:
     message = "Stretching domain from (~{:.2f}, ~{:.2f}) to (0, 255)."
-    logging.info(message.format(low, high))
+    log.info(message.format(low, high))
     divisor = domain[1] - domain[0]
     offset = domain[0]
     array = 255 * (array - offset) / divisor

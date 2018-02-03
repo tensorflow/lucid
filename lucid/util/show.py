@@ -23,7 +23,12 @@ import logging
 import numpy as np
 import PIL.Image
 
-from lucid.util.array_to_image import _infer_domain_from_array, _normalize_array_and_convert_to_image
+from lucid.util.array_to_image import _infer_domain_from_array
+from lucid.util.array_to_image import _normalize_array_and_convert_to_image
+
+
+# create logger with module name, e.g. lucid.util.show
+log = logging.getLogger(__name__)
 
 
 _last_html_output = None
@@ -45,8 +50,8 @@ try:
     IPythonDisplay(IPythonImage(data=image_data, format=format))
 
 except ImportError:
-  logging.warn('IPython is not present, HTML output from lucid.util.show and '
-    ' lucid.util.show.image will be ignored.')
+  log.warn('IPython is not present, HTML output from lucid.util.show and '
+           'lucid.util.show.image will be ignored.')
 
   def _display_html(html_str):
     global _last_html_output
@@ -139,20 +144,23 @@ def display(thing):
   """Display a nupmy array without having to specify what it represents.
 
   This module will attempt to infer how to display your tensor based on its
-  rank, shape and dtype. rank 4 tensors will be displayed as image grids, rank 2
-  and 3 tensors as images.
+  rank, shape and dtype. rank 4 tensors will be displayed as image grids, rank
+  2 and 3 tensors as images.
   """
   if isinstance(thing, np.ndarray):
     rank = len(thing.shape)
     if rank == 4:
-      logging.info("Show is assuming rank 4 tensor to be a list of images.")
+      log.debug("Show is assuming rank 4 tensor to be a list of images.")
       images(thing)
     elif rank in (2, 3):
-      logging.info("Show is assuming rank 2 or 3 tensor to be an image.")
+      log.debug("Show is assuming rank 2 or 3 tensor to be an image.")
       image(thing)
     else:
-      logging.warn("Show only supports numpy arrays of rank 2-4. Using repr().")
+      log.warn("Show only supports numpy arrays of rank 2-4. Using repr().")
       print(repr(thing))
+  elif isinstance(thing, (list, tuple)):
+    log.debug("Show is assuming list or tuple to be a collection of images.")
+    images(thing)
   else:
-    logging.warn("Show only supports numpy arrays so far. Using repr().")
+    log.warn("Show only supports numpy arrays so far. Using repr().")
     print(repr(thing))
