@@ -25,36 +25,42 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import json
+import logging
 import numpy as np
 import PIL.Image
 
 from lucid.util.read import reading
 
 
-def load_npy(handle):
+# create logger with module name, e.g. lucid.util.read
+log = logging.getLogger(__name__)
+
+
+def _load_npy(handle):
   """Load npy file as numpy array."""
   return np.load(handle)
 
 
-def load_img(handle):
+def _load_img(handle):
   """Load image file as numpy array."""
-  # PIL requires a buffer interface, so wrap data in BytesIO
+  # PIL.Image will infer image type from provided handle's file extension
   pil_img = PIL.Image.open(handle)
-  return np.asarray(pil_img)
+  # using np.divide should avoid an extra copy compared to doing division first
+  return np.divide(pil_img, 255, dtype=np.float32)
 
 
-def load_json(handle):
+def _load_json(handle):
   """Load json file as python object."""
   return json.load(handle)
 
 
 loaders = {
-  ".png": load_img,
-  ".jpg": load_img,
-  ".jpeg": load_img,
-  ".npy": load_npy,
-  ".npz": load_npy,
-  ".json": load_json,
+  ".png":  _load_img,
+  ".jpg":  _load_img,
+  ".jpeg": _load_img,
+  ".npy":  _load_npy,
+  ".npz":  _load_npy,
+  ".json": _load_json,
 }
 
 
@@ -74,11 +80,23 @@ def load(url):
   if not ext:
     raise RuntimeError("No extension in URL: " + url)
 
+  ext = ext.lower()
   if ext in loaders:
     loader = loaders[ext]
+    message = "Using inferred loader '%s' due to passed file extension '%s'."
+    log.info(message, loader.__name__[6:], ext)
     with reading(url) as handle:
       result = loader(handle)
     return result
   else:
-    message = "Unknown extension '{}', supports {}."
-    raise RuntimeError(message.format(ext, loaders))
+    log.warn("Unknown extension '%s', attempting to load as image.", ext)
+    try:
+      with reading(url) as handle:
+        result = _load_img(handle)
+    except Exception as e:
+      message = "Could not load resource %s as image. Supported extensions: %s"
+      log.error(message, url, list(loaders))
+      raise RuntimeError(message.format(url, list(loaders)))
+    else:
+      log.info("Unknown extension '%s' successfully loaded as image.", ext)
+      return result

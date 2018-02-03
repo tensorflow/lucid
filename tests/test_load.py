@@ -26,15 +26,20 @@ def test_load_npz():
   assert isinstance(arrays, np.lib.npyio.NpzFile)
 
 
-def test_load_image_png():
-  path = "./tests/fixtures/noise.png"
+@pytest.mark.parametrize("path", [
+  "./tests/fixtures/noise.png",
+  "./tests/fixtures/noise.PNG",
+  "./tests/fixtures/noise.jpg",
+  "./tests/fixtures/noise.jpeg",
+  "./tests/fixtures/image.XYZ",
+])
+def test_load_image(path):
   image = load(path)
   assert image.shape is not None
   assert all(dimension > 2 for dimension in image.shape)
 
 
-def test_load_image_jpg():
-  path = "./tests/fixtures/noise.jpg"
-  image = load(path)
-  assert image.shape is not None
-  assert all(dimension > 2 for dimension in image.shape)
+def test_load_garbage_with_unknown_extension():
+  path = "./tests/fixtures/string.XYZ"
+  with pytest.raises(RuntimeError):
+    image = load(path)
