@@ -117,7 +117,7 @@ def load_obj(fn):
   
   outputs = {}
   outputs['face'] = np.int32(trinagle_indices)
-  pos_idx, uv_idx, normal_idx = np.int32(tuple2idx.keys()).T
+  pos_idx, uv_idx, normal_idx = np.int32(list(tuple2idx)).T
   if np.any(pos_idx):
     outputs['position'] = np.float32(position)[pos_idx]
   if np.any(uv_idx):
