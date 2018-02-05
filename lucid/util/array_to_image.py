@@ -20,6 +20,7 @@ from __future__ import absolute_import, division, print_function
 import logging
 import numpy as np
 import PIL.Image
+from io import BytesIO
 
 
 # create logger with module name, e.g. lucid.util.array_to_image
@@ -65,49 +66,7 @@ def _infer_image_mode_from_shape(shape):
   return image_mode
 
 
-def _infer_domain_from_array(array):
-  """Guesses a canonical domain from an arrays domain.
-  Covers common cases such as 0,1, -1,1, 0,255.
-
-  Args:
-    array: a numpy array
-
-  Returns:
-    inferred canonical domain of the array as a tuple (low, high)
-  """
-  low, high = np.min(array), np.max(array)
-  assert low <= high
-
-  try:
-    if low >= 0:
-      if high <= 1:
-        domain = (0, 1)
-      elif high <= 255:
-        domain = (0, 255)
-      else:
-        raise CouldNotInfer
-    elif low >= -1:
-      if high <= 0:
-        domain = (-1, 0)
-      elif high <= 1:
-        domain = (-1, 1)
-      else:
-        raise CouldNotInfer
-    else:
-      raise CouldNotInfer
-  except CouldNotInfer:
-    message = "Could not infer canonical domain from (~{:.2f}, ~{:.2f})"
-    log.warn(message.format(low, high))
-    domain = (low, high)
-  else:
-    message = "Inferred canonical domain {} from (~{:.2f}, ~{:.2f})"
-    log.info(message.format(domain, low, high))
-  finally:
-    assert domain is not None
-  return domain
-
-
-def _normalize_array_and_convert_to_image(array, domain=None, w=None):
+def _normalize_array(array, domain=(0, 1)):
   """Normalize an image pixel values and width.
 
   Args:
@@ -124,40 +83,43 @@ def _normalize_array_and_convert_to_image(array, domain=None, w=None):
   assert len(array.shape) <= 3
   assert np.issubdtype(array.dtype, np.number)
 
-  domain = domain or _infer_domain_from_array(array)
-
   low, high = np.min(array), np.max(array)
+  if domain is None:
+    message = "No domain specified, normalizing from measured (~%.2f, ~%.2f)"
+    log.debug(message, low, high)
+    domain = (low, high)
+
+  # clip values if domain was specified and array contains values outside of it
   if low < domain[0] or high > domain[1]:
-    message = "Clipping domain from (~{:.2f}, ~{:.2f}) to (~{:.2f}, ~{:.2f})"
+    message = "Clipping domain from (~{:.2f}, ~{:.2f}) to (~{:.2f}, ~{:.2f})."
     log.info(message.format(low, high, domain[0], domain[1]))
     array = array.clip(*domain)
 
-  force_stretching_to_domain = False
-  if np.issubdtype(array.dtype, np.signedinteger):
-    if low >= 0:
-      array = np.uint8(array)
-    else:
-      force_stretching_to_domain = True
-
-  if np.issubdtype(array.dtype, np.inexact) or force_stretching_to_domain:
-    message = "Stretching domain from (~{:.2f}, ~{:.2f}) to (0, 255)."
-    log.info(message.format(low, high))
-    divisor = domain[1] - domain[0]
+  min_value, max_value = 0, np.iinfo(np.uint8).max  # = 255
+  # convert signed to unsigned if needed
+  if np.issubdtype(array.dtype, np.inexact):
     offset = domain[0]
-    array = 255 * (array - offset) / divisor
-    array = np.uint8(array)
+    if offset != 0:
+      array -= offset
+      log.debug("Converting inexact array by subtracting -%.2f.", offset)
+    scalar = max_value / (domain[1] - domain[0])
+    if scalar != 1:
+      array *= scalar
+      log.debug("Converting inexact array by scaling by %.2f.", scalar)
 
+  assert np.max(array) <= max_value and np.min(array) >= min_value
+  array = array.astype(np.uint8)
+
+  return array
+
+
+def _serialize_array(array, fmt='png', quality=70):
   assert np.issubdtype(array.dtype, np.unsignedinteger)
-
-  image_mode = _infer_image_mode_from_shape(array.shape)
-  image = PIL.Image.fromarray(array, mode=image_mode)
-
-  if w is not None:
-    # TODO: is that intended? feels like it should just be shape[0]
-    original_w = min(array.shape[0], array.shape[1])
-    if original_w != w:
-      aspect = float(image.size[0]) / image.size[1]
-      h = int(w / aspect)
-      image = image.resize((w, h), PIL.Image.NEAREST)
-
-  return image
+  assert np.max(array) <= 255
+  inferred_mode = _infer_image_mode_from_shape(array.shape)
+  image = PIL.Image.fromarray(array, mode=inferred_mode)
+  image_bytes = BytesIO()
+  image.save(image_bytes, fmt, quality=quality)
+  # TODO: Python 3 could save a copy here by using `getbuffer()` instead.
+  image_data = image_bytes.getvalue()
+  return image_data

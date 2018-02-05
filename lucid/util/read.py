@@ -31,6 +31,7 @@ from urllib.parse import urlparse, urljoin
 from future.moves.urllib.request import urlopen
 from tensorflow import gfile
 from tempfile import gettempdir
+from io import BytesIO, StringIO
 
 from lucid.util.write import write
 
@@ -83,21 +84,26 @@ def reading(url, mode=None, cache=None):
   """
   scheme = urlparse(url).scheme
 
-  if _is_remote(scheme) and cache is None:
-    cache = True
-
   if mode is None:
     if _supports_binary_mode(scheme):
       mode = 'rb'
     else:
       mode = 'r'
+    log.debug("Mode not specified, using '%s'", mode)
 
-  if scheme in ('http', 'https'):
-    handle = _handle_web_url(url, mode)
-  elif scheme == 'gs':
-    handle = _handle_gcs_url(url, mode)
+  if _is_remote(scheme) and cache is None:
+    cache = True
+    log.debug("Cache not specified, enabling because resource is remote.")
+
+  if cache:
+    handle = _read_and_cache(url, mode)
   else:
-    handle = _handle_gfile(url, mode)
+    if scheme in ('http', 'https'):
+      handle = _handle_web_url(url, mode)
+    elif scheme == 'gs':
+      handle = _handle_gcs_url(url, mode)
+    else:
+      handle = _handle_gfile(url, mode)
 
   yield handle
   handle.close()
@@ -137,14 +143,17 @@ def _is_remote(scheme):
 RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
 
 
-def _read_and_cache(url):
+def _read_and_cache(url, mode):
   local_name = RESERVED_PATH_CHARS.sub('_', url)
   local_path = os.path.join(gettempdir(), local_name)
   if os.path.exists(local_path):
     log.info("Found cached file '%s'.", local_path)
-    return read_path(local_path)
+    return _handle_gfile(local_path, mode)
   else:
-    log.info("Caching URL '%s' locally at 's'.", url, local_path)
-    result = read(url, cache=False)  # important to avoid endless loop
-    write(result, local_path)
-    return result
+    log.info("Caching URL '%s' locally at '%s'.", url, local_path)
+    data = read(url, cache=False)  # important to avoid endless loop
+    write(data, local_path)
+    if 'b' in mode:
+      return BytesIO(data)
+    else:
+      return StringIO(data)

@@ -24,6 +24,7 @@ test_deps = [
   'future',
   'twine',
   'pytest',
+  'pytest-mock'
 ]
 
 extras = {

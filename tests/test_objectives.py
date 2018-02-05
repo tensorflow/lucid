@@ -9,6 +9,7 @@ from lucid.optvis import objectives, param, render, transform
 model = InceptionV1()
 model.load_graphdef()
 
+
 def test_class_logit():
   obj = objectives.neuron("mixed4c_pre_relu", 0)
   rendering = render.render_vis(model, obj, thresholds=(1, 32), verbose=False)

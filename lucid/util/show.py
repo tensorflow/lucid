@@ -21,76 +21,40 @@ from io import BytesIO
 import base64
 import logging
 import numpy as np
-import PIL.Image
+import IPython.display
 
-from lucid.util.array_to_image import _infer_domain_from_array
-from lucid.util.array_to_image import _normalize_array_and_convert_to_image
+from lucid.util.array_to_image import _infer_image_mode_from_shape, _normalize_array, _serialize_array
 
 
 # create logger with module name, e.g. lucid.util.show
 log = logging.getLogger(__name__)
 
 
-_last_html_output = None
-_last_data_output = None
-
-try:
-  from IPython.display import display as IPythonDisplay
-  from IPython.display import HTML as IPythonHTML
-  from IPython.display import Image as IPythonImage
-
-  def _display_html(html_str):
-    global _last_html_output
-    _last_html_output = html_str
-    IPythonDisplay(IPythonHTML(html_str))
-
-  def _display_data(image_data, format):
-    global _last_data_output
-    _last_data_output = image_data
-    IPythonDisplay(IPythonImage(data=image_data, format=format))
-
-except ImportError:
-  log.warn('IPython is not present, HTML output from lucid.util.show and '
-           'lucid.util.show.image will be ignored.')
-
-  def _display_html(html_str):
-    global _last_html_output
-    _last_html_output = html_str
-    pass
-
-  def _display_data(image_data, format):
-    global _last_data_output
-    _last_data_output = image_data
-    pass
+def _display_html(html_str):
+  IPython.display.display(IPython.display.HTML(html_str))
 
 
-def _image_url(image, fmt='png', mode="data"):
+def _image_url(array, fmt='png', mode="data", quality=70, domain=None):
   """Create a data URL representing an image from a PIL.Image.
 
   Args:
-    image: a PIL.Image
+    image: a numpy
     mode: presently only supports "data" for data URL
 
   Returns:
     URL representing image
   """
-  # think about supporting saving to CNS
-  # potential params: cns="tmp", name="foo.png"
-  # think about saving to Cloud Storage
+  # TODO: think about supporting saving to CNS, potential params: cns, name
+  # TODO: think about saving to Cloud Storage
+  supported_modes = ("data")
+  if mode not in supported_modes:
+    message = "Unsupported mode '%s', should be one of '%s'."
+    raise ValueError(message, mode, supported_modes)
 
-  if mode == "data":
-    image_data = _data_from_image(image, fmt=fmt)
-    base64_string = base64.b64encode(image_data).decode('ascii')
-    return "data:image/" + fmt + ";base64," + base64_string
-  else:
-    raise ValueError("Unsupported mode '%s'", mode)
-
-
-def _data_from_image(image, fmt='png', quality=95):
-  """Serialize a PIL.Image"""
-  image_bytes = BytesIO()
-  image.save(image_bytes, fmt, quality=quality)
-  return image_bytes.getvalue()
+  normalized_array = _normalize_array(array, domain=domain)
+  image_data = _serialize_array(normalized_array, fmt=fmt, quality=quality)
+  base64_byte_string = base64.b64encode(image_data).decode('ascii')
+  return "data:image/" + fmt.upper() + ";base64," + base64_byte_string
 
 
 # public functions
@@ -106,10 +70,9 @@ def image(array, domain=None, w=None, format='png'):
     w: width of output image, scaled using nearest neighbor interpolation.
       size unchanged if None
   """
-  domain = domain or _infer_domain_from_array(array)
-  image = _normalize_array_and_convert_to_image(array, domain, w)
-  image_data = _data_from_image(image, format)
-  _display_data(image_data, format=format)
+  data_url = _image_url(array, domain=domain)
+  html = '<img src=\"' + data_url + '\">'
+  _display_html(html)
 
 
 def images(arrays, labels=None, domain=None, w=None):
@@ -124,14 +87,10 @@ def images(arrays, labels=None, domain=None, w=None):
       size unchanged if None
   """
 
-  s = '<div style="display:flex;flex-direction:row;">'
-  for i, a in enumerate(arrays):
-    domain = domain or _infer_domain_from_array(a)
-    a = _normalize_array_and_convert_to_image(a, domain, w)
-    url = _image_url(a)
+  s = '<div style="display: flex; flex-direction: row;">'
+  for i, array in enumerate(arrays):
+    url = _image_url(array)
     label = labels[i] if labels is not None else i
-    label = str(label)
-
     s += """<div style="margin-right:10px;">
               {label}<br/>
               <img src="{url}" style="margin-top:4px;">
@@ -140,7 +99,7 @@ def images(arrays, labels=None, domain=None, w=None):
   _display_html(s)
 
 
-def display(thing):
+def display(thing, domain=(0, 1)):
   """Display a nupmy array without having to specify what it represents.
 
   This module will attempt to infer how to display your tensor based on its
@@ -151,16 +110,16 @@ def display(thing):
     rank = len(thing.shape)
     if rank == 4:
       log.debug("Show is assuming rank 4 tensor to be a list of images.")
-      images(thing)
+      images(thing, domain=domain)
     elif rank in (2, 3):
       log.debug("Show is assuming rank 2 or 3 tensor to be an image.")
-      image(thing)
+      image(thing, domain=domain)
     else:
       log.warn("Show only supports numpy arrays of rank 2-4. Using repr().")
       print(repr(thing))
   elif isinstance(thing, (list, tuple)):
     log.debug("Show is assuming list or tuple to be a collection of images.")
-    images(thing)
+    images(thing, domain=domain)
   else:
     log.warn("Show only supports numpy arrays so far. Using repr().")
     print(repr(thing))

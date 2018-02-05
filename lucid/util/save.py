@@ -32,8 +32,7 @@ import json
 import numpy as np
 
 from lucid.util.write import write, writing
-from lucid.util.array_to_image import _infer_domain_from_array
-from lucid.util.array_to_image import _normalize_array_and_convert_to_image
+from lucid.util.array_to_image import _serialize_array, _normalize_array
 
 
 # create logger with module name, e.g. lucid.util.save
@@ -66,6 +65,7 @@ def save_npz(object, url):
 def save_img(object, url, **kwargs):
   """Save numpy array as image file on CNS."""
   if isinstance(object, np.ndarray):
+    normalized
     image = _normalize_array_and_convert_to_image(object)
   else:
     raise ValueError("Can only save_img for numpy arrays or PIL.Images!")
