@@ -12,11 +12,11 @@ HAVE_COLAB_NVIDIA = (os.path.exists('/usr/lib64-nvidia/') and
 WIDTH, HEIGHT = 200, 100
 
 if HAVE_COLAB_NVIDIA:
-  from lucid.misc import colab_gl
+  from lucid.misc import glcontext  # must be imported before OpenGL.GL
   import OpenGL.GL as gl
   from lucid.misc import glrenderer
   
-  colab_gl.create_opengl_context((WIDTH, HEIGHT))
+  glcontext.create_opengl_context((WIDTH, HEIGHT))
 
 
 @pytest.mark.skipif(not HAVE_COLAB_NVIDIA, reason="GPU Colab kernel only")

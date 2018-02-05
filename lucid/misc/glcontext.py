@@ -7,7 +7,7 @@ Typical usage:
     # OpenGL.ERROR_CHECKING = True
 
     # 'glcontext' must be imported before any OpenGL.* API.
-    from lucid.misc.colab_gl import create_opengl_context
+    from lucid.misc.glcontext import create_opengl_context
 
     # Now it's safe to import OpenGL and EGL functions
     import OpenGL.GL as gl
