@@ -13,24 +13,21 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Utility functions for modelzoo models."""
+"""Ensuring compatibilty across environments, e.g. Jupyter/Colab/Shell."""
 
 from __future__ import absolute_import, division, print_function
 
-import tensorflow as tf
-from lucid.misc.io.reading import read
 
-
-def load_graphdef(model_url, reset_device=True):
-  """Load GraphDef from a binary proto file."""
-  graphdef_string = read(model_url)
-  graph_def = tf.GraphDef.FromString(graphdef_string)
-  if reset_device:
-    for n in graph_def.node:
-      n.device = ""
-  return graph_def
-
-def forget_xy(t):
-  """Forget sizes of dimensions [1, 2] of a 4d tensor."""
-  zero = tf.identity(0)
-  return t[:, zero:, zero:, :]
+def is_notebook_environment():
+  try:
+    shell = get_ipython().__class__.__name__
+    if shell == 'ZMQInteractiveShell':
+      return True   # IPython Notebook
+    elif shell == 'Shell':
+      return True   # Colaboratory Notebook
+    elif shell == 'TerminalInteractiveShell':
+      return False  # Terminal running IPython
+    else:
+      return False  # Other unknown type (?)
+  except NameError:
+    return False    # Probably standard Python interpreter
