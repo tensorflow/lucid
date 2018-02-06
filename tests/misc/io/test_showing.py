@@ -44,7 +44,8 @@ def test_show_images(mocker):
 def test_show_textured_mesh(mocker):
   mock_html = mocker.patch('IPython.display.HTML')
   
-  texture = np.zeros((16, 16, 3), np.float32)
+  texture = np.ones((16, 16, 3), np.float32)
+  old_texture = texture.copy()
   mesh = dict(
     position = np.float32([[0, 0, 0], [1, 0, 0], [0, 1, 0]]),
     uv = np.float32([[0, 0], [1, 0], [0, 1]]),
@@ -52,4 +53,5 @@ def test_show_textured_mesh(mocker):
   )
   show.textured_mesh(mesh, texture)
 
+  assert (texture==old_texture).all()  # check that we don't modify data
   mock_html.assert_called_once()

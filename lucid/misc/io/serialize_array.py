@@ -43,7 +43,7 @@ def _normalize_array(array, domain=(0, 1)):
     normalized PIL.Image
   """
   # squeeze helps both with batch=1 and B/W and PIL's mode inference
-  array = np.squeeze(np.asarray(array))
+  array = np.squeeze(np.array(array))
   assert len(array.shape) <= 3
   assert np.issubdtype(array.dtype, np.number)
 
