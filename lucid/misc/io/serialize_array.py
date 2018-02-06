@@ -23,62 +23,25 @@ import PIL.Image
 from io import BytesIO
 
 
-# create logger with module name, e.g. lucid.util.array_to_image
+# create logger with module name, e.g. lucid.misc.io.array_to_image
 log = logging.getLogger(__name__)
 
 
-class CouldNotInfer(Exception):
-  pass
-
-
-def _infer_image_mode_from_shape(shape):
-  """Guesses image mode from supplied shape.
-
-  For example assumes that a 2D array is meant as a B/W image.
-
-  Args:
-    shape: an enumerable representation of dimensions, the length of which is
-      assumed to be its rank. E.g. (200,200,3) for a 200 by 200 pixel RGB image
-  Returns:
-    image_mode: a string representing grayscale, RGB, or RGBA image modes.
-  """
-  rank = len(shape)
-
-  if rank == 2:
-    image_mode = "L"
-  elif rank == 3:
-    depth = shape[-1]
-    if depth == 1:
-      image_mode = "L"
-    elif depth == 3:
-      image_mode = "RGB"
-    elif depth == 4:
-      image_mode = "RGBA"
-    else:
-      raise ValueError("""Can only infer image mode of 2D, 3D & 4D images,
-                         invalid shape: """ + str(shape))
-  elif rank == 4:
-    raise ValueError("""Can not infer image mode for shape of rank 4.
-      You may be trying to infer from an image with batch dimension?""")
-
-  message = "Inferred image mode '{}' from rank-{:d} shape {}"
-  log.info(message.format(image_mode, rank, shape))
-  return image_mode
-
-
 def _normalize_array(array, domain=(0, 1)):
-  """Normalize an image pixel values and width.
+  """Given an arbitrary rank-3 NumPy array, produce one representing an image.
+
+  This ensures the resulting array has a dtype of uint8 and a domain of 0-255.
 
   Args:
-    a: NumPy array representing the image
-    domain: Domain of pixel values, inferred from min & max values if None
-    w: width of output image, scaled using nearest neighbor interpolation.
-      size unchanged if None
+    array: NumPy array representing the image
+    domain: expected range of values in array,
+      defaults to (0, 1), if explicitly set to None will use the array's
+      own range of values and normalize them.
 
   Returns:
     normalized PIL.Image
   """
-  # squeeze helps both with batch=1 and B/W
+  # squeeze helps both with batch=1 and B/W and PIL's mode inference
   array = np.squeeze(np.asarray(array))
   assert len(array.shape) <= 3
   assert np.issubdtype(array.dtype, np.number)
@@ -113,13 +76,41 @@ def _normalize_array(array, domain=(0, 1)):
   return array
 
 
-def _serialize_array(array, fmt='png', quality=70):
+def _serialize_normalized_array(array, fmt='png', quality=70):
+  """Given a normalized array, returns byte representation of image encoding.
+
+  Args:
+    array: NumPy array of dtype uint8 and range 0 to 255
+    fmt: string describing desired file format, defaults to 'png'
+    quality: specifies compression quality from 0 to 100 for lossy formats
+
+  Returns:
+    image data as BytesIO buffer
+  """
   assert np.issubdtype(array.dtype, np.unsignedinteger)
   assert np.max(array) <= 255
-  inferred_mode = _infer_image_mode_from_shape(array.shape)
-  image = PIL.Image.fromarray(array, mode=inferred_mode)
+  assert array.shape[-1] > 1  # array dims must have been squeezed
+
+  image = PIL.Image.fromarray(array)
   image_bytes = BytesIO()
   image.save(image_bytes, fmt, quality=quality)
   # TODO: Python 3 could save a copy here by using `getbuffer()` instead.
   image_data = image_bytes.getvalue()
   return image_data
+
+
+def serialize_array(array, domain=(0, 1), fmt='png', quality=70):
+  """Given an arbitrary rank-3 NumPy array,
+  returns the byte representation of the encoded image.
+
+  Args:
+    array: NumPy array of dtype uint8 and range 0 to 255
+    domain: expected range of values in array, see `_normalize_array()`
+    fmt: string describing desired file format, defaults to 'png'
+    quality: specifies compression quality from 0 to 100 for lossy formats
+
+  Returns:
+    image data as BytesIO buffer
+  """
+  normalized = _normalize_array(array, domain=domain)
+  return _serialize_normalized_array(normalized, fmt=fmt, quality=quality)

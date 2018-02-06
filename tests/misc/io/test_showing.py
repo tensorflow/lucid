@@ -9,7 +9,7 @@ import pytest
 
 import numpy as np
 import lucid
-import lucid.util.show as show
+import lucid.misc.io.showing as show
 import IPython.display
 
 

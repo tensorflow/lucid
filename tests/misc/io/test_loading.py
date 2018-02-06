@@ -1,9 +1,10 @@
+# -*- coding: UTF-8 -*-
 from __future__ import absolute_import, division, print_function
 
 import pytest
 
 import numpy as np
-from lucid.util.load import load
+from lucid.misc.io.loading import load
 import os.path
 import io
 
@@ -12,6 +13,12 @@ def test_load_json():
   path = "./tests/fixtures/dictionary.json"
   dictionary = load(path)
   assert "key" in dictionary
+
+
+def test_load_text():
+  path = "./tests/fixtures/string.txt"
+  string = load(path)
+  assert u"🐕" in string
 
 
 def test_load_npy():
@@ -28,7 +35,7 @@ def test_load_npz():
 
 @pytest.mark.parametrize("path", [
   "./tests/fixtures/noise.png",
-  "./tests/fixtures/noise.PNG",
+  "./tests/fixtures/noise_uppercase.PNG",
   "./tests/fixtures/noise.jpg",
   "./tests/fixtures/noise.jpeg",
   "./tests/fixtures/image.XYZ",

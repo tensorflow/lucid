@@ -30,12 +30,13 @@ import logging
 import os.path
 import json
 import numpy as np
+import PIL.Image
 
-from lucid.util.write import write, writing
-from lucid.util.array_to_image import _serialize_array, _normalize_array
+from lucid.misc.io.writing import write, write_handle
+from lucid.misc.io.serialize_array import _normalize_array
 
 
-# create logger with module name, e.g. lucid.util.save
+# create logger with module name, e.g. lucid.misc.io.saving
 log = logging.getLogger(__name__)
 
 
@@ -47,7 +48,7 @@ def save_json(object, url, indent=2):
 
 def save_npy(object, url):
   """Save numpy array as npy file."""
-  with writing(url, "w") as handle:
+  with write_handle(url, "w") as handle:
     np.save(handle, object)
 
 
@@ -65,12 +66,12 @@ def save_npz(object, url):
 def save_img(object, url, **kwargs):
   """Save numpy array as image file on CNS."""
   if isinstance(object, np.ndarray):
-    normalized
-    image = _normalize_array_and_convert_to_image(object)
-  else:
+    normalized = _normalize_array(object)
+    image = PIL.Image.fromarray(normalized)
+  elif not isinstance(object, PIL.Image):
     raise ValueError("Can only save_img for numpy arrays or PIL.Images!")
 
-  with writing(url) as handle:
+  with write_handle(url) as handle:
     image.save(handle, **kwargs)  # will infer format from handle's url ext.
 
 
@@ -103,7 +104,7 @@ def save(thing, url, **kwargs):
 
   if ext in savers:
     saver = savers[ext]
-    data = saver(thing, url, **kwargs)
+    saver(thing, url, **kwargs)
   else:
     message = "Unknown extension '{}', supports {}."
     raise RuntimeError(message.format(ext, loaders))

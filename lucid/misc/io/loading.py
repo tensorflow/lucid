@@ -29,30 +29,37 @@ import logging
 import numpy as np
 import PIL.Image
 
-from lucid.util.read import reading
+from lucid.misc.io.reading import read_handle
 
 
-# create logger with module name, e.g. lucid.util.read
+# create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
 
 
-def _load_npy(handle):
+def _load_npy(handle, **kwargs):
   """Load npy file as numpy array."""
+  del kwargs
   return np.load(handle)
 
 
-def _load_img(handle):
+def _load_img(handle, **kwargs):
   """Load image file as numpy array."""
+  del kwargs
   # PIL.Image will infer image type from provided handle's file extension
   pil_img = PIL.Image.open(handle)
   # using np.divide should avoid an extra copy compared to doing division first
   return np.divide(pil_img, 255, dtype=np.float64)
 
 
-def _load_json(handle):
+def _load_json(handle, encoding=None):
   """Load json file as python object."""
+  del encoding
   return json.load(handle)
 
+
+def _load_text(handle, encoding='utf-8'):
+  """Load and decode a string."""
+  return handle.read().decode(encoding)
 
 loaders = {
   ".png":  _load_img,
@@ -61,10 +68,12 @@ loaders = {
   ".npy":  _load_npy,
   ".npz":  _load_npy,
   ".json": _load_json,
+  ".txt": _load_text,
+  ".md": _load_text,
 }
 
 
-def load(url, cache=None):
+def load(url, cache=None, encoding='utf-8'):
   """Load a file.
 
   File format is inferred from url. File retrieval strategy is inferred from
@@ -84,14 +93,14 @@ def load(url, cache=None):
   if ext in loaders:
     loader = loaders[ext]
     message = "Using inferred loader '%s' due to passed file extension '%s'."
-    log.info(message, loader.__name__[6:], ext)
-    with reading(url, cache=cache) as handle:
-      result = loader(handle)
+    log.debug(message, loader.__name__[6:], ext)
+    with read_handle(url, cache=cache) as handle:
+      result = loader(handle, encoding=encoding)
     return result
   else:
     log.warn("Unknown extension '%s', attempting to load as image.", ext)
     try:
-      with reading(url, cache=cache) as handle:
+      with read_handle(url, cache=cache) as handle:
         result = _load_img(handle)
     except Exception as e:
       message = "Could not load resource %s as image. Supported extensions: %s"

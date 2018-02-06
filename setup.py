@@ -51,6 +51,7 @@ setup(
     'tensorflow',
     'numpy',
     'pillow',
+    'ipython'
   ],
   tests_require = test_deps,
   extras_require = extras,

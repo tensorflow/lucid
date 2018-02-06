@@ -23,10 +23,10 @@ import logging
 import numpy as np
 import IPython.display
 
-from lucid.util.array_to_image import _infer_image_mode_from_shape, _normalize_array, _serialize_array
+from lucid.misc.io.serialize_array import serialize_array
 
 
-# create logger with module name, e.g. lucid.util.show
+# create logger with module name, e.g. lucid.misc.io.showing
 log = logging.getLogger(__name__)
 
 
@@ -51,8 +51,7 @@ def _image_url(array, fmt='png', mode="data", quality=70, domain=None):
     message = "Unsupported mode '%s', should be one of '%s'."
     raise ValueError(message, mode, supported_modes)
 
-  normalized_array = _normalize_array(array, domain=domain)
-  image_data = _serialize_array(normalized_array, fmt=fmt, quality=quality)
+  image_data = serialize_array(array, fmt=fmt, quality=quality)
   base64_byte_string = base64.b64encode(image_data).decode('ascii')
   return "data:image/" + fmt.upper() + ";base64," + base64_byte_string
 
@@ -99,7 +98,7 @@ def images(arrays, labels=None, domain=None, w=None):
   _display_html(s)
 
 
-def display(thing, domain=(0, 1)):
+def show(thing, domain=(0, 1)):
   """Display a nupmy array without having to specify what it represents.
 
   This module will attempt to infer how to display your tensor based on its

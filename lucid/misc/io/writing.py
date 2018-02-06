@@ -39,18 +39,24 @@ def _supports_binary_writing(path):
   return not path.startswith("/bigstore")
 
 
-def write(data, url, mode='wb'):
-  assert urlparse(url).scheme not in ('http', 'https')
-  write_to_path(data, url, mode=mode)
-
-
-def write_to_path(data, path, mode='wb'):
-  with writing(path, mode) as handle:
+def _write_to_path(data, path, mode='wb'):
+  with write_handle(path, mode) as handle:
     handle.write(data)
 
 
+# Public functions
+
+
+def write(data, url, mode='wb'):
+  if urlparse(url).scheme in ('http', 'https'):
+    message = "Writing to remote URL (%s) is not yet supported."
+    raise ValueError(message, url)
+
+  _write_to_path(data, url, mode=mode)
+
+
 @contextmanager
-def writing(path, mode=None):
+def write_handle(path, mode=None):
 
   if _supports_make_dirs(path):
     gfile.MakeDirs(os.path.dirname(path))

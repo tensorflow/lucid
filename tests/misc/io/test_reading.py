@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 
-from lucid.util.read import read, reading
+from lucid.misc.io.reading import read, read_handle
 import os.path
 import io
 
@@ -14,17 +14,22 @@ io.open(path, 'w').write(string)
 
 
 def test_read_txt_file():
-  content = read(path, mode='r')
+  content = read(path, encoding='utf-8')
   assert content == string
 
 
-def test_reading_txt_file():
-  with reading(path, mode='r') as handle:
+def test_read_handle_txt_file():
+  with read_handle(path) as handle:
+    content1 = handle.read().decode('utf-8')
+  assert content1 == string
+
+
+def test_read_handle_behaves_like_file():
+  with read_handle(path) as handle:
     content1 = handle.read()
     handle.seek(0)
     content2 = handle.read()
   assert content1 == content2
-  assert content1 == string
 
 
 def test_read_binary_file():

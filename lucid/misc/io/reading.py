@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Methods for reading bytes from arbitrary sources.
+"""Methods for read_handle bytes from arbitrary sources.
 
 This module takes a URL, infers how to locate it,
 loads the data into memory and returns it.
@@ -33,17 +33,17 @@ from tensorflow import gfile
 from tempfile import gettempdir
 from io import BytesIO, StringIO
 
-from lucid.util.write import write
+from lucid.misc.io.writing import write
 
 
-# create logger with module name, e.g. lucid.util.read
+# create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
 
 
 # Public functions
 
 
-def read(url, mode='rb', cache=None):
+def read(url, encoding=None, cache=None):
   """Read from any URL.
 
   Internally differentiates between URLs supported by tf.gfile, such as URLs
@@ -52,21 +52,31 @@ def read(url, mode='rb', cache=None):
 
   Args:
     url: a URL including scheme or a local path
+    mode: mode in which to open the file. defaults to binary ('rb')
+    encoding: if specified, encoding that should be used to decode read data
+      if mode is specified to be text ('r'), this defaults to 'utf-8'.
+    cache: whether to attempt caching the resource. Defaults to True only if
+      the given URL specifies a remote resource.
   Returns:
-    All bytes form the specified resource if it could be reached.
+    All bytes form the specified resource, or a decoded string of those.
   """
-  with reading(url, mode, cache) as handle:
-    return handle.read()
+  with read_handle(url, cache) as handle:
+    data = handle.read()
+
+  if encoding:
+    data = data.decode(encoding)
+
+  return data
 
 
 @contextmanager
-def reading(url, mode=None, cache=None):
+def read_handle(url, cache=None):
   """Read from any URL with a file handle.
 
   Use this to get a handle to a file rather than eagerly load the data:
 
   ```
-  with reading(url) as handle:
+  with read_handle(url) as handle:
     result = something.load(handle)
 
   result.do_something()
@@ -84,26 +94,19 @@ def reading(url, mode=None, cache=None):
   """
   scheme = urlparse(url).scheme
 
-  if mode is None:
-    if _supports_binary_mode(scheme):
-      mode = 'rb'
-    else:
-      mode = 'r'
-    log.debug("Mode not specified, using '%s'", mode)
-
   if _is_remote(scheme) and cache is None:
     cache = True
     log.debug("Cache not specified, enabling because resource is remote.")
 
   if cache:
-    handle = _read_and_cache(url, mode)
+    handle = _read_and_cache(url)
   else:
     if scheme in ('http', 'https'):
-      handle = _handle_web_url(url, mode)
+      handle = _handle_web_url(url)
     elif scheme == 'gs':
-      handle = _handle_gcs_url(url, mode)
+      handle = _handle_gcs_url(url)
     else:
-      handle = _handle_gfile(url, mode)
+      handle = _handle_gfile(url)
 
   yield handle
   handle.close()
@@ -112,28 +115,24 @@ def reading(url, mode=None, cache=None):
 # Handlers
 
 
-def _handle_gfile(url, mode):
+def _handle_gfile(url, mode='rb'):
   return gfile.Open(url, mode)
 
 
-def _handle_web_url(url, mode):
+def _handle_web_url(url):
   del mode  # unused
   return urlopen(url)
 
 
-def _handle_gcs_url(url, mode):
+def _handle_gcs_url(url):
   # TODO: transparently allow authenticated access through storage API
   _, resource_name = url.split('://')
   base_url = 'https://storage.googleapis.com/'
   url = urljoin(base_url, resource_name)
-  return _handle_web_url(url, mode)
+  return _handle_web_url(url)
 
 
 # Helper Functions
-
-
-def _supports_binary_mode(scheme):
-  return True
 
 
 def _is_remote(scheme):
@@ -143,17 +142,14 @@ def _is_remote(scheme):
 RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
 
 
-def _read_and_cache(url, mode):
+def _read_and_cache(url):
   local_name = RESERVED_PATH_CHARS.sub('_', url)
   local_path = os.path.join(gettempdir(), local_name)
   if os.path.exists(local_path):
     log.info("Found cached file '%s'.", local_path)
-    return _handle_gfile(local_path, mode)
+    return _handle_gfile(local_path)
   else:
     log.info("Caching URL '%s' locally at '%s'.", url, local_path)
     data = read(url, cache=False)  # important to avoid endless loop
     write(data, local_path)
-    if 'b' in mode:
-      return BytesIO(data)
-    else:
-      return StringIO(data)
+    return BytesIO(data)

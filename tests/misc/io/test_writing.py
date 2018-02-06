@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 
-from lucid.util.write import write, writing
+from lucid.misc.io.writing import write, write_handle
 import os
 import io
 import random
@@ -28,22 +28,22 @@ def test_write_bytes():
   assert os.path.isfile(path)
   assert content == random_bytes
 
-def test_writing_text():
+def test_write_handle_text():
   text = u"The quick brown 🦊 jumps over the lazy dog"
   path = "./tests/fixtures/string2.txt"
 
-  with writing(path, mode='w') as handle:
+  with write_handle(path, mode='w') as handle:
     handle.write(text)
   content = io.open(path, 'rt').read()
 
   assert os.path.isfile(path)
   assert content == text
 
-def test_writing_binary():
+def test_write_handle_binary():
     random_bytes = os.urandom(32)
     path = "./tests/fixtures/bytes"
 
-    with writing(path) as handle:
+    with write_handle(path) as handle:
       handle.write(random_bytes)
     content = io.open(path, 'rb').read()
 

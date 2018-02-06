@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 import numpy as np
-from lucid.util.save import save
+from lucid.misc.io.saving import save
 import os.path
 import io
 
