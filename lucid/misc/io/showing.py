@@ -23,7 +23,7 @@ import logging
 import numpy as np
 import IPython.display
 
-from lucid.misc.io.serialize_array import serialize_array
+from lucid.misc.io.serialize_array import serialize_array, array_to_jsbuffer
 
 
 # create logger with module name, e.g. lucid.misc.io.showing
@@ -122,3 +122,72 @@ def show(thing, domain=(0, 1)):
   else:
     log.warn("Show only supports numpy arrays so far. Using repr().")
     print(repr(thing))
+
+
+def show_textured_mesh(mesh, texture, background='0xffffff'):
+  texture = texture[::-1]  # flipping to match webgl convention
+  texture_data_url = _image_url(texture, format='jpeg', quality=95)
+
+  code = Template('''
+  <script src="https://cdn.rawgit.com/mrdoob/three.js/r89/build/three.min.js"></script>
+  <script src="https://cdn.rawgit.com/mrdoob/three.js/r89/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+  "use strict";
+
+  var camera, scene, renderer, controls;
+
+  init();
+  animate();
+
+  function init() {
+    var width = 800, height = 600;
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+    camera.position.z = 1.5;
+    scene.add(camera);
+
+    controls = new THREE.OrbitControls( camera );
+
+    var geometry = new THREE.BufferGeometry();
+    geometry.addAttribute( 'position', new THREE.BufferAttribute($verts, 3 ) );
+    geometry.addAttribute( 'uv', new THREE.BufferAttribute($uvs, 2) );
+    geometry.setIndex(new THREE.BufferAttribute($faces, 1 ));
+    geometry.computeVertexNormals();
+
+    var loader = new THREE.TextureLoader();
+    var texture = loader.load( '$tex_data_url' );
+
+    var material = new THREE.MeshBasicMaterial({
+        'map': texture,
+        'color': 0xffffff
+    });
+
+
+    var mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+    scene.background = new THREE.Color( $background );
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(width, height);
+
+    document.body.appendChild(renderer.domElement);
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  </script>
+  ''').substitute(
+      verts = array_to_jsbuffer(mesh['position'].ravel()),
+      uvs = array_to_jsbuffer(mesh['uv'].ravel()),
+      faces = array_to_jsbuffer(np.uint32(mesh['face'].ravel())),
+      tex_data_url = texture_data_url,
+      background = background,
+  )
+  _display_html(code)
+
