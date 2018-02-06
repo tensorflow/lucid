@@ -34,9 +34,9 @@ def test_load_npz():
 
 
 @pytest.mark.parametrize("path", [
-  "./tests/fixtures/noise.png",
+  "./tests/fixtures/rgbeye.png",
   "./tests/fixtures/noise_uppercase.PNG",
-  "./tests/fixtures/noise.jpg",
+  "./tests/fixtures/rgbeye.jpg",
   "./tests/fixtures/noise.jpeg",
   "./tests/fixtures/image.XYZ",
 ])

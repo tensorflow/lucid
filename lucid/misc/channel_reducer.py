@@ -13,9 +13,9 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Helper for using sklearn.decomposition on high-diemsnional tensors.
+"""Helper for using sklearn.decomposition on high-dimensional tensors.
 
-Provides ChannelRedurcer, a wrapper around sklearn.decomposition to help them
+Provides ChannelReducer, a wrapper around sklearn.decomposition to help them
 apply to arbitrary rank tensors. It saves lots of annoying reshaping.
 """
 
@@ -32,21 +32,21 @@ class ChannelReducer(object):
   http://scikit-learn.org/stable/modules/classes.html#module-sklearn.decomposition
   """
 
-  def __init__(self, n_features=3, reduction_alg="NMF", **kwds):
+  def __init__(self, n_features=3, reduction_alg="NMF", **kwargs):
     """Constructor for ChannelReducer.
 
     Inputs:
       n_features: Numer of dimensions to reduce inner most dimension to.
       reduction_alg: A string or sklearn.decomposition class. Defaults to
-        "NMF" (non-negative matrix facotrization). Other optoins include:
+        "NMF" (non-negative matrix facotrization). Other options include:
         "PCA", "FastICA", and "MiniBatchDictionaryLearning". The name of any of
         the sklearn.decomposition classes will work, though.
-      kwds: Additional args to be bassed on to the reducer.
+      kwargs: Additional kwargs to be passed on to the reducer.
     """
     if isinstance(reduction_alg, str):
       reduction_alg = sklearn.decomposition.__getattribute__(reduction_alg)
     self.n_features = n_features
-    self._reducer = reduction_alg(n_features, **kwds)
+    self._reducer = reduction_alg(n_features, **kwargs)
 
   @classmethod
   def _apply_flat(cls, f, acts):
@@ -77,7 +77,7 @@ class ChannelReducer(object):
 
   #def __getattr__(self, name):
   #  return getattr(self._reducer, name)
-      
+
   def __dir__(self):
     dynamic_attrs = dir(self._reducer)
     return self.__dict__.keys()# + dynamic_attrs

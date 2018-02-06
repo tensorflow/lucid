@@ -24,7 +24,8 @@ test_deps = [
   'future',
   'twine',
   'pytest',
-  'pytest-mock'
+  'pytest-mock',
+  'pytest-cov'
 ]
 
 extras = {
@@ -50,6 +51,7 @@ setup(
     'decorator',
     'tensorflow',
     'numpy',
+    'sklearn',
     'pillow',
     'ipython'
   ],
