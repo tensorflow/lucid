@@ -48,7 +48,7 @@ def _load_img(handle, **kwargs):
   # PIL.Image will infer image type from provided handle's file extension
   pil_img = PIL.Image.open(handle)
   # using np.divide should avoid an extra copy compared to doing division first
-  return np.divide(pil_img, 255, dtype=np.float64)
+  return np.divide(pil_img, 255, dtype=np.float32)
 
 
 def _load_json(handle, encoding=None):
