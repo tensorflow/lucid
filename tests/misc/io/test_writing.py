@@ -8,6 +8,8 @@ import os
 import io
 import random
 
+random.seed(42)
+
 def test_write_text():
   text = u"The quick brown fox jumps over the lazy 🐕"
   path = "./tests/fixtures/string.txt"
