@@ -40,3 +40,16 @@ def test_show_images(mocker):
   assert golden_eye_html[:-1] in html_arg
   # check that label strings are in output
   assert all(label in html_arg for label in labels)
+
+def test_show_textured_mesh(mocker):
+  mock_html = mocker.patch('IPython.display.HTML')
+  
+  texture = np.zeros((16, 16, 3), np.float32)
+  mesh = dict(
+    position = np.float32([[0, 0, 0], [1, 0, 0], [0, 1, 0]]),
+    uv = np.float32([[0, 0], [1, 0], [0, 1]]),
+    face = np.int32([0, 1, 2])
+  )
+  show.textured_mesh(mesh, texture)
+
+  mock_html.assert_called_once()

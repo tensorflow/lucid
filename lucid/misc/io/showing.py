@@ -22,6 +22,7 @@ import base64
 import logging
 import numpy as np
 import IPython.display
+from string import Template
 
 from lucid.misc.io.serialize_array import serialize_array, array_to_jsbuffer
 
@@ -124,9 +125,9 @@ def show(thing, domain=(0, 1)):
     print(repr(thing))
 
 
-def show_textured_mesh(mesh, texture, background='0xffffff'):
+def textured_mesh(mesh, texture, background='0xffffff'):
   texture = texture[::-1]  # flipping to match webgl convention
-  texture_data_url = _image_url(texture, format='jpeg', quality=95)
+  texture_data_url = _image_url(texture, fmt='jpeg', quality=95)
 
   code = Template('''
   <script src="https://cdn.rawgit.com/mrdoob/three.js/r89/build/three.min.js"></script>
