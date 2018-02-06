@@ -120,7 +120,6 @@ def _handle_gfile(url, mode='rb'):
 
 
 def _handle_web_url(url):
-  del mode  # unused
   return urlopen(url)
 
 
