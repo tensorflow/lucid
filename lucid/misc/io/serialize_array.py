@@ -41,8 +41,10 @@ def _normalize_array(array, domain=(0, 1)):
   Returns:
     normalized PIL.Image
   """
+  # first copy the input so we're never mutating the user's data
+  array = np.array(array)
   # squeeze helps both with batch=1 and B/W and PIL's mode inference
-  array = np.squeeze(np.asarray(array))
+  array = np.squeeze(array)
   assert len(array.shape) <= 3
   assert np.issubdtype(array.dtype, np.number)
 
@@ -87,8 +89,9 @@ def _serialize_normalized_array(array, fmt='png', quality=70):
   Returns:
     image data as BytesIO buffer
   """
-  assert np.issubdtype(array.dtype, np.unsignedinteger)
-  assert np.max(array) <= 255
+  dtype = array.dtype
+  assert np.issubdtype(dtype, np.unsignedinteger)
+  assert np.max(array) <= np.iinfo(dtype).max
   assert array.shape[-1] > 1  # array dims must have been squeezed
 
   image = PIL.Image.fromarray(array)

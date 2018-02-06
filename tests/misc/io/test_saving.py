@@ -13,6 +13,8 @@ dictionary = {
 dictionary_json = """{
   "key": "value"
 }"""
+
+np.random.seed(42)
 array1 = np.random.normal(loc=.5, scale=.1, size=(5,10))
 array2 = np.random.normal(loc=.5, scale=.1, size=(2,5,10,3))
 

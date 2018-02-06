@@ -47,13 +47,15 @@ def _load_img(handle, **kwargs):
   del kwargs
   # PIL.Image will infer image type from provided handle's file extension
   pil_img = PIL.Image.open(handle)
+  img_array = np.asarray(pil_img)
+  dtype = img_array.dtype
   # using np.divide should avoid an extra copy compared to doing division first
-  return np.divide(pil_img, 255, dtype=np.float32)
+  return np.divide(img_array, np.iinfo(dtype).max, dtype=np.float32)
 
 
-def _load_json(handle, encoding=None):
+def _load_json(handle, **kwargs):
   """Load json file as python object."""
-  del encoding
+  del kwargs
   return json.load(handle)
 
 
