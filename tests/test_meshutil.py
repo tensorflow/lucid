@@ -2,7 +2,7 @@ import pytest
 
 import io
 import numpy as np
-from lucid.misc import meshutil
+from lucid.misc.gl import meshutil
 
 test_obj = u'''
 # comment
