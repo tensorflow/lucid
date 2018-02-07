@@ -1,10 +1,13 @@
-# Lucid
-
 🔶 **Lucid is alpha software.
 We're still sorting out the kinks in using it outside Google.
 The API is very much in flux.
 Unless you want to be an alpha user and help us test Lucid,
 please come back towards the end of February.**
+
+<br>
+
+
+# Lucid
 
 <!--*DeepDream, but sane. Home of cats, dreams, and interpretable neural networks.*-->
 
@@ -28,6 +31,7 @@ run in your browser.
 -->
 
 
+<br>
 
 # License and Disclaimer
 
