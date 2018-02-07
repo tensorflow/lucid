@@ -53,6 +53,7 @@ setup(
     'numpy',
     'sklearn',
     'pillow',
+    'pyopengl',
     'ipython'
   ],
   tests_require = test_deps,

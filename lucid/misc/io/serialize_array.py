@@ -17,6 +17,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import base64
 import logging
 import numpy as np
 import PIL.Image
@@ -117,3 +118,46 @@ def serialize_array(array, domain=(0, 1), fmt='png', quality=70):
   """
   normalized = _normalize_array(array, domain=domain)
   return _serialize_normalized_array(normalized, fmt=fmt, quality=quality)
+
+
+JS_ARRAY_TYPES = {
+    'int8', 'int16', 'int32', 'uint8', 'uint16', 'uint32', 'float32', 'float64'
+}
+
+
+def array_to_jsbuffer(array):
+  """Serialize 1d NumPy array to JS TypedArray.
+
+  Data is serialized to base64-encoded string, which is much faster
+  and memory-efficient than json list serialization.
+
+  Args:
+    array: 1d NumPy array, dtype must be one of JS_ARRAY_TYPES.
+
+  Returns:
+    JS code that evaluates to a TypedArray as string.
+
+  Raises:
+    TypeError: if array dtype or shape not supported.
+  """
+  if array.ndim != 1:
+    raise TypeError('Only 1d arrays can be converted JS TypedArray.')
+  if array.dtype.name not in JS_ARRAY_TYPES:
+    raise TypeError('Array dtype not supported by JS TypedArray.')
+  js_type_name = array.dtype.name.capitalize() + 'Array'
+  data_base64 = base64.b64encode(array.tobytes()).decode('ascii')
+  code = """
+    (function() {
+      const data = atob("%s");
+      const buf = new Uint8Array(data.length);
+      for (var i=0; i<data.length; ++i) {
+        buf[i] = data.charCodeAt(i);
+      }
+      var array_type = %s;
+      if (array_type == Uint8Array) {
+        return buf;
+      }
+      return new array_type(buf.buffer);
+    })()
+  """ % (data_base64, js_type_name)
+  return code
