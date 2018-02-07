@@ -37,3 +37,15 @@ def test_read_binary_file():
   content = read(path)
   golden_content = io.open(path, 'rb').read()
   assert content == golden_content
+
+
+def test_read_remote_url(mocker):
+  path = "https://example.com/example.html"
+  golden = b"42"
+  mock_urlopen = mocker.patch('future.moves.urllib.request.urlopen',
+    return_value=io.BytesIO(golden))
+
+  content = read(path, cache=False)
+
+  mock_urlopen.assert_called_once_with(path)
+  assert content == golden

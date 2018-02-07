@@ -7,14 +7,15 @@ from lucid.misc.io.saving import save
 import os.path
 import io
 
+
 dictionary = {
   "key": "value"
 }
 dictionary_json = """{
   "key": "value"
 }"""
-array1 = np.random.normal(loc=.5, scale=.1, size=(5,10))
-array2 = np.random.normal(loc=.5, scale=.1, size=(2,5,10,3))
+array1 = np.eye(10, 10)
+array2 = np.dstack([np.eye(10, 10, k=i-1) for i in range(3)])
 
 
 def _remove(path):
@@ -44,12 +45,12 @@ def test_save_npy():
 def test_save_npz_array():
   path = "./tests/fixtures/arrays.npz"
   _remove(path)
-  arrays = [array1, array2]
-  save(arrays, path)
+  save([array1, array2], path)
   assert os.path.isfile(path)
   re_read_arrays = np.load(path)
   assert all(arr in re_read_arrays for arr in ("arr_0", "arr_1"))
-  assert np.array_equal(arrays[0], re_read_arrays["arr_0"])
+  assert np.array_equal(array1, re_read_arrays["arr_0"])
+  assert np.array_equal(array2, re_read_arrays["arr_1"])
 
 
 def test_save_npz_dict():
@@ -64,14 +65,14 @@ def test_save_npz_dict():
 
 
 def test_save_image_png():
-  path = "./tests/fixtures/noise.png"
+  path = "./tests/fixtures/rgbeye.png"
   _remove(path)
-  save(array1, path)
+  save(array2, path)
   assert os.path.isfile(path)
 
 
 def test_save_image_jpg():
-  path = "./tests/fixtures/noise.jpg"
+  path = "./tests/fixtures/rgbeye.jpg"
   _remove(path)
-  save(array1, path)
+  save(array2, path)
   assert os.path.isfile(path)

@@ -6,3 +6,5 @@ dist
 .pytest_cache
 *.egg-info
 notebooks/.ipynb_checkpoints
+coverage.txt
+.coverage

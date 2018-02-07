@@ -18,13 +18,14 @@ from __future__ import absolute_import, division, print_function
 
 from setuptools import setup, find_packages
 
-version = '0.0.3'
+version = '0.0.4'
 
 test_deps = [
   'future',
   'twine',
   'pytest',
-  'pytest-mock'
+  'pytest-mock',
+  'pytest-cov'
 ]
 
 extras = {
@@ -50,6 +51,7 @@ setup(
     'decorator',
     'tensorflow',
     'numpy',
+    'sklearn',
     'pillow',
     'pyopengl',
     'ipython'

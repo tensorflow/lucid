@@ -28,7 +28,7 @@ import os
 import re
 import logging
 from urllib.parse import urlparse, urljoin
-from future.moves.urllib.request import urlopen
+from future.moves.urllib import request
 from tensorflow import gfile
 from tempfile import gettempdir
 from io import BytesIO, StringIO
@@ -120,7 +120,7 @@ def _handle_gfile(url, mode='rb'):
 
 
 def _handle_web_url(url):
-  return urlopen(url)
+  return request.urlopen(url)
 
 
 def _handle_gcs_url(url):
