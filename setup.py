@@ -50,8 +50,9 @@ setup(
     'future',
     'decorator',
     'tensorflow',
-    'numpy',
     'scikit-learn',
+    'numpy',
+    'scipy',
     'pillow',
     'pyopengl',
     'ipython'
