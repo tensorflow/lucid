@@ -1,0 +1,20 @@
+language: python
+python:
+  - "2.7"
+  - "3.6"
+install:
+  - pip install tox-travis
+script:
+  - tox
+deploy:
+  - provider: releases
+    api_key: $GITHUB_PRODUCTION_TOKEN
+    file:
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: pypi
+    user: ludwigschubert
+    password: $PYPI_PRODUCTION_PASSWORD
+    on:
+      tags: true
