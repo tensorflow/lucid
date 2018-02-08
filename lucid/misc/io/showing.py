@@ -162,7 +162,8 @@ def textured_mesh(mesh, texture, background='0xffffff'):
 
     var material = new THREE.MeshBasicMaterial({
         'map': texture,
-        'color': 0xffffff
+        'color': 0xffffff,
+        'side': THREE.DoubleSide,
     });
 
 
