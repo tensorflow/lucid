@@ -38,7 +38,7 @@ setup(
   version = version,
   description = ('Collection of infrastructure and tools for research in '
     'neural network interpretability.'),
-  author = 'The Deepviz Authors',
+  author = 'The Lucid Authors',
   author_email = 'deepviz@google.com',
   url = 'https://github.com/tensorflow/lucid',
   download_url = ('https://github.com/tensorflow/lucid'
