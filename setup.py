@@ -51,7 +51,7 @@ setup(
     'decorator',
     'tensorflow',
     'numpy',
-    'sklearn',
+    'scikit-learn',
     'pillow',
     'pyopengl',
     'ipython'
