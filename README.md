@@ -1,8 +1,8 @@
-🔶 **Lucid is alpha software.
+🔶 **Lucid is alpha software.**
 We're still sorting out the kinks in using it outside Google.
 The API is very much in flux.
 Unless you want to be an alpha user and help us test Lucid,
-please come back towards the end of February.**
+please come back towards the end of February.
 
 <br>
 
@@ -14,10 +14,10 @@ please come back towards the end of February.**
 Lucid is a collection of infrastructure and tools for research in neural
 network interpretability.
 
-In particular, it provides state of the art implementations of [feature
+<!--In particular, it provides state of the art implementations of [feature
 visualization techniques](https://distill.pub/2017/feature-visualization/),
 and flexible abstractions that make it very easy to explore new research
-directions.
+directions.-->
 
 
 
@@ -30,8 +30,6 @@ Start visualizing neural networks ***with no setup***. The following notebooks
 run in your browser.
 -->
 
-
-<br>
 
 # License and Disclaimer
 
@@ -52,3 +50,8 @@ via the `-e` flag: `tox -e py27`.
 
 After adding dependencies to `setup.py`, run tox with the `--recreate` flag to
 update the environments' dependencies.
+
+# References
+
+See our article on [feature
+visualization techniques](https://distill.pub/2017/feature-visualization/).
