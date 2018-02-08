@@ -38,7 +38,7 @@ def test_load_npz():
   "./tests/fixtures/noise_uppercase.PNG",
   "./tests/fixtures/rgbeye.jpg",
   "./tests/fixtures/noise.jpeg",
-  "./tests/fixtures/image.XYZ",
+  "./tests/fixtures/image.xyz",
 ])
 def test_load_image(path):
   image = load(path)

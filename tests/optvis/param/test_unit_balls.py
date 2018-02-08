@@ -11,7 +11,7 @@ num_steps = 16
 
 
 @pytest.mark.parametrize("shape", [(3), (2, 5, 5)])
-def test_unit_ball_L2(shape, eps=1e-6):
+def test_unit_ball_L2(shape, eps=1e-1):
   """Tests that a L2 unit ball variable's norm stays roughly within 1.0.
   Note: only holds down to eps ~= 5e-7.
   """
@@ -31,7 +31,7 @@ def test_unit_ball_L2(shape, eps=1e-6):
 
 @pytest.mark.parametrize("shape", [(3), (2, 5, 5)])
 @pytest.mark.parametrize("precondition", [True, False])
-def test_unit_ball_L_inf(shape, precondition, eps=1e-6):
+def test_unit_ball_L_inf(shape, precondition, eps=1e-1):
   """Tests that a L infinity unit ball variables' stay roughly within 1.0.
   Note: only holds down to eps ~= 5e-7.
   """
