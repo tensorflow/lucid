@@ -9,7 +9,6 @@ script:
 deploy:
   - provider: releases
     api_key: $GITHUB_PRODUCTION_TOKEN
-    file:
     skip_cleanup: true
     on:
       tags: true
