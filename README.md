@@ -1,8 +1,5 @@
-🔶 **Lucid is alpha software.**
-We're still sorting out the kinks in using it outside Google.
-The API is very much in flux.
-Unless you want to be an alpha user and help us test Lucid,
-please come back towards the end of February.
+<img src="https://storage.googleapis.com/lucid-link-images/lucid_repo-alpha-warn.png" width="648" alt="Lucid is alpha software. We're still sorting out the kinks in using it outside Google. The API is very much in flux. Unless you want to be an alpha user and help us test Lucid, please come back towards the end of February."></img>
+
 
 <br>
 
