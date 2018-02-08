@@ -80,3 +80,35 @@ def laplacian_pyramid(shape, n_levels=4, sd=None):
     k = 2**n
     pyramid += lowres_tensor(shape, batch_dims + [w // k, h // k, ch], sd=sd)
   return pyramid
+
+
+def sample_bilinear(texture, uv):
+  """Build bilinear texture sampling graph.
+
+  Coordinate transformation rules match OpenGL GL_REPEAT wrapping and GL_LINEAR
+  interpolation modes.
+
+  Args:
+    texture: [tex_h, tex_w, channel_n] tensor.
+    uv: [frame_h, frame_h, 2] tensor with per-pixel UV coordinates in range [0..1]
+
+  Returns:
+    [frame_h, frame_h, channel_n] tensor with per-pixel sampled values.
+  """
+  h, w = tf.unstack(tf.shape(texture)[:2])
+  u, v = tf.split(uv, 2, axis=-1)
+  v = 1.0-v  # vertical flip to match GL convention
+  u, v = u*tf.to_float(w)-0.5, v*tf.to_float(h)-0.5
+  u0, u1 = tf.floor(u), tf.ceil(u)
+  v0, v1 = tf.floor(v), tf.ceil(v)
+  uf, vf = u-u0, v-v0
+  u0, u1, v0, v1 = map(tf.to_int32, [u0, u1, v0, v1])
+  def sample(u, v):
+    vu = tf.concat([v%h, u%w], axis=-1)
+    return tf.gather_nd(texture, vu)
+  s00, s01 = sample(u0, v0), sample(u0, v1)
+  s10, s11 = sample(u1, v0), sample(u1, v1)
+  s0 = s00*(1.0-vf) + s01*vf
+  s1 = s10*(1.0-vf) + s11*vf
+  s = s0*(1.0-uf) + s1*uf
+  return s

@@ -126,8 +126,7 @@ def show(thing, domain=(0, 1)):
 
 
 def textured_mesh(mesh, texture, background='0xffffff'):
-  texture = texture[::-1]  # flipping to match webgl convention
-  texture_data_url = _image_url(texture, fmt='jpeg', quality=95)
+  texture_data_url = _image_url(texture, fmt='jpeg', quality=90)
 
   code = Template('''
   <script src="https://cdn.rawgit.com/mrdoob/three.js/r89/build/three.min.js"></script>
