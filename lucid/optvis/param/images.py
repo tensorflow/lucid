@@ -23,7 +23,7 @@ import tensorflow as tf
 from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import naive, fft_image
 
-def image(w, h=None, batch=None, sd=None, decorrelate=False, fft=False, alpha=False):
+def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=False):
   h = h or w
   batch = batch or 1
   channels = 4 if alpha else 3

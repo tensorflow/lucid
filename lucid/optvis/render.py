@@ -211,7 +211,7 @@ def make_t_image(param_f):
 
 def make_transform_f(transforms):
   if type(transforms) is not list:
-    transforms = [transform.jitter(8)]
+    transforms = transform.standard_transforms
   transform_f = transform.compose(transforms)
   return transform_f
 
