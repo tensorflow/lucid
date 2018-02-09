@@ -9,6 +9,7 @@
 <!--*DeepDream, but sane. Home of cats, dreams, and interpretable neural networks.*-->
 
 ![Build status](https://travis-ci.org/tensorflow/lucid.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/tensorflow/lucid/badge.svg?branch=master)](https://coveralls.io/github/tensorflow/lucid?branch=master)
 
 Lucid is a collection of infrastructure and tools for research in neural
 network interpretability.
