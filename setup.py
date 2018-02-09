@@ -25,7 +25,8 @@ test_deps = [
   'twine',
   'pytest',
   'pytest-mock',
-  'pytest-cov'
+  'pytest-cov',
+  'python-coveralls'
 ]
 
 extras = {

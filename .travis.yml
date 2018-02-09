@@ -17,3 +17,5 @@ deploy:
     password: $PYPI_PRODUCTION_PASSWORD
     on:
       tags: true
+after_success:
+  - coveralls
