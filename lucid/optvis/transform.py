@@ -133,3 +133,12 @@ def _angle2rads(angle, units):
   elif units.lower() in ["radians", "rads", "rad"]:
     angle = angle
   return angle
+  
+  
+standard_transforms = [
+    pad(12, mode='constant', constant_value=.5),
+    jitter(8),
+    random_scale([1 + (i-5)/50. for i in range(11)]),
+    random_rotate(list(range(-10, 11)) + 5*[0]),
+    jitter(4),
+  ]
