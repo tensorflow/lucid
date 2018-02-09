@@ -3,6 +3,8 @@ python:
   - "2.7"
   - "3.6"
 install:
+  - pip install -U pip wheel
+  - pip install python-coveralls
   - pip install tox-travis
 script:
   - tox
@@ -19,3 +21,6 @@ deploy:
       tags: true
 after_success:
   - coveralls
+cache:
+  directories:
+    - $HOME/.cache/pip
