@@ -10,6 +10,7 @@
 
 ![Build status](https://travis-ci.org/tensorflow/lucid.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/tensorflow/lucid/badge.svg?branch=master)](https://coveralls.io/github/tensorflow/lucid?branch=master)
+[![PyPI version](https://badge.fury.io/py/Lucid.svg)](https://badge.fury.io/py/Lucid)
 
 Lucid is a collection of infrastructure and tools for research in neural
 network interpretability.
