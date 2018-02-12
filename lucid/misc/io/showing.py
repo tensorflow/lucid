@@ -191,4 +191,135 @@ def textured_mesh(mesh, texture, background='0xffffff'):
       background = background,
   )
   _display_html(code)
+  
+def textured_mesh_adv(mesh, texture, background='0xffffff', unfolding = 0.0, shading = True, animate = False, unfolding_speed = 2.):
+  texture_data_url = _image_url(texture, fmt='jpeg', quality=90)
 
+  code = Template('''
+  <script src="https://cdn.rawgit.com/mrdoob/three.js/r89/build/three.min.js"></script>
+  <script src="https://cdn.rawgit.com/mrdoob/three.js/r89/examples/js/controls/OrbitControls.js"></script>
+
+  <script type="x-shader/x-vertex" id="vertexShader"> 
+    uniform float unfolding_perc;
+    varying vec2 text_coord;
+    varying float shading;
+    void main () {
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vec4 plane_position = vec4((uv.x*2.0-1.0),(uv.y*2.0-1.0),0,1);
+      gl_Position = gl_Position * vec4(1.0-unfolding_perc) + plane_position * vec4(unfolding_perc);
+      
+      //not normalized on purpose to simulate the rotation
+      vec3 light_vector = normalize(cameraPosition-position)*vec3(1.0-unfolding_perc) + normal*vec3(unfolding_perc);
+      shading = dot(normal,light_vector);
+      
+      text_coord = uv;
+      //shading = 0.5;
+    }
+  </script>
+
+  <script type="x-shader/x-fragment" id="fragmentShader">  
+    uniform float unfolding_perc;
+    uniform float texture_perc;
+    varying vec2  text_coord;
+    varying float shading;
+    uniform sampler2D texture1;
+    
+    void main() {  
+      gl_FragColor = texture2D(texture1, text_coord) * texture_perc + vec4(text_coord,0,1) * (1.0-texture_perc);
+      if($shading){
+        gl_FragColor *= vec4(vec3(shading),1); 
+      }
+    }
+  </script>  
+
+  <script>
+  "use strict";
+
+  var camera, scene, renderer, controls, mesh;
+  var inc_texture = 0.0015;
+  var inc_unfolding = $unfolding_speed / 1000.0;
+  var unfolding_perc = -Math.PI/2;
+  init();
+  animate();
+
+  function init() {
+    var width = 800, height = 600;
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+    camera.position.z = 1.5;
+    scene.add(camera);
+
+    controls = new THREE.OrbitControls( camera );
+
+    var geometry = new THREE.BufferGeometry();
+    geometry.addAttribute( 'position', new THREE.BufferAttribute($verts, 3 ) );
+    geometry.addAttribute( 'uv', new THREE.BufferAttribute($uvs, 2) );
+    geometry.setIndex(new THREE.BufferAttribute($faces, 1 ));
+    geometry.computeVertexNormals();
+
+    var material_unf = new THREE.ShaderMaterial( {
+      uniforms: {
+      
+        unfolding_perc: { value: 0.8 },
+        texture_perc:   { value: 1.0 },
+        texture1: { type: 't', value: THREE.ImageUtils.loadTexture( '$tex_data_url' ) }
+      },
+      side: THREE.DoubleSide,
+      vertexShader: document.getElementById( 'vertexShader' ).textContent,
+      fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+    });
+    
+
+    mesh = new THREE.Mesh(geometry, material_unf);
+    scene.add(mesh);
+    scene.background = new THREE.Color( $background );
+
+    mesh.material.uniforms.unfolding_perc.value = $unfolding;
+    mesh.material.uniforms.texture_perc.value = 1.0;
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(width, height);
+
+    document.body.appendChild(renderer.domElement);
+  }
+
+
+  function animate() {
+
+    if($animate){
+      //mesh.material.uniforms.unfolding_perc.value += inc_unfolding;
+      unfolding_perc += inc_unfolding;
+      mesh.material.uniforms.unfolding_perc.value = (Math.sin(unfolding_perc)+1)/2;
+      if(mesh.material.uniforms.unfolding_perc.value > 1 || mesh.material.uniforms.unfolding_perc.value < 0){
+        inc_unfolding = -inc_unfolding;
+      }
+    }
+    
+    /*    
+    mesh.material.uniforms.texture_perc.value += inc_texture;
+    if(mesh.material.uniforms.texture_perc.value > 1 || mesh.material.uniforms.texture_perc.value < 0){
+      inc_texture = -inc_texture;
+    }
+    */   
+    
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+    
+  }
+  </script>
+  ''').substitute(
+      verts = array_to_jsbuffer(mesh['position'].ravel()),
+      uvs = array_to_jsbuffer(mesh['uv'].ravel()),
+      faces = array_to_jsbuffer(np.uint32(mesh['face'].ravel())),
+      tex_data_url = texture_data_url,
+      background = background,
+      unfolding = unfolding,
+      shading = 'true' if shading else 'false',
+      animate = 'true' if animate else 'false',
+      unfolding_speed = unfolding_speed
+  )
+  #print(code)
+  _display_html(code)
