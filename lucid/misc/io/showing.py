@@ -216,7 +216,7 @@ def textured_mesh(mesh, texture, background='0xffffff'):
     scene.add(mesh);
     scene.background = new THREE.Color( $background );
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(width, height);
     document.body.appendChild(renderer.domElement);
 
