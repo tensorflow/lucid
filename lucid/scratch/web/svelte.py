@@ -65,7 +65,7 @@ def SvelteComponent(name, path):
 
 
 @register_cell_magic
-def define_svelte(line, cell):
+def html_define_svelte(line, cell):
   base_name = line.split()[0]
   name_str = base_name + "_" + hex(random.randint(0, 1e8))[2:]
   html_fname = osp.join(_svelte_temp_dir, name_str + ".html")
