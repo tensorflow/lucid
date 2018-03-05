@@ -1,3 +1,5 @@
+
+
 <img src="https://storage.googleapis.com/lucid-link-images/lucid_repo-alpha-warn.png" width="648" alt="Lucid is alpha software. We're still sorting out the kinks in using it outside Google. The API is very much in flux. Unless you want to be an alpha user and help us test Lucid, please come back towards the end of February."></img>
 
 
@@ -58,3 +60,26 @@ update the environments' dependencies.
 
 See our article on [feature
 visualization techniques](https://distill.pub/2017/feature-visualization/).
+
+
+# Notebooks (still under developement)
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-semantic-dict.png" width="500" alt=""></img>
+</a>
+<br>
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-grid.png" width="500" alt=""></img>
+</a>
+<br>
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-spatial-attr.png" width="500" alt=""></img>
+</a>
+<br>
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-channel-attr.png" width="500" alt=""></img>
+</a>
+<br>
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-neuron-groups.png" width="500" alt=""></img>
+
