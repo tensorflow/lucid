@@ -64,6 +64,9 @@ visualization techniques](https://distill.pub/2017/feature-visualization/).
 <!--
 # Notebooks (still under developement)
 
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/common/stickers/colab-tutorial.png" width="500" alt=""></img>
+</a>
 <br>
 
 **Core Notebooks:**
