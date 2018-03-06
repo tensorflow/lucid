@@ -62,7 +62,7 @@ See our article on [feature
 visualization techniques](https://distill.pub/2017/feature-visualization/).
 
 <!--
-# Notebooks (still under developement)
+# Notebooks
 
 **Core Notebooks:**
 
