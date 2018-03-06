@@ -61,15 +61,15 @@ update the environments' dependencies.
 See our article on [feature
 visualization techniques](https://distill.pub/2017/feature-visualization/).
 
-<!--
+
 # Notebooks (still under developement)
 
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+**Core Notebooks:**
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/tutorial.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/common/stickers/colab-tutorial.png" width="500" alt=""></img>
 </a>
 <br>
-
-**Core Notebooks:**
 
 <br>
 
@@ -80,18 +80,18 @@ visualization techniques](https://distill.pub/2017/feature-visualization/).
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-semantic-dict.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/ActivationGrid.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-grid.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/AttrSpatial.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-spatial-attr.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/AttrChannel.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-channel-attr.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/NeuronGroups.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-neuron-groups.png" width="500" alt=""></img>
--->
+
