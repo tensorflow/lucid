@@ -20,6 +20,8 @@ from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 from lucid.misc.io.reading import read
 
+def load_text_labels(labels_path):
+  return read(labels_path, encoding='utf-8').splitlines()
 
 def load_graphdef(model_url, reset_device=True):
   """Load GraphDef from a binary proto file."""

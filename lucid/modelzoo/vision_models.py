@@ -36,6 +36,7 @@ def populate_inception_bottlenecks(scope):
 
 class InceptionV1(Model):
   model_path = 'gs://modelzoo/InceptionV1.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt'
   image_shape = [224, 224, 3]
   image_value_range = (-117, 255-117)
   input_name = 'input:0'

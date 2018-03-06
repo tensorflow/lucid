@@ -16,17 +16,21 @@
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
-from lucid.modelzoo.util import load_graphdef, forget_xy
+from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
 
 class Model(object):
   """Base pretrained model importer."""
 
   model_path = None
+  labels_path = None
+  labels = None
   image_value_range = (-1, 1)
   image_shape = [None, None, 3]
 
   def __init__(self):
     self.graph_def = None
+    if self.labels_path is not None:
+      self.labels = load_text_labels(self.labels_path)
 
   def load_graphdef(self):
     self.graph_def = load_graphdef(self.model_path)
