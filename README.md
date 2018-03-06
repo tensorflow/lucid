@@ -37,7 +37,7 @@ run in your browser.
 </a>
 
 ## Building Blocks 
-*Notebooks corresponding to the [Building Blocks of Interpretability]() article*
+*Notebooks corresponding to the [Building Blocks of Interpretability](https://distill.pub/2018/building-blocks/) article*
 
 
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/building-blocks/SemanticDictionary.ipynb">
