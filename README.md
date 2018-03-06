@@ -61,7 +61,7 @@ update the environments' dependencies.
 See our article on [feature
 visualization techniques](https://distill.pub/2017/feature-visualization/).
 
-
+<!--
 # Notebooks (still under developement)
 
 **Core Notebooks:**
@@ -94,4 +94,4 @@ visualization techniques](https://distill.pub/2017/feature-visualization/).
 <br>
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/NeuronGroups.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-neuron-groups.png" width="500" alt=""></img>
-
+-->
