@@ -66,7 +66,7 @@ visualization techniques](https://distill.pub/2017/feature-visualization/).
 
 **Core Notebooks:**
 
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/tutorial.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/tutorial.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/common/stickers/colab-tutorial.png" width="500" alt=""></img>
 </a>
 <br>
@@ -76,22 +76,22 @@ visualization techniques](https://distill.pub/2017/feature-visualization/).
 **Building Blocks** -- Notebooks corresponding to the [Building Blocks of Interpretability]() article:
 
 
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/SemanticDictionary.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/building-blocks/SemanticDictionary.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-semantic-dict.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/ActivationGrid.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/building-blocks/ActivationGrid.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-grid.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/AttrSpatial.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/building-blocks/AttrSpatial.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-spatial-attr.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/AttrChannel.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/building-blocks/AttrChannel.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-channel-attr.png" width="500" alt=""></img>
 </a>
 <br>
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/boring/notebooks/building-blocks/NeuronGroups.ipynb">
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/building-blocks/NeuronGroups.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-neuron-groups.png" width="500" alt=""></img>
 -->
