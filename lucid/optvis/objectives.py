@@ -151,10 +151,9 @@ def neuron(layer_name, channel_n, x=None, y=None, batch=None):
   def inner(T):
     layer = T(layer_name)
     shape = tf.shape(layer)
-    if x is None:
-      x_ = shape[1] // 2
-    if y is None:
-      y_ = shape[2] // 2
+    x_ = shape[1] // 2 if x is None else x
+    y_ = shape[2] // 2 if y is None else y
+    
     if batch is None:
       return layer[:, x_, y_, channel_n]
     else:
@@ -188,8 +187,8 @@ def direction_neuron(layer_name, vec, batch=None, x=None, y=None):
   def inner(T):
     layer = T(layer_name)
     shape = tf.shape(layer)
-    x_ = shape[1] / 2 if x is None else x
-    y_ = shape[2] / 2 if y is None else y
+    x_ = shape[1] // 2 if x is None else x
+    y_ = shape[2] // 2 if y is None else y
     if batch is None:
       return tf.reduce_mean(layer[:, x_, y_] * vec[None])
     else:
