@@ -28,7 +28,7 @@ _template = """
 def build_svelte(html_fname):
   js_fname = html_fname.replace(".html", ".js")
   cmd = "svelte compile --format iife " + html_fname + " > " + js_fname
-  print cmd
+  print(cmd)
   try:
     print(subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT))
   except subprocess.CalledProcessError as exception:
