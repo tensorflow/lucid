@@ -41,7 +41,7 @@ log = logging.getLogger(__name__)
 
 def render_vis(model, objective_f, param_f=None, optimizer=None,
                transforms=None, thresholds=(512,),
-               print_objectives=None, verbose=True, display_rate=10):
+               print_objectives=None, verbose=True,):
   """Flexible optimization-base feature vis.
 
   There's a lot of ways one might wish to customize otpimization-based
@@ -93,10 +93,9 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
           vis = t_image.eval()
           images.append(vis)
           if verbose:
-            if i % display_rate == 0:
-              print(i, loss_)
-              print_objective_func(sess)
-              show(np.hstack(vis))
+            print(i, loss_)
+            print_objective_func(sess)
+            show(np.hstack(vis))
     except KeyboardInterrupt:
       log.warn("Interrupted optimization at step {:d}.".format(i+1))
       vis = t_image.eval()
