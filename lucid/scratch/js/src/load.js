@@ -22,6 +22,11 @@ import { csvParse, tsvParse } from 'd3-dsv';
 // load("test.csv").then(response => console.log("1", response));
 // load(["test.csv", "test.tsv"]).then(response => console.log("2", response[0], response[1]));
 // load('3a.jpg').then(response => {this.refs.img.src = response.src;})
+// 
+// // You can also namespace requests, which will cancel previous requests
+// load("test.csv", "namespace").then(response => console.log("This will never be called."))
+// load("test.tsv", "namespace").then(response => console.log("This will interrupt the previous one and be resolved instead."))
+
 
 
 // We will cache requests and parsing.
@@ -92,7 +97,6 @@ function load(url, namespace) {
   // the current request.
   if (namespaces.has(ns)) {
     const pendingRequestID = namespaces.get(ns);
-    console.warn("Cancelling: " + pendingRequestID)
     suppress.set(pendingRequestID, true);
   }
   namespaces.set(ns, requestID);
