@@ -1,0 +1,28 @@
+{
+  "name": "lucid-components",
+  "version": "0.0.0",
+  "svelte.root": "src",
+  "license": "Apache-2.0",
+  "main": "public/index.js",
+  "module": "public/index.js",
+  "devDependencies": {
+    "rollup": "^0.56.4",
+    "rollup-plugin-commonjs": "^8.4.0",
+    "rollup-plugin-node-resolve": "^3.0.3",
+    "rollup-plugin-svelte": "^4.0.0",
+    "serve": "^6.5.1",
+    "svelte": "^1.56.1"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "chai": "^4.1.2",
+    "d3-dsv": "^1.0.8",
+    "fetch-mock": "^6.1.0",
+    "mocha": "^5.0.4",
+    "node-fetch": "^2.1.1"
+  }
+}
