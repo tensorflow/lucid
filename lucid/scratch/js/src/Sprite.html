@@ -1,0 +1,120 @@
+<!--
+// Copyright 2018 The Lucid Authors.All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0(the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// ==============================================================================
+-->
+
+<canvas ref:canvas :width height={{realHeight}}></canvas>
+
+<script>
+  // We need to create a global cache of loaded images independent of any sprite instance.
+  const cache = new Map();
+
+  export default {
+    data() {
+      return {
+        url: '',
+        index: 0,
+        width: 100,
+        loaded: null,
+        columns: Infinity,
+        height: null,
+        img: null
+      }
+    },
+    computed: {
+      realHeight: (width, height) => {
+        return height ? height : width;
+      }
+    },
+    oncreate() {
+      const done = (e) => {
+        this.set({loaded: true});
+        const {img} = this.get()
+        img.removeEventListener('loaded', done);
+      }
+      // TODO this redraws one too many times on when you change the index and url at the same time. 
+      // could add the svelte extras dependency for 'observeMany', but not sure it's worth it.
+      this.observe('index', index => {
+        this.draw();
+      }, { init: false });
+      this.observe('img', index => {
+        this.draw();
+      }, { init: false });
+      this.observe('loaded', loaded => {
+        this.draw();
+      }, { init: false });
+      this.observe('url', url => {
+        // Clear any pending events for old urls.
+        const currentImg = this.get('img');
+        if (currentImg) {currentImg.removeEventListener('load', done); }
+        // Check if we've already seen this url in the global cache
+        if (cache.has(url)) {
+          const cached = cache.get(url);
+          // If we've seen it, we need to check if we're currently loading it.
+          if (cached.loaded) {
+            // If it's loaded, just start using it!
+            this.set({
+              loaded: true,
+              img: cached.img
+            });
+          } else {
+            // If it's not loaded, we need to wait until the other request is done before we start drawing.
+            this.set({
+              loaded: false,
+              img: cached.img
+            });
+            cached.img.addEventListener('load', done);
+          }
+        } else {
+          // If we haven't seen the url yet, we need to load the image.
+          const img = new Image();
+          this.set({ 
+            loaded: false,
+            img: img
+           });
+          const data = {img};
+          // We need this event to persist, so that we still know when an abandoned image is done loading.
+          const finished = (e) => {
+            data.loaded = true;
+            img.removeEventListener('load', finished);
+          }
+          img.addEventListener('load', finished);
+          img.addEventListener('load', done);
+          cache.set(url, data);
+          img.src = url;
+        }
+      });
+    },
+    methods: {
+      draw() {
+        const context = this.refs.canvas.getContext('2d');
+        const { img, index, width, realHeight, columns, loaded } = this.get();
+        context.clearRect(0, 0, width, realHeight);
+        const sx = Array.isArray(index) ? index[0] * width : (index % columns) * width;
+        const sy = Array.isArray(index) ? index[1] * realHeight : Math.floor(index / columns) * realHeight;
+        if (loaded) {
+          context.drawImage(img, sx, sy, width, realHeight, 0, 0, width, realHeight);
+        } else {
+          context.fillStyle = '#ccc';
+          context.fillRect(0, 0, width, realHeight);
+          context.fillStyle = "#eee";
+          context.textAlign = 'center';
+          context.font = '16px sans-serif';
+          context.fillText('...', width / 2, realHeight / 2);
+        }
+      }
+    }
+  }
+</script>
