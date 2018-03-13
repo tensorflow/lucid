@@ -1,10 +1,10 @@
 {
   "name": "lucid-components",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "svelte.root": "src",
   "license": "Apache-2.0",
-  "main": "lucid/scratch/js/public/index.js",
-  "module": "lucid/scratch/js/public/index.js",
+  "main": "public/index.js",
+  "module": "public/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/tensorflow/lucid.git"
