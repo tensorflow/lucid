@@ -23,7 +23,7 @@ export default {
 	input: 'src/index.js',	
 	output: {
 		sourcemap: true,	
-		format: 'es',
+		format: 'umd',
 		name: 'lucidComponents',
 		file: 'public/index.js'
 	},
