@@ -3,8 +3,12 @@
   "version": "0.0.2",
   "svelte.root": "src",
   "license": "Apache-2.0",
-  "main": "public/index.js",
-  "module": "public/index.js",
+  "main": "lucid/scratch/js/public/index.js",
+  "module": "lucid/scratch/js/public/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tensorflow/lucid.git"
+  },
   "devDependencies": {
     "rollup": "^0.56.4",
     "rollup-plugin-commonjs": "^8.4.0",
