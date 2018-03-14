@@ -2,7 +2,7 @@ const chai = require('chai');
 const expect = chai.expect;
 
 const fetchMock = require('fetch-mock');
-const load = require("../public/index.js").load;
+const load = require("../public/index.cjs.js").load;
 
 const mockData = { 'test': 42 }
 fetchMock.mock('404', 404);

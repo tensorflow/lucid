@@ -20,26 +20,27 @@ import commonjs from 'rollup-plugin-commonjs';
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-  input: 'src/index.js',
-  output: {
-    sourcemap: true,
-    format: 'es',
-    file: 'public/index.js'
-  },
-  plugins: [
-    svelte({
-      // enable run-time checks when not in production
-      dev: !production,
-      store: true,
-      cascade: false
-    }),
+	input: 'src/index.js',	
+	output: {
+		sourcemap: true,	
+		format: 'cjs',
+		name: 'lucidComponents',
+		file: 'public/index.cjs.js'
+	},
+	plugins: [
+		svelte({
+			// enable run-time checks when not in production
+			dev: !production,
+			store: true,
+			cascade: false
+		}),
 
-    // If you have external dependencies installed from
-    // npm, you'll most likely need these plugins. In
-    // some cases you'll need additional configuration —
-    // consult the documentation for details:
-    // https://github.com/rollup/rollup-plugin-commonjs
-    resolve(),
-    commonjs(),
-  ]
+		// If you have external dependencies installed from
+		// npm, you'll most likely need these plugins. In
+		// some cases you'll need additional configuration —
+		// consult the documentation for details:
+		// https://github.com/rollup/rollup-plugin-commonjs
+		resolve(),
+		commonjs(),
+	]
 };
