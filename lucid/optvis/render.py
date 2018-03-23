@@ -154,11 +154,11 @@ def make_vis_T(model, objective_f, param_f=None, optimizer=None,
   objective_f = objectives.as_objective(objective_f)
   transform_f = make_transform_f(transforms)
   optimizer = make_optimizer(optimizer, [])
-
+  global_step = tf.Variable(0, trainable=False, name="import/global_step")
+  
   T = import_model(model, transform_f(t_image), t_image)
   loss = objective_f(T)
 
-  global_step = tf.Variable(0, trainable=False, name="global_step")
   vis_op = optimizer.minimize(-loss, global_step=global_step)
 
   local_vars = locals()
