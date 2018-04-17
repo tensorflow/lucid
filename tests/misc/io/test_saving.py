@@ -76,3 +76,10 @@ def test_save_image_jpg():
   _remove(path)
   save(array2, path)
   assert os.path.isfile(path)
+
+def test_save_named_handle():
+  path = "./tests/fixtures/rgbeye.jpg"
+  _remove(path)
+  with io.open(path, 'wb') as handle:
+    save(array2, handle)
+  assert os.path.isfile(path)
