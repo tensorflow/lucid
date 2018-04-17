@@ -18,7 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 from setuptools import setup, find_packages
 
-version = '0.0.6'
+version = '0.0.7'
 
 test_deps = [
   'future',
