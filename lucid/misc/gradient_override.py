@@ -40,7 +40,7 @@ performance critical, you can use the high level `use_gradient()` decorator:
 Otherwise, you can use use the lower level `gradient_override_map()`, a
 convenience wrapper for `graph.gradient_override_map()`.
 """
-low=
+
 from contextlib import contextmanager
 import numpy as np
 import tensorflow as tf
