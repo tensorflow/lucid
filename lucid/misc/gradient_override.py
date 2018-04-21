@@ -40,7 +40,7 @@ performance critical, you can use the high level `use_gradient()` decorator:
 Otherwise, you can use use the lower level `gradient_override_map()`, a
 convenience wrapper for `graph.gradient_override_map()`.
 """
-
+low=
 from contextlib import contextmanager
 import numpy as np
 import tensorflow as tf
@@ -67,7 +67,7 @@ def register_to_random_name(grad_f):
   Returns:
     String that gradient function was registered to.
   """
-  grad_f_name = grad_f.__name__ + "_" + hex(np.random.randint(0, 1e10))[2:]
+  grad_f_name = grad_f.__name__ + "_" + hex(np.random.randint(low=0, high=1e10, dtype='int64'))[2:]
   tf.RegisterGradient(grad_f_name)(grad_f)
   return grad_f_name
 
