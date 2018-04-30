@@ -23,3 +23,8 @@ def test_InceptionV1_graph_import():
   node_names = set(node.name for node in nodes)
   for layer_name in important_layer_names:
     assert "import/"+layer_name+"_pre_relu" in node_names
+
+def test_InceptionV1_labels():
+  model = InceptionV1()
+  assert model.labels is not None
+  assert model.labels[0] == "dummy"
