@@ -3,6 +3,7 @@ import json
 import tempfile
 import subprocess
 import os.path as osp
+import uuid
 
 from IPython.core.magic import register_cell_magic
 
@@ -54,7 +55,7 @@ def SvelteComponent(name, path):
     js_path = build_svelte(path)
   js_content = read(js_path)
   def inner(data):
-    id_str = name + "_" + hex(random.randint(0, 1e8))[2:]
+    id_str = name + "_" + str(uuid.uuid4())
     html = _template \
         .replace("$js", js_content) \
         .replace("$name", name) \
@@ -67,7 +68,7 @@ def SvelteComponent(name, path):
 @register_cell_magic
 def html_define_svelte(line, cell):
   base_name = line.split()[0]
-  name_str = base_name + "_" + hex(random.randint(0, 1e8))[2:]
+  name_str = base_name + "_" + str(uuid.uuid4())
   html_fname = osp.join(_svelte_temp_dir, name_str + ".html")
   with open(html_fname, "w") as f:
     f.write(cell)
