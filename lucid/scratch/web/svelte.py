@@ -32,18 +32,18 @@ def build_svelte(html_fname):
   try:
     print(subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT))
   except subprocess.CalledProcessError as exception:
-    print("svelte build failed!\n" + exception.output)
+    print("Svelte build failed! Output:\n{}".format(exception.output.decode()))
   return js_fname
 
 
 def SvelteComponent(name, path):
   """Display svelte components in iPython.
-  
+
   Args:
     name: name of svelte component (must match component filename when built)
     path: path to compile svelte .js file or source svelte .html file.
       (If html file, we try to call svelte and build the file.)
-  
+
   Returns:
     A function mapping data to a rendered svelte component in ipython.
   """
