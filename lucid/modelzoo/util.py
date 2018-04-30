@@ -34,5 +34,5 @@ def load_graphdef(model_url, reset_device=True):
 
 def forget_xy(t):
   """Forget sizes of dimensions [1, 2] of a 4d tensor."""
-  zero = tf.identity(0)
-  return t[:, zero:, zero:, :]
+  shape = (t.shape[0], None, None, t.shape[3])
+  return tf.placeholder_with_default(t, shape)
