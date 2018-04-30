@@ -162,7 +162,7 @@ from io import DEFAULT_BUFFER_SIZE
 import sys
 
 def _file_chunk_iterator(file_handle):
-  reader = partial(file_handle.read1, DEFAULT_BUFFER_SIZE)
+  reader = partial(file_handle.read, DEFAULT_BUFFER_SIZE)
   file_iterator = iter(reader, bytes())
   # TODO: once dropping Python <3.3 compat, update to `yield from ...`
   for chunk in file_iterator:
