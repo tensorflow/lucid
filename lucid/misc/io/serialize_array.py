@@ -61,7 +61,7 @@ def _normalize_array(array, domain=(0, 1)):
     log.info(message.format(low, high, domain[0], domain[1]))
     array = array.clip(*domain)
 
-  min_value, max_value = 0, np.iinfo(np.uint8).max  # = 255
+  min_value, max_value = np.iinfo(np.uint8).min, np.iinfo(np.uint8).max  # 0, 255
   # convert signed to unsigned if needed
   if np.issubdtype(array.dtype, np.inexact):
     offset = domain[0]
@@ -73,10 +73,7 @@ def _normalize_array(array, domain=(0, 1)):
       array *= scalar
       log.debug("Converting inexact array by scaling by %.2f.", scalar)
 
-  assert np.max(array) <= max_value and np.min(array) >= min_value
-  array = array.astype(np.uint8)
-
-  return array
+  return array.clip(min_value, max_value).astype(np.uint8)
 
 
 def _serialize_normalized_array(array, fmt='png', quality=70):
