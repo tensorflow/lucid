@@ -32,8 +32,9 @@ from future.moves.urllib import request
 from tensorflow import gfile
 from tempfile import gettempdir
 from io import BytesIO, StringIO
+import gc
 
-from lucid.misc.io.writing import write
+from lucid.misc.io.writing import write, write_handle
 
 
 # create logger with module name, e.g. lucid.misc.io.reading
@@ -149,6 +150,20 @@ def _read_and_cache(url):
     return _handle_gfile(local_path)
   else:
     log.info("Caching URL '%s' locally at '%s'.", url, local_path)
-    data = read(url, cache=False)  # important to avoid endless loop
-    write(data, local_path)
-    return BytesIO(data)
+    with write_handle(local_path, 'wb') as output, read_handle(url, cache=False) as input:
+      for chunk in _file_chunk_iterator(input):
+        output.write(chunk)
+    gc.collect()
+    return _handle_gfile(local_path)
+
+
+from functools import partial
+from io import DEFAULT_BUFFER_SIZE
+import sys
+
+def _file_chunk_iterator(file_handle):
+  reader = partial(file_handle.read1, DEFAULT_BUFFER_SIZE)
+  file_iterator = iter(reader, bytes())
+  # TODO: once dropping Python <3.3 compat, update to `yield from ...`
+  for chunk in file_iterator:
+    yield chunk
