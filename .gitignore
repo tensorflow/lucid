@@ -1,4 +1,4 @@
-**.pyc
+*.pyc
 dist
 .eggs
 .cache
@@ -8,3 +8,4 @@ dist
 notebooks/.ipynb_checkpoints
 coverage.txt
 .coverage
+lucidenv

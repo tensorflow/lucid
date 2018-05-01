@@ -50,3 +50,10 @@ def test_load_garbage_with_unknown_extension():
   path = "./tests/fixtures/string.XYZ"
   with pytest.raises(RuntimeError):
     image = load(path)
+
+
+def test_load_json_with_file_handle():
+  path = "./tests/fixtures/dictionary.json"
+  with io.open(path, 'r') as handle:
+    dictionary = load(handle)
+  assert "key" in dictionary

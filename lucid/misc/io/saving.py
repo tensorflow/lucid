@@ -40,39 +40,42 @@ from lucid.misc.io.serialize_array import _normalize_array
 log = logging.getLogger(__name__)
 
 
-def save_json(object, url, indent=2):
+def save_json(object, handle, indent=2):
   """Save object as json on CNS."""
   obj_json = json.dumps(object, indent=indent)
-  write(obj_json, url, 'w')
+  handle.write(obj_json)
 
 
-def save_npy(object, url):
+def save_npy(object, handle):
   """Save numpy array as npy file."""
-  with write_handle(url, "w") as handle:
-    np.save(handle, object)
+  np.save(handle, object)
 
 
-def save_npz(object, url):
+def save_npz(object, handle):
   """Save dict of numpy array as npz file."""
+  # there is a bug where savez doesn't actually accept a file handle.
+  log.warn("Saving npz files currently only works locally. :/")
+  path = handle.name
+  handle.close()
   if type(object) is dict:
-    np.savez(url, **object)
+    np.savez(path, **object)
   elif type(object) is list:
-    np.savez(url, *object)
+    np.savez(path, *object)
   else:
     log.warn("Saving non dict or list as npz file, did you maybe want npy?")
-    np.savez(url, object)
+    np.savez(path, object)
 
 
-def save_img(object, url, **kwargs):
+def save_img(object, handle, **kwargs):
   """Save numpy array as image file on CNS."""
   if isinstance(object, np.ndarray):
     normalized = _normalize_array(object)
     image = PIL.Image.fromarray(normalized)
-  elif not isinstance(object, PIL.Image):
+  elif isinstance(object, PIL.Image):
+    image = object
+  else:
     raise ValueError("Can only save_img for numpy arrays or PIL.Images!")
-
-  with write_handle(url) as handle:
-    image.save(handle, **kwargs)  # will infer format from handle's url ext.
+  image.save(handle, **kwargs)  # will infer format from handle's url ext.
 
 
 savers = {
@@ -85,7 +88,7 @@ savers = {
 }
 
 
-def save(thing, url, **kwargs):
+def save(thing, url_or_handle, **kwargs):
   """Save object to file on CNS.
 
   File format is inferred from path. Use save_img(), save_npy(), or save_json()
@@ -98,13 +101,21 @@ def save(thing, url, **kwargs):
   Raises:
     RuntimeError: If file extension not supported.
   """
-  _, ext = os.path.splitext(url)
+  is_handle = hasattr(url_or_handle, 'write') and hasattr(url_or_handle, 'name')
+  if is_handle:
+    _, ext = os.path.splitext(url_or_handle.name)
+  else:
+    _, ext = os.path.splitext(url_or_handle)
   if not ext:
-    raise RuntimeError("No extension in URL: " + url)
+    raise RuntimeError("No extension in URL: " + url_or_handle)
 
   if ext in savers:
     saver = savers[ext]
-    saver(thing, url, **kwargs)
+    if is_handle:
+      saver(thing, url_or_handle, **kwargs)
+    else:
+      with write_handle(url_or_handle) as handle:
+        saver(thing, handle, **kwargs)
   else:
     message = "Unknown extension '{}', supports {}."
-    raise RuntimeError(message.format(ext, loaders))
+    raise RuntimeError(message.format(ext, savers))

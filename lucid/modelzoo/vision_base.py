@@ -14,9 +14,11 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
+from os import path
 
 import tensorflow as tf
 from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
+from lucid.misc.io import load
 
 class Model(object):
   """Base pretrained model importer."""
@@ -61,3 +63,39 @@ class Model(object):
     tf.import_graph_def(
         self.graph_def, {self.input_name: t_prep_input}, name=scope)
     self.post_import(scope)
+
+
+class SerializedModel(Model):
+  """Allows importing various types of serialized models from a directory.
+
+  (Currently only supports frozen graph models and relies on manifest.json file.
+  In the future we may want to support automatically detecting the type and
+  support loading more ways of saving models: tf.SavedModel, metagraphs, etc.)
+  """
+
+  @classmethod
+  def from_directory(cls, model_path):
+    manifest_path = path.join(model_path, 'manifest.json')
+    try:
+      manifest = load(manifest_path)
+    except Exception as e:
+      raise ValueError("Could not find manifest.json file in dir {}. Error: {}".format(model_path, e))
+    if manifest.get('type', 'frozen') == 'frozen':
+      return FrozenGraphModel(model_path, manifest)
+    else: # TODO: add tf.SavedModel support, etc
+      raise NotImplementedError("SerializedModel Manifest type '{}' has not been implemented!".format(manifest.get('type')))
+
+
+class FrozenGraphModel(SerializedModel):
+
+  def __init__(self, model_directory, manifest):
+    model_path = manifest.get('model_path', 'graph.pb')
+    if model_path.startswith("./"): # TODO: can we be less specific here?
+      self.model_path = path.join(model_directory, model_path)
+    else:
+      self.model_path = model_path
+    self.labels_path = manifest.get('labels_path', None)
+    self.image_value_range = manifest.get('image_value_range', None)
+    self.image_shape = manifest.get('image_shape', None)
+    self.input_name = manifest.get('input_name', 'input:0')
+    super().__init__()

@@ -59,6 +59,13 @@ run in your browser.
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/building-blocks/NeuronGroups.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-neuron-groups.png" width="500" alt=""></img>
 
+# Recomended Reading
+
+* [Feaure Visualization](https://distill.pub/2017/feature-visualization/)
+* [The Building Blocks of Interpretability](https://distill.pub/2018/building-blocks/)
+* [Using Artiﬁcial Intelligence to Augment Human Intelligence](https://distill.pub/2017/aia/)
+* [Visualizing Representations: Deep Learning and Human Beings](http://colah.github.io/posts/2015-01-Visualizing-Representations/)
+
 <br>
 <br>
 

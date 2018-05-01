@@ -44,6 +44,7 @@ convenience wrapper for `graph.gradient_override_map()`.
 from contextlib import contextmanager
 import numpy as np
 import tensorflow as tf
+import uuid
 
 
 def register_to_random_name(grad_f):
@@ -67,7 +68,7 @@ def register_to_random_name(grad_f):
   Returns:
     String that gradient function was registered to.
   """
-  grad_f_name = grad_f.__name__ + "_" + hex(np.random.randint(0, 1e10))[2:]
+  grad_f_name = grad_f.__name__ + "_" + str(uuid.uuid4())
   tf.RegisterGradient(grad_f_name)(grad_f)
   return grad_f_name
 

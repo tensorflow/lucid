@@ -14,6 +14,8 @@ explore a large space of possibilities. In the case that you want to do
 something it doesn't directly support, it should gracefully allow you to
 continue using subcomponents.
 
+***Try the [tutorial](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/tutorial.ipynb) in your browser!***
+
 ## Abstraction
 
 * **Objectives** describe what you want to optimize, whether a single neuron,
@@ -61,7 +63,7 @@ Using a different paramaterization:
 
 ```python
 obj = objectives.channel("mixed4a_pre_relu", 2)
-param_f = lambda: param.rgb_sigmoid(param.laplacian_pyramid([1, 128, 128, 3]))
+param_f = lambda: param.image(128, fft=False, decorrelate=False)
 render_vis(model, obj, param_f)
 ```
 
@@ -73,6 +75,7 @@ opt = tf.train.AdamOptimizer()
 render_vis(model, obj, optimizer=opt)
 ```
 
+<!--
 Rendering 4 different paramaterizations at once:
 
 ```python
@@ -85,7 +88,8 @@ param_f = lambda: tf.concat([
 ], 0)
 render_vis(model, obj, param_f)
 ```
+-->
 
-See go/deeepviz-tutorial (colab) for more!
+See the [Lucid tutorial](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/tutorial.ipynb) for more!
 
 

@@ -25,6 +25,7 @@ tensorflow tensor. The functions are of the form:
 
 import tensorflow as tf
 import numpy as np
+import uuid
 
 from lucid.optvis import param
 
@@ -88,7 +89,7 @@ def normalize_gradient(grad_scales=None):
   if grad_scales is not None:
     grad_scales = np.float32(grad_scales)
 
-  op_name = "NormalizeGrad_" + hex(np.random.randint(1e6))[2:]
+  op_name = "NormalizeGrad_" + str(uuid.uuid4())
   @tf.RegisterGradient(op_name)
   def _NormalizeGrad(op, grad):
     grad_norm = tf.sqrt(tf.reduce_sum(grad**2, [1, 2, 3], keep_dims=True))
@@ -133,8 +134,8 @@ def _angle2rads(angle, units):
   elif units.lower() in ["radians", "rads", "rad"]:
     angle = angle
   return angle
-  
-  
+
+
 standard_transforms = [
     pad(12, mode='constant', constant_value=.5),
     jitter(8),

@@ -75,39 +75,47 @@ loaders = {
 }
 
 
-def load(url, cache=None, encoding='utf-8'):
+def load(url_or_handle, cache=None, encoding='utf-8'):
   """Load a file.
 
   File format is inferred from url. File retrieval strategy is inferred from
   URL. Returned object type is inferred from url extension.
 
   Args:
-    path: a (reachable) URL
+    url_or_handle: a (reachable) URL, or an already open file handle
 
   Raises:
     RuntimeError: If file extension or URL is not supported.
   """
-  _, ext = os.path.splitext(url)
+  is_handle = hasattr(url_or_handle, 'read') and hasattr(url_or_handle, 'name')
+  if is_handle:
+    _, ext = os.path.splitext(url_or_handle.name)
+  else:
+    _, ext = os.path.splitext(url_or_handle)
   if not ext:
-    raise RuntimeError("No extension in URL: " + url)
+    raise RuntimeError("No extension in URL: " + url_or_handle)
 
   ext = ext.lower()
   if ext in loaders:
     loader = loaders[ext]
     message = "Using inferred loader '%s' due to passed file extension '%s'."
     log.debug(message, loader.__name__[6:], ext)
-    with read_handle(url, cache=cache) as handle:
-      result = loader(handle, encoding=encoding)
+    if is_handle:
+      result = loader(url_or_handle, encoding=encoding)
+    else:
+      with read_handle(url_or_handle, cache=cache) as handle:
+        result = loader(handle, encoding=encoding)
     return result
   else:
+    # TODO: handle 'handle' case? refactor?
     log.warn("Unknown extension '%s', attempting to load as image.", ext)
     try:
-      with read_handle(url, cache=cache) as handle:
+      with read_handle(url_or_handle, cache=cache) as handle:
         result = _load_img(handle)
     except Exception as e:
       message = "Could not load resource %s as image. Supported extensions: %s"
-      log.error(message, url, list(loaders))
-      raise RuntimeError(message.format(url, list(loaders)))
+      log.error(message, url_or_handle, list(loaders))
+      raise RuntimeError(message.format(url_or_handle, list(loaders)))
     else:
       log.info("Unknown extension '%s' successfully loaded as image.", ext)
       return result

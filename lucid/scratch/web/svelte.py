@@ -3,6 +3,7 @@ import json
 import tempfile
 import subprocess
 import os.path as osp
+import uuid
 
 from IPython.core.magic import register_cell_magic
 
@@ -28,22 +29,22 @@ _template = """
 def build_svelte(html_fname):
   js_fname = html_fname.replace(".html", ".js")
   cmd = "svelte compile --format iife " + html_fname + " > " + js_fname
-  print cmd
+  print(cmd)
   try:
     print(subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT))
   except subprocess.CalledProcessError as exception:
-    print("svelte build failed!\n" + exception.output)
+    print("Svelte build failed! Output:\n{}".format(exception.output.decode()))
   return js_fname
 
 
 def SvelteComponent(name, path):
   """Display svelte components in iPython.
-  
+
   Args:
     name: name of svelte component (must match component filename when built)
     path: path to compile svelte .js file or source svelte .html file.
       (If html file, we try to call svelte and build the file.)
-  
+
   Returns:
     A function mapping data to a rendered svelte component in ipython.
   """
@@ -54,7 +55,7 @@ def SvelteComponent(name, path):
     js_path = build_svelte(path)
   js_content = read(js_path)
   def inner(data):
-    id_str = name + "_" + hex(random.randint(0, 1e8))[2:]
+    id_str = name + "_" + str(uuid.uuid4())
     html = _template \
         .replace("$js", js_content) \
         .replace("$name", name) \
@@ -67,7 +68,7 @@ def SvelteComponent(name, path):
 @register_cell_magic
 def html_define_svelte(line, cell):
   base_name = line.split()[0]
-  name_str = base_name + "_" + hex(random.randint(0, 1e8))[2:]
+  name_str = base_name + "_" + str(uuid.uuid4())
   html_fname = osp.join(_svelte_temp_dir, name_str + ".html")
   with open(html_fname, "w") as f:
     f.write(cell)
