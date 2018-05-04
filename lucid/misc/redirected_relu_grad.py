@@ -15,10 +15,15 @@
 
 """Redirected ReLu Gradient Overrides
 
-When visualizing models we often[0] have to optimize through ReLu activation
-functions. Where accessing pre-relu tensors is too hard, we use these
-overrides to allow gradient to flow back through the ReLu—even if it didn't
-activate ("dead neuron") and thus its derivative is 0.
+When we visualize ReLU networks, the initial random input we give the model may
+not cause the neuron we're visualizing to fire at all. For a ReLU neuron, this
+means that no gradient flow backwards and the visualization never takes off.
+One solution would be to find the pre-ReLU tensor, but that can be tedious.
+
+These functions provide a more convenient solution: temporarily override the
+gradient of ReLUs to allow gradient to flow back through the ReLU -- even if it
+didn't activate and had a derivative of zero -- allowing the visualization
+process to get started.
 
 Usage:
 ```python
@@ -26,7 +31,7 @@ from lucid.misc.gradient_override import gradient_override_map
 from lucid.misc.redirected_relu_grad import redirected_relu_grad
 
 with gradient_override_map({'Relu': redirected_relu_grad}):
-  model.import_graph(…)
+  model.import_graph(...)
 ```
 
 Discussion:
@@ -34,6 +39,9 @@ ReLus block the flow of the gradient during backpropagation when their input is
 negative. ReLu6s also do so when the input is larger than 6. These overrides
 change this behavior to allow gradient pushing the input into a desired regime
 between these points.
+
+(This override first checks if the entire gradient would be blocked, and only
+changes it in that case. It does this check independently for each batch entry.)
 
 In effect, this replaces the relu gradient with the following:
 
