@@ -107,7 +107,12 @@ def load_obj(fn):
     line = line.strip()
     if not line or line[0] == '#':
       continue
-    tag, line = line.split(' ', 1)
+    line = line.split(' ', 1)
+    tag = line[0]
+    if len(line) > 1:
+      line = line[1]
+    else:
+      line = ''
     if tag == 'v':
       position.append(np.fromstring(line, sep=' '))
     elif tag == 'vt':
