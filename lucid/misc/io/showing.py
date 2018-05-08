@@ -35,7 +35,7 @@ def _display_html(html_str):
   IPython.display.display(IPython.display.HTML(html_str))
 
 
-def _image_url(array, fmt='png', mode="data", quality=70, domain=None):
+def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
   """Create a data URL representing an image from a PIL.Image.
 
   Args:
@@ -70,7 +70,7 @@ def image(array, domain=None, w=None, format='png'):
     w: width of output image, scaled using nearest neighbor interpolation.
       size unchanged if None
   """
-  data_url = _image_url(array, domain=domain)
+  data_url = _image_url(array, domain=domain, fmt=format)
   html = '<img src=\"' + data_url + '\">'
   _display_html(html)
 
