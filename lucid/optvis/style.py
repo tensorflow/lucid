@@ -27,7 +27,7 @@ class StyleLoss(object):
       https://arxiv.org/abs/1508.06576
   """
 
-  def __init__(self, style_layers, ema_decay=0.0,
+  def __init__(self, style_layers, ema_decay=None,
                style_func=gram_style,
                loss_func=mean_l1_loss):
     """Initilize style loss.
@@ -44,7 +44,7 @@ class StyleLoss(object):
         outputs of 'style_func'.
     """
     self.input_grams = [style_func(s) for s in style_layers]
-    if ema_decay:
+    if ema_decay is not None:
       ema = tf.train.ExponentialMovingAverage(decay=ema_decay)
       update_ema_op = ema.apply(self.input_grams)
       with tf.control_dependencies([update_ema_op]):
