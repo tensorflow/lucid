@@ -36,7 +36,7 @@ run in your browser.
 <img src="https://storage.googleapis.com/lucid-static/common/stickers/colab-tutorial.png" width="500" alt=""></img>
 </a>
 
-## Building Blocks 
+## Building Blocks
 *Notebooks corresponding to the [Building Blocks of Interpretability](https://distill.pub/2018/building-blocks/) article*
 
 
@@ -79,6 +79,22 @@ This project is research code. It is not an official Google product.
 
 
 ## Development
+
+### Style guide deviations
+
+We use naming conventions to help differentiate tensors, operations, and values:
+
+* Suffix variable names representing **tensors** with `_t`
+* Suffix variable names representing **operations** with `_op`
+* Don't suffix variable names representing concrete values
+
+Usage example:
+
+```
+global_step_t = tf.train.get_or_create_global_step()
+global_step_init_op = tf.variables_initializer([global_step_t])
+global_step = global_step_t.eval()
+```
 
 ### Running Tests
 

@@ -20,4 +20,9 @@ def test_integration(decorrelate, fft):
     verbose=False, transforms=[])
   start_image = rendering[0]
   end_image = rendering[-1]
+  objective_f = objectives.neuron("mixed3a", 177)
+  param_f = lambda: param.image(64, decorrelate=decorrelate, fft=fft)
+  rendering = render.render_vis(model, objective_f, param_f, verbose=False, thresholds=(0,64), use_fixed_seed=True)
+  start_image, end_image = rendering
+
   assert (start_image != end_image).any()

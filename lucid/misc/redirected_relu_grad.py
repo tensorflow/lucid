@@ -23,12 +23,19 @@ One solution would be to find the pre-ReLU tensor, but that can be tedious.
 These functions provide a more convenient solution: temporarily override the
 gradient of ReLUs to allow gradient to flow back through the ReLU -- even if it
 didn't activate and had a derivative of zero -- allowing the visualization
-process to get started.
+process to get started. These functions override the gradient for at most 16
+steps. Thus, you need to initialize `global_step` before using these functions.
 
 Usage:
 ```python
 from lucid.misc.gradient_override import gradient_override_map
 from lucid.misc.redirected_relu_grad import redirected_relu_grad
+
+...
+global_step_t = tf.train.get_or_create_global_step()
+init_global_step_op = tf.variables_initializer([global_step_t])
+init_global_step_op.run()
+...
 
 with gradient_override_map({'Relu': redirected_relu_grad}):
   model.import_graph(...)
@@ -99,7 +106,12 @@ def redirected_relu_grad(op, grad):
     batch = tf.shape(relu_grad)[0]
     reshaped_relu_grad = tf.reshape(relu_grad, [batch, -1])
     relu_grad_mag = tf.norm(reshaped_relu_grad, axis=1)
-  return tf.where(relu_grad_mag > 0., relu_grad, redirected_grad)
+  result_grad = tf.where(relu_grad_mag > 0., relu_grad, redirected_grad)
+
+  global_step_t =tf.train.get_or_create_global_step()
+  return_relu_grad = tf.greater(global_step_t, tf.constant(16, tf.int64))
+
+  return tf.where(return_relu_grad, relu_grad, result_grad)
 
 
 def redirected_relu6_grad(op, grad):
@@ -125,4 +137,9 @@ def redirected_relu6_grad(op, grad):
     batch = tf.shape(relu_grad)[0]
     reshaped_relu_grad = tf.reshape(relu_grad, [batch, -1])
     relu_grad_mag = tf.norm(reshaped_relu_grad, axis=1)
-  return tf.where(relu_grad_mag > 0., relu_grad, redirected_grad)
+  result_grad =  tf.where(relu_grad_mag > 0., relu_grad, redirected_grad)
+
+  global_step_t = tf.train.get_or_create_global_step()
+  return_relu_grad = tf.greater(global_step_t, tf.constant(16, tf.int64))
+
+  return tf.where(return_relu_grad, relu_grad, result_grad)

@@ -48,6 +48,7 @@ def _normalize_array(array, domain=(0, 1)):
   array = np.squeeze(array)
   assert len(array.shape) <= 3
   assert np.issubdtype(array.dtype, np.number)
+  assert not np.isnan(array).any()
 
   low, high = np.min(array), np.max(array)
   if domain is None:
