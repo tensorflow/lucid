@@ -131,7 +131,23 @@ def wrap_objective(f, *args, **kwds):
 
 @wrap_objective
 def neuron(layer_name, channel_n, x=None, y=None, batch=None):
-  """Visualize a single neuron of a single channel."""
+  """Visualize a single neuron of a single channel.
+
+  Defaults to the center neuron. When width and height are even numbers, we
+  choose the neuron in the bottom right of the center 2x2 neurons.
+
+  Odd width & height:               Even width & height:
+
+  +---+---+---+                     +---+---+---+---+
+  |   |   |   |                     |   |   |   |   |
+  +---+---+---+                     +---+---+---+---+
+  |   | X |   |                     |   |   |   |   |
+  +---+---+---+                     +---+---+---+---+
+  |   |   |   |                     |   |   | X |   |
+  +---+---+---+                     +---+---+---+---+
+                                    |   |   |   |   |
+                                    +---+---+---+---+
+  """
   def inner(T):
     layer = T(layer_name)
     shape = tf.shape(layer)

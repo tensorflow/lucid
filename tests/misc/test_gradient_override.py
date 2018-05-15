@@ -29,6 +29,10 @@ def test_gradient_override_map():
     return tf.constant(42)
 
   with tf.Session().as_default() as sess:
+    global_step = tf.train.get_or_create_global_step()
+    init_global_step = tf.variables_initializer([global_step])
+    init_global_step.run()
+
     a = tf.constant(1.)
     standard_relu = tf.nn.relu(a)
     grad_wrt_a = tf.gradients(standard_relu, a, [1.])[0]
@@ -56,6 +60,10 @@ def test_gradient_override_relu6_directionality(nonl_name, nonl,
     nonl_grad_override, examples):
   for incoming_grad, input, grad in examples:
     with tf.Session().as_default() as sess:
+      global_step = tf.train.get_or_create_global_step()
+      init_global_step = tf.variables_initializer([global_step])
+      init_global_step.run()
+
       batched_shape = [1,1]
       incoming_grad_t = tf.constant(incoming_grad, shape=batched_shape)
       input_t = tf.constant(input, shape=batched_shape)
@@ -63,3 +71,27 @@ def test_gradient_override_relu6_directionality(nonl_name, nonl,
         nonl_t = nonl(input_t)
         grad_wrt_input = tf.gradients(nonl_t, input_t, [incoming_grad_t])[0]
       assert (grad_wrt_input.eval() == grad).all()
+
+@pytest.mark.parametrize("nonl_name,nonl,nonl_grad_override, examples", nonls)
+def test_gradient_override_shutoff(nonl_name, nonl,
+    nonl_grad_override, examples):
+  for incoming_grad, input, grad in examples:
+    with tf.Session().as_default() as sess:
+      global_step_t = tf.train.get_or_create_global_step()
+      global_step_init_op = tf.variables_initializer([global_step_t])
+      global_step_init_op.run()
+      global_step_assign_t = tf.assign(global_step_t, 17)
+      sess.run(global_step_assign_t)
+
+      # similar setup to test_gradient_override_relu6_directionality,
+      # but we test that the gradient is *not* what we're expecting as after 16
+      # steps the override is shut off
+      batched_shape = [1,1]
+      incoming_grad_t = tf.constant(incoming_grad, shape=batched_shape)
+      input_t = tf.constant(input, shape=batched_shape)
+      with gradient_override_map({nonl_name: nonl_grad_override}):
+        nonl_t = nonl(input_t)
+        grad_wrt_input = tf.gradients(nonl_t, input_t, [incoming_grad_t])[0]
+      nonl_t_no_override = nonl(input_t)
+      grad_wrt_input_no_override = tf.gradients(nonl_t_no_override, input_t, [incoming_grad_t])[0]
+      assert (grad_wrt_input.eval() == grad_wrt_input_no_override.eval()).all()

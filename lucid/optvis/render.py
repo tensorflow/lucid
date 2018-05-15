@@ -31,6 +31,8 @@ import logging
 
 from lucid.optvis import objectives, param, transform
 from lucid.misc.io import show
+from lucid.misc.redirected_relu_grad import redirected_relu_grad, redirected_relu6_grad
+from lucid.misc.gradient_override import gradient_override_map
 
 # pylint: disable=invalid-name
 
@@ -40,8 +42,8 @@ log = logging.getLogger(__name__)
 
 
 def render_vis(model, objective_f, param_f=None, optimizer=None,
-               transforms=None, thresholds=(512,),
-               print_objectives=None, verbose=True,):
+               transforms=None, thresholds=(512,), print_objectives=None,
+               verbose=True, relu_gradient_override=True, use_fixed_seed=False):
   """Flexible optimization-base feature vis.
 
   There's a lot of ways one might wish to customize otpimization-based
@@ -72,6 +74,11 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
       whose values get logged during the optimization.
     verbose: Should we display the visualization when we hit a threshold?
       This should only be used in IPython.
+    relu_gradient_override: Whether to use the gradient override scheme
+      described in lucid/misc/redirected_relu_grad.py. On by default!
+    use_fixed_seed: Seed the RNG with a fixed value so results are reproducible.
+      Off by default. As of tf 1.8 this does not work as intended, see:
+      https://github.com/tensorflow/tensorflow/issues/9171
   Returns:
     2D array of optimization results containing of evaluations of supplied
     param_f snapshotted at specified thresholds. Usually that will mean one or
@@ -80,7 +87,11 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
 
   with tf.Graph().as_default() as graph, tf.Session() as sess:
 
-    T = make_vis_T(model, objective_f, param_f, optimizer, transforms)
+    if use_fixed_seed:  # does not mean results are reproducible, see Args doc
+      tf.set_random_seed(0)
+
+    T = make_vis_T(model, objective_f, param_f, optimizer, transforms,
+                   relu_gradient_override)
     print_objective_func = make_print_objective_func(print_objectives, T)
     loss, vis_op, t_image = T("loss"), T("vis_op"), T("input")
     tf.global_variables_initializer().run()
@@ -105,7 +116,7 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
 
 
 def make_vis_T(model, objective_f, param_f=None, optimizer=None,
-               transforms=None):
+               transforms=None, relu_gradient_override=False):
   """Even more flexible optimization-base feature vis.
 
   This function is the inner core of render_vis(), and can be used
@@ -155,10 +166,19 @@ def make_vis_T(model, objective_f, param_f=None, optimizer=None,
   transform_f = make_transform_f(transforms)
   optimizer = make_optimizer(optimizer, [])
 
-  T = import_model(model, transform_f(t_image), t_image)
+  global_step = tf.train.get_or_create_global_step()
+  init_global_step = tf.variables_initializer([global_step])
+  init_global_step.run()
+
+  if relu_gradient_override:
+    with gradient_override_map({'Relu': redirected_relu_grad,
+                                'Relu6': redirected_relu6_grad}):
+      T = import_model(model, transform_f(t_image), t_image)
+  else:
+    T = import_model(model, transform_f(t_image), t_image)
   loss = objective_f(T)
 
-  global_step = tf.Variable(0, trainable=False, name="global_step")
+
   vis_op = optimizer.minimize(-loss, global_step=global_step)
 
   local_vars = locals()
