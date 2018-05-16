@@ -68,7 +68,8 @@ def SvelteComponent(name, path):
 @register_cell_magic
 def html_define_svelte(line, cell):
   base_name = line.split()[0]
-  name_str = base_name + "_" + str(uuid.uuid4())
+  # name_str will become the name of a javascript variable, and can't contain dashes.
+  name_str = base_name + "_" + str(uuid.uuid4()).replace('-', '_')
   html_fname = osp.join(_svelte_temp_dir, name_str + ".html")
   with open(html_fname, "w") as f:
     f.write(cell)
