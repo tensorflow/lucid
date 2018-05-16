@@ -53,9 +53,10 @@ def short_rand_str():
 def build_svelte(html_fname):
   js_fname = html_fname.replace(".html", ".js")
   cmd = "svelte compile --format iife " + html_fname + " > " + js_fname
-  print(cmd)
+  #print(cmd)
   try:
-    print(subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT))
+    svelte_logs = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+    #print(subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT))
   except subprocess.CalledProcessError as exception:
     print("Svelte build failed! Output:\n{}".format(exception.output.decode()))
   return js_fname
@@ -119,7 +120,7 @@ class SvelteComponent:
     if path[-3:] == ".js":
       js_path = path
     elif path[-5:] == ".html":
-      print("Trying to build svelte component from html...")
+      #print("Trying to build svelte component from html...")
       js_path = build_svelte(path)
     self.base_name = base_name
     self.full_name = full_name
