@@ -19,14 +19,14 @@ def to_js(obj):
     raise RuntimeError("to_js(): unsupported type %s" % type(obj))
     
     
-class JsExpression:
+class JsExpr:
   """Represents a javascript expression in python."""
 
   def __init__(self, code):
     self.code = code
 
   def __repr__(self):
-    return "JsCode(\"\"\"%s\"\"\")" % self.code
+    return "JsExpr(\"\"\"%s\"\"\")" % self.code
   
   def __js__(self):
     return self.code
@@ -47,5 +47,5 @@ def js_ndarray(arr, dtype):
   code += "  var typed_arr = new %s(buffer);\n" % constructor
   code += "  return ndarray(typed_arr, %s);\n" % shape
   code += "})()\n"
-  return JsCode(code)
+  return JsExpr(code)
   
