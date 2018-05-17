@@ -1,0 +1,65 @@
+<:Window on:resize='onresize()' />
+
+<d-figure ref:figure style="height: {{size.outerHeight}}px;">
+  <slot></slot>
+</d-figure>
+
+<script>
+  export default {
+    data() {
+      return {
+        _ready: false,
+        mouseActive: false,
+        mousePosition: undefined,
+        size: {
+          outerHeight: 0,
+          outerWidth: 0,
+          height: 0,
+          width: 0
+        }
+      }
+    },
+    computed: {
+      ready: (_ready, size) => _ready && size.width && size.height,
+      context: (size, xScale, yScale, margins) => {
+        return { size, xScale, yScale, margins };
+      }
+    },
+    oncreate() {
+      this.onresize();
+      this.refs.figure.addEventListener("ready", () => {
+        this.set({_ready: true});
+      });
+      this.set({target: this.refs.figure});
+    },
+    methods: {
+      onresize() {
+        const {aspectRatio, minHeight, margins} = this.get();
+        const element = this.refs.figure;
+        const outerWidth = element.offsetWidth
+        let outerHeight = outerWidth / aspectRatio;
+        if (minHeight) {
+          outerHeight = Math.max(outerHeight, minHeight);
+        }
+        const width = outerWidth - margins.left - margins.right;
+        const height = outerHeight - margins.top - margins.bottom;
+        const size = {width, height, outerWidth, outerHeight};
+        this.set({size});
+      },
+    }
+  }
+</script>
+
+
+<style>
+
+  d-figure {
+    display: block;
+    position: relative;
+  }
+
+  d-figure > * {
+    position: absolute;
+  }
+
+</style>

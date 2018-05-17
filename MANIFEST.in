@@ -1,1 +1,2 @@
 include tox.ini
+include lucid/scratch/web/components/*

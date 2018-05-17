@@ -1,0 +1,87 @@
+<canvas ref:canvas width="{{width}}" height="{{height}}" ></canvas>
+
+<script>
+  import * as d3Contour from "d3-contour";
+  import { range, scaleLog, geoIdentity, geoPath, extent, scaleLinear } from "d3";
+
+  export default {
+    data() {
+      return {
+        func: undefined,
+        xScale: undefined,
+        yScale: undefined,
+        thresholds: undefined,
+        contoursGenerator: d3Contour.contours(),
+        colorScale: undefined,
+        pixelsPerSample: 3
+      }
+    },
+    computed: {
+      contourFunction: (contoursGenerator, numSamples, thresholds) => {
+        const contour = contoursGenerator.size(numSamples);
+        if (thresholds) {
+          contour.thresholds(thresholds);
+        }
+        return contour;
+      },
+      width: (xScale) => xScale.range()[1],
+      height: (yScale) => yScale.range()[0],
+      numSamples: (width, height, pixelsPerSample) => {
+        return [Math.floor(width/pixelsPerSample), Math.floor(height/pixelsPerSample)];
+      },
+      sampleSize: (width, height, numSamples) => {
+        return [width/numSamples[0], height/numSamples[1]];
+      },
+      values: (func, numSamples, sampleSize, xScale, yScale, pixelsPerSample) => {
+        const values = new Array(numSamples[0] * numSamples[1]);
+        for (let yi = 0, i=0; yi < numSamples[1]; yi++) {
+          for (let xi = 0; xi < numSamples[0]; xi++, i++) {
+            const x = xScale.invert((xi + .5) * sampleSize[0]);
+            const y = yScale.invert((yi + .5) * sampleSize[1]);
+            values[i] = func([x, y]);
+          }
+        }
+        return values;
+      },
+      renderProps: (width, height, values, colorScale, contourFunction, thresholds, pixelsPerSample, sampleSize, xScale, yScale) => {
+        return {width, height, values, colorScale, contourFunction, thresholds, pixelsPerSample, sampleSize};
+      }
+    },
+    oncreate() {
+      this.set({canvas: this.refs.canvas});
+      this.observe('renderProps', this.render, { defer: true });
+    },
+    methods: {
+      render: function(renderProps) {
+        const {width, height, values, colorScale, contourFunction, pixelsPerSample, sampleSize, xScale, yScale} = renderProps;
+        const canvas = this.refs.canvas;
+        const context = canvas.getContext("2d");
+        const projection = geoIdentity().scale(Math.max(...sampleSize))
+        const path = geoPath(projection, context);
+        const contours = contourFunction(values);
+
+        context.lineWidth = 1;
+        context.lineJoin = "round";
+        // context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "white";
+        context.fillRect(0, 0, width, height);
+        context.strokeStyle = "rgba(255, 255, 255, 0.1)";
+        for (const contour of contours) {
+          context.fillStyle = colorScale(contour.value);
+          context.beginPath();
+          path(contour);
+          context.fill();
+          context.stroke();
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  canvas {
+    /*This needs to be set higher up, contour is too generic for rounded corners*/
+    /*E.g. GaussianFitting needs non-rounded corners as it uses axes*/
+    /*border-radius: 7px;*/
+  }
+</style>

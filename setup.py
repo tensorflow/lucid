@@ -76,4 +76,5 @@ setup(
     'Topic :: Scientific/Engineering :: Visualization',
     'Topic :: Software Development :: Libraries :: Python Modules',
   ],
+  include_package_data=True,
 )
