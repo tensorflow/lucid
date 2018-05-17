@@ -1,5 +1,3 @@
-import random
-import json
 import tempfile
 import subprocess
 import os
@@ -12,6 +10,8 @@ from IPython.core.magic import register_cell_magic
 
 from lucid.misc.io.showing import _display_html
 from lucid.misc.io.reading import read
+
+from lucid.scratch.web.js_encoder import to_js
 
 _svelte_temp_dir = tempfile.mkdtemp(prefix="svelte_")
 _svelte_shipped_dir = osp.join(osp.dirname(__file__), "components/")
@@ -32,7 +32,6 @@ _template = """
 
 _default_svelte_script_tag = """
  <script>
-   $auto_sub_component_imports
    export default {
      data() {
        return {};
@@ -87,10 +86,12 @@ def expand_svelte_html(html, sub_components):
   if "<script>" not in html:
     html += _default_svelte_script_tag
 
-  auto_import_str = ""
+  auto_import_str = "import  ndarray from \"ndarray\";\n"
   for component in sub_components:
     auto_import_str += "import " + component.full_name + " from " \
                     + "\"./" + component.full_name + ".html\";\n"
+  
+  html = html.replace("<script>", "<script>\n" + auto_import_str, 1)
 
   auto_sub_components_str = "\n{\n"
   for component in sub_components:
@@ -102,10 +103,6 @@ def expand_svelte_html(html, sub_components):
     html = html.replace("$auto_sub_components", auto_sub_components_str)
   elif len(sub_components) > 0:
     print("Warning: despite appearing to use sub-components, $auto_sub_components is missing.")
-  if "$auto_sub_component_imports" in html:
-    html = html.replace("$auto_sub_component_imports", auto_import_str)
-  elif len(sub_components) > 0:
-    print("Warning: despite appearing to use sub-components, $auto_sub_component_imports is missing.")
 
   return html
 
@@ -158,7 +155,7 @@ class SvelteComponent:
     html = _template \
         .replace("$js", full_js_content) \
         .replace("$name", self.full_name) \
-        .replace("$data", json.dumps(data)) \
+        .replace("$data", to_js(data)) \
         .replace("$div_id", div_id)
     return html
 
