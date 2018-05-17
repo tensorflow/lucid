@@ -68,8 +68,8 @@ def used_svelte_components(html):
   upper_elements = list(set(upper_elements))
   used_components = {}
   for e in upper_elements:
-    if e in SvelteComponent.components:
-      used_components[e] = SvelteComponent.components[e]
+    if e in svelte_components:
+      used_components[e] = svelte_components[e]
     else:
       print("Warning: Unknown component <" + e + ">.")
   return used_components.values()
@@ -105,8 +105,10 @@ def component_from_html(base_name, html):
                          sub_components=sub_components)
 
 
+svelte_components = {}
+
+
 class SvelteComponent:
-  components = {}
 
   def __init__(self, base_name, full_name, path, sub_components=()):
     """Display svelte components in iPython.
@@ -128,9 +130,9 @@ class SvelteComponent:
     self.sub_components = sub_components
 
   def register(self):
-    if self.base_name in SvelteComponent.components:
+    if self.base_name in svelte_components:
       print("Redefining " + self.base_name + " ...")
-    SvelteComponent.components[self.base_name] = self
+    svelte_components[self.base_name] = self
 
   def make_instance_html(self, data):
     full_js_content = ""
