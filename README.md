@@ -37,7 +37,7 @@ run in your browser.
 </a>
 
 
-## Feature Visaulization
+## Feature Visualization
 *Notebooks corresponding to the [Feature Visualization](https://distill.pub/2017/feature-visualization/) article*
 
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/feature-visualization/negative_neurons.ipynb">
