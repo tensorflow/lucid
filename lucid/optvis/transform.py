@@ -92,7 +92,7 @@ def normalize_gradient(grad_scales=None):
   op_name = "NormalizeGrad_" + str(uuid.uuid4())
   @tf.RegisterGradient(op_name)
   def _NormalizeGrad(op, grad):
-    grad_norm = tf.sqrt(tf.reduce_sum(grad**2, [1, 2, 3], keep_dims=True))
+    grad_norm = tf.sqrt(tf.reduce_sum(grad**2, [1, 2, 3], keepdims=True))
     if grad_scales is not None:
       grad *= grad_scales[:, None, None, None]
     return grad / grad_norm

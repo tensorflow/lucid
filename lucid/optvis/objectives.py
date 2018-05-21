@@ -153,7 +153,7 @@ def neuron(layer_name, channel_n, x=None, y=None, batch=None):
     shape = tf.shape(layer)
     x_ = shape[1] // 2 if x is None else x
     y_ = shape[2] // 2 if y is None else y
-    
+
     if batch is None:
       return layer[:, x_, y_, channel_n]
     else:
@@ -199,7 +199,7 @@ def direction_neuron(layer_name, vec, batch=None, x=None, y=None):
 def direction_cossim(layer, vec, batch=None):
   """Visualize a direction (cossine similarity)"""
   def inner(T):
-    act_mags = tf.sqrt(tf.reduce_sum(T(layer)**2, -1, keep_dims=True))
+    act_mags = tf.sqrt(tf.reduce_sum(T(layer)**2, -1, keepdims=True))
     vec_mag = tf.sqrt(tf.reduce_sum(vec**2))
     mags = act_mags * vec_mag
     if batch is None:
@@ -411,7 +411,7 @@ def diversity(layer):
 
     flattened = tf.reshape(layer_t, [batch_n, -1, channels])
     grams = tf.matmul(flattened, flattened, transpose_a=True)
-    grams = tf.nn.l2_normalize(grams, dim=[1,2], epsilon=1e-10)
+    grams = tf.nn.l2_normalize(grams, axis=[1,2], epsilon=1e-10)
 
     return sum([ sum([ tf.reduce_sum(grams[i]*grams[j])
                       for j in range(batch_n) if j != i])
