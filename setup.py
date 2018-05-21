@@ -60,7 +60,7 @@ setup(
   tests_require = test_deps,
   extras_require = extras,
   classifiers = [
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 3 - Alpha',
     'Intended Audience :: Science/Research',
     'Intended Audience :: Education',
     'License :: OSI Approved :: Apache Software License',
