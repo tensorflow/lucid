@@ -44,12 +44,13 @@ class StyleLoss(object):
         outputs of 'style_func'.
     """
     self.input_grams = [style_func(s) for s in style_layers]
+    self.ema = None
     if ema_decay is not None:
-      ema = tf.train.ExponentialMovingAverage(decay=ema_decay)
-      update_ema_op = ema.apply(self.input_grams)
+      self.ema = tf.train.ExponentialMovingAverage(decay=ema_decay)
+      update_ema_op = self.ema.apply(self.input_grams)
       with tf.control_dependencies([update_ema_op]):
-        self.effective_grams = [g + tf.stop_gradient(ema.average(g)-g)
-                           for g in self.input_grams]
+        self.effective_grams = [g + tf.stop_gradient(self.ema.average(g)-g)
+                                for g in self.input_grams]
     else:
       self.effective_grams = self.input_grams
     

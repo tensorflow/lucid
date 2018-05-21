@@ -36,6 +36,26 @@ run in your browser.
 <img src="https://storage.googleapis.com/lucid-static/common/stickers/colab-tutorial.png" width="500" alt=""></img>
 </a>
 
+
+## Feature Visualization
+*Notebooks corresponding to the [Feature Visualization](https://distill.pub/2017/feature-visualization/) article*
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/feature-visualization/negative_neurons.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/feature-visualization/stickers/colab-neuron-negative.png" width="500" alt=""></img>
+</a>
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/feature-visualization/neuron_diversity.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/feature-visualization/stickers/colab-neuron-diversity.png" width="500" alt=""></img>
+</a>
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/feature-visualization/neuron_interaction.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/feature-visualization/stickers/colab-neuron-interaction.png" width="500" alt=""></img>
+</a>
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/feature-visualization/regularization.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/feature-visualization/stickers/colab-regularization.png" width="500" alt=""></img>
+</a>
+
 ## Building Blocks
 *Notebooks corresponding to the [Building Blocks of Interpretability](https://distill.pub/2018/building-blocks/) article*
 
