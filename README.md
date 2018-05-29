@@ -37,7 +37,7 @@ run in your browser.
 </a>
 
 
-## Feature Visualization
+## Feature Visualization Notebooks
 *Notebooks corresponding to the [Feature Visualization](https://distill.pub/2017/feature-visualization/) article*
 
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/feature-visualization/negative_neurons.ipynb">
@@ -56,7 +56,7 @@ run in your browser.
 <img src="https://storage.googleapis.com/lucid-static/feature-visualization/stickers/colab-regularization.png" width="500" alt=""></img>
 </a>
 
-## Building Blocks
+## Building Blocks Notebooks
 *Notebooks corresponding to the [Building Blocks of Interpretability](https://distill.pub/2018/building-blocks/) article*
 
 
@@ -84,6 +84,10 @@ run in your browser.
 
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/misc/feature_inversion_caricatures.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/misc/stickers/colab-feature-inversion.ipynb.png" width="500" alt=""></img>
+</a>
+<br>
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/misc/neuron_interaction_grids.ipynb">
+<img src="https://storage.googleapis.com/lucid-static/misc/stickers/colab-interaction-grid.png" width="500" alt=""></img>
 </a>
 
 # Recomended Reading
