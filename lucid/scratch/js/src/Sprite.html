@@ -99,20 +99,22 @@
     },
     methods: {
       draw() {
-        const context = this.refs.canvas.getContext('2d');
-        const { img, index, width, realHeight, columns, loaded } = this.get();
-        context.clearRect(0, 0, width, realHeight);
-        const sx = Array.isArray(index) ? index[0] * width : (index % columns) * width;
-        const sy = Array.isArray(index) ? index[1] * realHeight : Math.floor(index / columns) * realHeight;
-        if (loaded) {
-          context.drawImage(img, sx, sy, width, realHeight, 0, 0, width, realHeight);
-        } else {
-          context.fillStyle = '#ccc';
-          context.fillRect(0, 0, width, realHeight);
-          context.fillStyle = "#eee";
-          context.textAlign = 'center';
-          context.font = '16px sans-serif';
-          context.fillText('...', width / 2, realHeight / 2);
+        if (this.refs.canvas) {
+          const context = this.refs.canvas.getContext('2d');
+          const { img, index, width, realHeight, columns, loaded } = this.get();
+          context.clearRect(0, 0, width, realHeight);
+          const sx = Array.isArray(index) ? index[0] * width : (index % columns) * width;
+          const sy = Array.isArray(index) ? index[1] * realHeight : Math.floor(index / columns) * realHeight;
+          if (loaded) {
+            context.drawImage(img, sx, sy, width, realHeight, 0, 0, width, realHeight);
+          } else {
+            context.fillStyle = '#ccc';
+            context.fillRect(0, 0, width, realHeight);
+            context.fillStyle = "#eee";
+            context.textAlign = 'center';
+            context.font = '16px sans-serif';
+            context.fillText('...', width / 2, realHeight / 2);
+          }
         }
       }
     }
