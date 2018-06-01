@@ -1,6 +1,6 @@
 {
   "name": "lucid-components",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "svelte.root": "src",
   "license": "Apache-2.0",
   "main": "public/index.js",
