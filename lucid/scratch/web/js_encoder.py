@@ -6,6 +6,8 @@ def to_js(obj):
   
   if hasattr(obj, "__js__"):
     return obj.__js__()
+  elif isinstance(obj, np.ndarray):
+    return js_ndarray(obj, obj.dtype).__js__()
   elif isinstance(obj, str):
     return repr(obj)
   elif isinstance(obj, (int, float)):
@@ -36,16 +38,13 @@ def js_ndarray(arr, dtype):
   arr    = np.asarray(arr, dtype)
   b64arr = base64.b64encode(arr)
   shape  = list(arr.shape)
-  constructor_map = {
-    "float32" : "Float32Array"
-    }
-  constructor = constructor_map[dtype]
-  
+  dtype  = str(dtype)
+
   code  = "(function () {\n"
   code += "  var s = \"%s\";\n" % b64arr
   code += "  var buffer = Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer;\n"
-  code += "  var typed_arr = new %s(buffer);\n" % constructor
-  code += "  return ndarray(typed_arr, %s);\n" % shape
+  code += "  var typed_arr = new %s(buffer);\n" % (dtype.capitalize() + "Array")
+  code += "  return nj.array(typed_arr, '%s').reshape(%s);\n" % (dtype, shape)
   code += "})()\n"
   return JsExpr(code)
   

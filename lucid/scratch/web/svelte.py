@@ -18,6 +18,7 @@ _svelte_shipped_dir = osp.join(osp.dirname(__file__), "components/")
 
 
 _template = """
+  <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
   <div id='$div_id'></div>
   <script>
   $js
