@@ -22,7 +22,9 @@
     computed: {
       ready: (_ready, size) => _ready && size.width && size.height,
       context: (size, xScale, yScale, margins) => {
-        return { size, xScale, yScale, margins };
+        if (xScale) xScale = xScale.copy().range([0, size.width]);
+        if (yScale) yScale = yScale.copy().range([size.height, 0]);
+        return {size, xScale, yScale, margins};
       }
     },
     oncreate() {
