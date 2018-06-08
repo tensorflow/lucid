@@ -1,0 +1,55 @@
+<div
+  ref:target
+  style="width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0);"
+  on:mousemove="move(event)"
+  on:mouseleave="leave(event)"
+></div>
+
+<script>
+
+  export default {
+    data() {
+      return {
+        hoverActive: false,
+        // position: [undefined, undefined],
+        // positionDefault: [undefined, undefined],
+        target: undefined,
+      }
+    },
+    computed: {
+
+    },
+    oncreate() {
+      const positionDefault = this.get('positionDefault');
+      this.set({position: positionDefault});
+      this.observe('position', (newValue, oldValue) => {
+        if (newValue) {
+          this.fire('positionUpdate', {position: newValue})
+        }
+      }, { init: false });
+
+    },
+    methods: {
+      move(event) {
+        const {margins, xScale, yScale} = this.get();
+        const width = xScale.range()[1];
+        const height = yScale.range()[0];
+        const bbox = this.refs.target.getBoundingClientRect();
+        //const x = event.clientX - bbox.left;
+        //const y = event.clientY - bbox.top;
+        const x = event.offsetX;
+        const y = event.offsetY;
+        const clampedX = Math.min(Math.max(x - margins.left, 0), width);
+        const clampedY = Math.min(Math.max(y - margins.top, 0), height);
+        this.set({
+          position: [xScale.invert(clampedX), yScale.invert(clampedY)], 
+          hoverActive: true
+        });
+      },
+      leave(event) {
+        const {positionDefault} = this.get();
+        this.set({position: positionDefault, hoverActive: false});
+      }
+    }
+  }
+</script>

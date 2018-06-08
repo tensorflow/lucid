@@ -1,0 +1,32 @@
+
+{{#if namespace === 'svg'}}
+<svg class="stage-layer" width={{context.size.outerWidth}} height={{context.size.outerHeight}}>
+  <g transform="translate({{context.margins.left}}, {{context.margins.top}})">
+    <slot></slot>
+  </g>
+</svg>
+{{else}}
+<div class="stage-layer" style="top: {{context.margins.top}}px; left: {{context.margins.left}}px; width: {{context.size.height}}px; height: {{context.size.height}}px;">
+  <slot></slot>
+</div>
+{{/if}}
+
+<script>
+  export default {
+    computed: {
+     
+    }
+  }
+</script>
+
+<style>
+  div.stage-layer {
+  }
+  div.stage-layer > * {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  svg.stage-layer {
+  }
+</style>

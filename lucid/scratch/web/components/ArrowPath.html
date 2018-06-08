@@ -1,0 +1,84 @@
+<g>
+  {{#each segments as segment}}
+    <path d={{segment.path}} stroke={{color}}></path>
+  {{/each}}
+</g>
+
+<script>
+  export default {
+    namespace: 'svg',
+    data() {
+      return {
+        color: "rgb(255, 102, 0)",
+        xScale: undefined,
+        yScale: undefined,
+        points: undefined,
+      }
+    },
+    computed: {
+      width: (xScale) => xScale.range()[1],
+      height: (yScale) => yScale.range()[0],
+      segments: (points, xScale, yScale) => {
+        let previousPoint = points[0];
+        const remainingPoints = points.slice(1);
+        return remainingPoints.map((currentPoint, j) => {
+          const start = [
+            xScale(previousPoint[0]),
+            yScale(previousPoint[1])
+          ];
+          const end = [
+            xScale(currentPoint[0]),
+            yScale(currentPoint[1])
+          ];
+          const path = generateArrow(start[0], start[1], end[0], end[1], 3, 0, 0);
+          previousPoint = currentPoint;
+          return { path, start, end};
+        });
+      }
+    }
+  }
+
+  function generateArrow(x1, y1, x2, y2, flangeSize, padding1, padding2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    let multiplier1 = padding1 / length;
+    const dx1 = dx * multiplier1;
+    const dy1 = dy * multiplier1;
+
+    let multiplier2 = padding2 / length;
+    const dx2 = dx * multiplier2;
+    const dy2 = dy * multiplier2;
+
+    var px = y1 - y2;
+    var py = x2 - x1;
+    let plength = Math.sqrt(px * px + py * py);
+    let pmultiplier = flangeSize / plength;
+
+    const px1 = px * pmultiplier;
+    const py1 = py * pmultiplier;
+
+    const sx = dx * pmultiplier;
+    const sy = dy * pmultiplier;
+
+    const a1 = x1 + dx1;
+    const b1 = y1 + dy1;
+    const a2 = x2 - dx2;
+    const b2 = y2 - dy2;
+
+    return `
+      M${a1}, ${b1}
+      L${a2}, ${b2}
+    `;
+  }
+
+</script>
+
+<style>
+  path {
+    fill: none;
+    stroke-width: 1px;
+    stroke-opacity: 0.5;
+  }
+</style>
