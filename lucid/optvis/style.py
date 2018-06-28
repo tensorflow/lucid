@@ -35,8 +35,8 @@ class StyleLoss(object):
     Args:
       style_layers: List of tensors that are used to compute statistics that
         define a style.
-      ema_decay: Number in range [0.0 .. 1.0]. Loss function is computed against
-        moving averaged versions of style statistics if ema_decay > 0.0.
+      ema_decay: Number in range [0.0 .. 1.0] or None. Loss function is computed against
+        moving averaged versions of style statistics if ema_decay is not None.
         This is useful when each optimisation step only covers some part of
         the full output image.
       style_func: Function that is used to compute layer statistics.
