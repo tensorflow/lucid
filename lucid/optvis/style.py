@@ -17,6 +17,11 @@ def mean_l1_loss(g1, g2):
     return tf.reduce_mean(tf.abs(g1-g2))
 
 
+def mean_l2_loss(g1, g2):
+  with tf.name_scope('mean_l2_loss'):
+    return tf.sqrt(tf.reduce_mean(tf.square(g1 - g2)))
+
+
 class StyleLoss(object):
   """Image Style Loss.
   
