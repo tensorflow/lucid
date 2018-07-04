@@ -53,6 +53,20 @@ def lookat(eye, target=[0, 0, 0], up=[0, 1, 0]):
   return M
 
 
+def sample_view(min_dist, max_dist=None):
+  '''Sample random camera position.
+  
+  Sample origin directed camera position in given distance
+  range from the origin. ModelView matrix is returned.
+  '''
+  if max_dist is None:
+    max_dist = min_dist
+  dist = np.random.uniform(min_dist, max_dist)
+  eye = np.random.normal(size=3)
+  eye = meshutil.normalize(eye)*dist
+  return meshutil.lookat(eye)
+
+
 def homotrans(M, p):
   p = np.asarray(p)
   if p.shape[-1] == M.shape[1]-1:
@@ -142,3 +156,13 @@ def load_obj(fn):
   if np.any(normal_idx):
     outputs['normal'] = _unify_rows(normal)[normal_idx]
   return outputs
+
+
+def normalize_mesh(mesh):
+  '''Scale mesh to fit into -1..1 cube'''
+  mesh = dict(mesh)
+  pos = mesh['position'][:,:3].copy()
+  pos -= (pos.max(0)+pos.min(0)) / 2.0
+  pos /= np.abs(pos).max()
+  mesh['position'] = pos
+  return mesh
