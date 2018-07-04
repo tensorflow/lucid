@@ -187,8 +187,8 @@ def textured_mesh(mesh, texture, background='0xffffff'):
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
-    camera.position.z = 1.5;
+    camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.z = 3.3;
     scene.add(camera);
 
     controls = new THREE.OrbitControls( camera );
