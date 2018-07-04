@@ -63,8 +63,8 @@ def sample_view(min_dist, max_dist=None):
     max_dist = min_dist
   dist = np.random.uniform(min_dist, max_dist)
   eye = np.random.normal(size=3)
-  eye = meshutil.normalize(eye)*dist
-  return meshutil.lookat(eye)
+  eye = normalize(eye)*dist
+  return lookat(eye)
 
 
 def homotrans(M, p):
