@@ -19,16 +19,20 @@ and flexible abstractions that make it very easy to explore new research
 directions.
 
 
-<!--
-# Dive In with Colab Notebooks
+# Special consideration for TensorFlow dependency
 
-Start visualizing neural networks ***with no setup***. The following notebooks
-run in your browser.
--->
+Lucid requires `tensorflow`, but does not explicitly depend on it in `setup.py`. Due to the way [tensorflow is packaged](https://github.com/tensorflow/tensorflow/issues/7166) and some deficiencies in how pip handles dependencies, specifying either the GPU or the non-GPU version of tensorflow will conflict with the version of tensorflow your already may have installed.
 
+If you don't want to add your own dependency on tensorflow, you can specify which tensorflow version you want lucid to install by selecting from `extras_require` like such: `lucid[tf]` or `lucid[tf_gpu]`.
 
+**In actual practice, we recommend you use your already installed version of tensorflow.**
 
 # Notebooks
+
+Start visualizing neural networks ***with no setup***. The following notebooks
+run right from your browser, thanks to [Colaboratory](https://colab.research.google.com/notebooks/welcome.ipynb). It's a Jupyter notebook environment that requires no setup to use and runs entirely in the cloud.
+
+You can run the notebooks on your local machine, too. Clone the repository and find them in the `notebooks` subfolder. You will need to run a local instance of the [Jupyter notebook environment](http://jupyter.org/install.html) to execute them.
 
 ## Tutorial Notebooks
 

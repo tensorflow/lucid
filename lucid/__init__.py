@@ -21,4 +21,6 @@ CRITICAL	The program itself may be unable to continue running.
 """
 
 import logging
+
 logging.basicConfig(level=logging.WARN)
+del logging

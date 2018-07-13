@@ -18,7 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 from setuptools import setup, find_packages
 
-version = '0.1.0'
+version = '0.2.0'
 
 test_deps = [
   'future',
@@ -30,6 +30,8 @@ test_deps = [
 
 extras = {
   'test': test_deps,
+  'tf': ['tensorflow>=1.0.0'],
+  'tf_gpu': ['tensorflow-gpu>=1.0.0'],
 }
 
 setup(
@@ -47,15 +49,14 @@ setup(
   keywords = ['tensorflow', 'tensor', 'machine learning', 'neural networks',
     'convolutional neural networks', 'feature visualization', 'optimization'],
   install_requires = [
-    'future',
-    'decorator',
-    'tensorflow',
-    'scikit-learn',
     'numpy',
     'scipy',
-    'pillow',
-    'pyopengl',
+    'scikit-learn',
     'ipython'
+    'pillow',
+    'future',
+    'decorator',
+    'pyopengl',
   ],
   tests_require = test_deps,
   extras_require = extras,
