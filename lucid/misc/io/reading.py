@@ -44,7 +44,7 @@ log = logging.getLogger(__name__)
 # Public functions
 
 
-def read(url, encoding=None, cache=None):
+def read(url, encoding=None, cache=None, mode='rb'):
   """Read from any URL.
 
   Internally differentiates between URLs supported by tf.gfile, such as URLs
@@ -61,7 +61,7 @@ def read(url, encoding=None, cache=None):
   Returns:
     All bytes form the specified resource, or a decoded string of those.
   """
-  with read_handle(url, cache) as handle:
+  with read_handle(url, cache, mode=mode) as handle:
     data = handle.read()
 
   if encoding:
@@ -71,7 +71,7 @@ def read(url, encoding=None, cache=None):
 
 
 @contextmanager
-def read_handle(url, cache=None):
+def read_handle(url, cache=None, mode='rb'):
   """Read from any URL with a file handle.
 
   Use this to get a handle to a file rather than eagerly load the data:
@@ -100,14 +100,14 @@ def read_handle(url, cache=None):
     log.debug("Cache not specified, enabling because resource is remote.")
 
   if cache:
-    handle = _read_and_cache(url)
+    handle = _read_and_cache(url, mode=mode)
   else:
     if scheme in ('http', 'https'):
-      handle = _handle_web_url(url)
+      handle = _handle_web_url(url, mode=mode)
     elif scheme == 'gs':
-      handle = _handle_gcs_url(url)
+      handle = _handle_gcs_url(url, mode=mode)
     else:
-      handle = _handle_gfile(url)
+      handle = _handle_gfile(url, mode=mode)
 
   yield handle
   handle.close()
@@ -120,16 +120,16 @@ def _handle_gfile(url, mode='rb'):
   return gfile.Open(url, mode)
 
 
-def _handle_web_url(url):
+def _handle_web_url(url, mode='r'):
   return request.urlopen(url)
 
 
-def _handle_gcs_url(url):
+def _handle_gcs_url(url, mode='r'):
   # TODO: transparently allow authenticated access through storage API
   _, resource_name = url.split('://')
   base_url = 'https://storage.googleapis.com/'
   url = urljoin(base_url, resource_name)
-  return _handle_web_url(url)
+  return _handle_web_url(url, mode=mode)
 
 
 # Helper Functions
@@ -142,19 +142,22 @@ def _is_remote(scheme):
 RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
 
 
-def _read_and_cache(url):
-  local_name = RESERVED_PATH_CHARS.sub('_', url)
-  local_path = os.path.join(gettempdir(), local_name)
+def local_cache_path(remote_url):
+  local_name = RESERVED_PATH_CHARS.sub('_', remote_url)
+  return os.path.join(gettempdir(), local_name)
+
+def _read_and_cache(url, mode='rb'):
+  local_path = local_cache_path(url)
   if os.path.exists(local_path):
     log.info("Found cached file '%s'.", local_path)
     return _handle_gfile(local_path)
   else:
     log.info("Caching URL '%s' locally at '%s'.", url, local_path)
-    with write_handle(local_path, 'wb') as output, read_handle(url, cache=False) as input:
+    with write_handle(local_path, 'wb') as output, read_handle(url, cache=False, mode='rb') as input:
       for chunk in _file_chunk_iterator(input):
         output.write(chunk)
     gc.collect()
-    return _handle_gfile(local_path)
+    return _handle_gfile(local_path, mode=mode)
 
 
 from functools import partial

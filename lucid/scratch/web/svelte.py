@@ -53,7 +53,7 @@ def SvelteComponent(name, path):
   elif path[-5:] == ".html":
     print("Trying to build svelte component from html...")
     js_path = build_svelte(path)
-  js_content = read(js_path)
+  js_content = read(js_path, mode='r')
   def inner(data):
     id_str = name + "_" + str(uuid.uuid4())
     html = _template \
