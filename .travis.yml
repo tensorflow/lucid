@@ -5,6 +5,7 @@ python:
 install:
   - pip install -U pip wheel
   - pip install python-coveralls
+  - pip install tensorflow
   - pip install tox-travis
 script:
   - tox
