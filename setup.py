@@ -18,7 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 from setuptools import setup, find_packages
 
-version = "0.2.1"
+version = "0.2.2"
 
 test_deps = ["future", "twine", "pytest", "pytest-mock", "python-coveralls"]
 
@@ -56,7 +56,8 @@ setup(
         "numpy",
         "scipy",
         "scikit-learn",
-        "ipython" "pillow",
+        "ipython",
+        "pillow",
         "future",
         "decorator",
         "pyopengl",
