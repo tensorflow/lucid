@@ -18,3 +18,4 @@ from lucid.optvis.param.lowres import lowres_tensor
 from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import naive, fft_image, laplacian_pyramid
 from lucid.optvis.param.random import image_sample
+from lucid.optvis.param.cppn import cppn
