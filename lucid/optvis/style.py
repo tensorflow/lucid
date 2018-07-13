@@ -50,10 +50,16 @@ class StyleLoss(object):
     """
     self.input_grams = [style_func(s) for s in style_layers]
     self.ema = None
+    
     if ema_decay is not None:
+      # creating moving average versions of input Gram matrices
       self.ema = tf.train.ExponentialMovingAverage(decay=ema_decay)
       update_ema_op = self.ema.apply(self.input_grams)
+      # averages get updated before evaluation of effective_grams
       with tf.control_dependencies([update_ema_op]):
+        # Using stop_gradient trick to substitute each Gram matrix with its
+        # moving avarage before style loss computation, but still propagate
+        # loss gradients to the input.
         self.effective_grams = [g + tf.stop_gradient(self.ema.average(g)-g)
                                 for g in self.input_grams]
     else:
