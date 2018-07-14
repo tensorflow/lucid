@@ -4,11 +4,12 @@
 
 <!--*DeepDream, but sane. Home of cats, dreams, and interpretable neural networks.*-->
 
-[![PyPI](https://img.shields.io/pypi/status/Lucid.svg)]()
-![Build status](https://travis-ci.org/tensorflow/lucid.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/tensorflow/lucid/badge.svg?branch=master)](https://coveralls.io/github/tensorflow/lucid?branch=master)
-[![PyPI](https://img.shields.io/pypi/pyversions/Lucid.svg)]()
-[![PyPI version](https://badge.fury.io/py/Lucid.svg)](https://badge.fury.io/py/Lucid)
+[![PyPI project status](https://img.shields.io/pypi/status/Lucid.svg)]()
+[![Travis build status](https://img.shields.io/travis/tensorflow/lucid.svg)](https://travis-ci.org/tensorflow/lucid)
+[![Code coverage](https://img.shields.io/coveralls/github/tensorflow/lucid.svg)](https://coveralls.io/github/tensorflow/lucid)
+[![Supported Python version](https://img.shields.io/pypi/pyversions/Lucid.svg)]()
+[![PyPI release version](https://img.shields.io/pypi/v/Lucid.svg)](https://pypi.org/project/Lucid/)
+
 
 Lucid is a collection of infrastructure and tools for research in neural
 network interpretability.
@@ -23,7 +24,7 @@ directions.
 
 Lucid requires `tensorflow`, but does not explicitly depend on it in `setup.py`. Due to the way [tensorflow is packaged](https://github.com/tensorflow/tensorflow/issues/7166) and some deficiencies in how pip handles dependencies, specifying either the GPU or the non-GPU version of tensorflow will conflict with the version of tensorflow your already may have installed.
 
-If you don't want to add your own dependency on tensorflow, you can specify which tensorflow version you want lucid to install by selecting from `extras_require` like such: `lucid[tf]` or `lucid[tf_gpu]`.
+If you don't want to add your own dependency on tensorflow, you can specify which tensorflow version you want lucid to install by selecting from `extras_require` like so: `lucid[tf]` or `lucid[tf_gpu]`.
 
 **In actual practice, we recommend you use your already installed version of tensorflow.**
 
