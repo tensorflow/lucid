@@ -85,7 +85,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 <img src="https://storage.googleapis.com/lucid-static/building-blocks/stickers/colab-neuron-groups.png" width="500" alt=""></img>
 </a>
 
-<!--
+
 ## Differentiable Image Parameterizations Notebooks
 *Notebooks corresponding to the [Differentiable Image Parameterizations](https://distill.pub/2018/differentiable-parameterizations/) article*
 
@@ -112,7 +112,6 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/differentiable-parameterizations/style_transfer_3d.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/differentiable-parameterizations/stickers/colab-3d-style.png" width="500" alt=""></img>
 </a>
--->
 
 
 ## Miscellaneous Notebooks
