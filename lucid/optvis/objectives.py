@@ -45,7 +45,7 @@ class Objective(object):
   For example, suppose you want to optimize 20% for mixed4a:20 and 80% for
   mixed4a:21. Then you could use:
 
-    objetive = 0.2 * channel("mixed4a", 20) + 0.8 * channel("mixed4a", 0.8)
+    objetive = 0.2 * channel("mixed4a", 20) + 0.8 * channel("mixed4a", 21)
 
   Under the hood, we think of objectives as functions of the form:
 
