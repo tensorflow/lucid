@@ -19,6 +19,9 @@ import tensorflow as tf
 from lucid.modelzoo.vision_base import Model
 
 
+IMAGENET_MEAN = np.asarray([123.68, 116.779, 103.939])
+
+
 def populate_inception_bottlenecks(scope):
   """Add Inception bottlenecks and their pre-Relu versions to the graph."""
   graph = tf.get_default_graph()
@@ -35,6 +38,10 @@ def populate_inception_bottlenecks(scope):
 
 
 class InceptionV1(Model):
+  """InceptionV1 (or 'GoogLeNet')
+  
+  https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  """
   model_path = 'gs://modelzoo/InceptionV1.pb'
   labels_path = 'gs://modelzoo/InceptionV1-labels.txt'
   image_shape = [224, 224, 3]
@@ -43,3 +50,42 @@ class InceptionV1(Model):
 
   def post_import(self, scope):
     populate_inception_bottlenecks(scope)
+
+
+class AlexNet_caffe(Model):
+  """Original AlexNet weights ported to TF.
+  
+  AlexNet is the breakthrough vision model from Krizhevsky, et al (2012):
+  https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
+  This implementation is a caffe re-implementation:
+  http://www.cs.toronto.edu/~guerzhoy/tf_alexnet/
+  It was converted to TensorFlow by this GitHub project:
+  https://github.com/huanzhang12/tensorflow-alexnet-model
+  """
+  
+  # The authors of code to convert AlexNet to TF host weights at
+  # http://jaina.cs.ucdavis.edu/datasets/adv/imagenet/alexnet_frozen.pb
+  # but it seems more polite and reliable to host our own.
+  model_path  = 'gs://modelzoo/AlexNet.pb'
+  labels_path = 'gs://modelzoo/ImageNet_labels_caffe.txt'
+  image_shape = [227, 227, 3]
+  image_value_range = (-IMAGENET_MEAN, 255-IMAGENET_MEAN)
+  input_name = 'Placeholder'
+
+
+class InceptionV3_slim(Model):
+  """InceptionV3 as implemented by the TensorFlow slim framework.
+  
+  InceptionV3 was introduced by Szegedy, et al (2015) 
+  https://arxiv.org/pdf/1512.00567.pdf
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/InceptionV3_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt'
+  image_shape = [299, 299, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
