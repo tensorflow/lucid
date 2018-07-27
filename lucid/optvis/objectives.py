@@ -171,18 +171,18 @@ def channel(layer, n_channel, batch=None):
 
 
 def _dot(x, y):
-  return tf.reduce_mean(x * y, -1)
+  return tf.reduce_sum(x * y, -1)
 
 
 def _dot_cossim(x, y, cossim_pow=0):
   eps = 1e-4
   xy_dot = _dot(x, y)
-  if cossim_pow == 0: return xy_dot
+  if cossim_pow == 0: return tf.reduce_mean(xy_dot)
   x_mags = tf.sqrt(_dot(x,x))
   y_mags = tf.sqrt(_dot(y,y))
   cossims = xy_dot / (eps + x_mags ) / (eps + y_mags)
   floored_cossims = tf.maximum(0.1, cossims)
-  return xy_dot * floored_cossims**cossim_pow
+  return tf.reduce_mean(xy_dot * floored_cossims**cossim_pow)
 
 
 @wrap_objective
