@@ -53,9 +53,13 @@ class InceptionV1(Model):
 
 
 class InceptionV1_caffe(Model):
-  """InceptionV1 (or 'GoogLeNet')
+  """InceptionV1 (or 'GoogLeNet') as reimplemented in caffe.
   
+  This model is a reimplementation of GoogLeNet:
   https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  reimplemented in caffe by BVLC / Sergio Guadarrama:
+  https://github.com/BVLC/caffe/tree/master/models/bvlc_googlenet
+  and then ported to TensorFlow using caffe-tensorflow.
   """
   model_path = 'gs://modelzoo/InceptionV1_caffe.pb'
   labels_path = 'gs://modelzoo/InceptionV1_caffe-labels.txt'
@@ -67,11 +71,34 @@ class InceptionV1_caffe(Model):
 class InceptionV1_caffe_Places205(Model):
   """InceptionV1 (or 'GoogLeNet') trained on Places205.
   
+  This model is a caffe reimplementation of GoogLeNet:
   https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  trained on the MIT Places205 dataset, retrieved here:
+  http://places.csail.mit.edu/downloadCNN.html
+  and then ported to TensorFlow using caffe-tensorflow.
   """
   model_path = 'gs://modelzoo/InceptionV1_caffe_places205.pb'
   labels_path = 'gs://modelzoo/InceptionV1_caffe_places205-labels.txt'
   image_shape = [224, 224, 3]
+  # range based on emperical testing
+  image_value_range = (-1,1)
+  input_name = 'data'
+
+
+class InceptionV1_caffe_Places365(Model):
+  """InceptionV1 (or 'GoogLeNet') trained on Places365.
+  
+  This model is a caffe reimplementation of GoogLeNet:
+  https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  trained on the MIT Places365 dataset, retrieved here:
+  https://github.com/CSAILVision/places365
+  and then ported to TensorFlow using caffe-tensorflow.
+  """
+  model_path = 'gs://modelzoo/InceptionV1_caffe_places365.pb'
+  # TODO - check labels match predictions
+  labels_path = 'gs://modelzoo/InceptionV1_caffe_places365-labels.txt'
+  image_shape = [224, 224, 3]
+  # range based on emperical testing
   image_value_range = (-1,1)
   input_name = 'data'
 
