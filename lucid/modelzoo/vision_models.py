@@ -52,6 +52,30 @@ class InceptionV1(Model):
     populate_inception_bottlenecks(scope)
 
 
+class InceptionV1_caffe(Model):
+  """InceptionV1 (or 'GoogLeNet')
+  
+  https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  """
+  model_path = 'gs://modelzoo/InceptionV1_caffe.pb'
+  labels_path = 'gs://modelzoo/InceptionV1_caffe-labels.txt'
+  image_shape = [224, 224, 3]
+  image_value_range = (-IMAGENET_MEAN, 255-IMAGENET_MEAN)
+  input_name = 'data'
+
+
+class InceptionV1_caffe_Places205(Model):
+  """InceptionV1 (or 'GoogLeNet') trained on Places205.
+  
+  https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  """
+  model_path = 'gs://modelzoo/InceptionV1_caffe_places205.pb'
+  labels_path = 'gs://modelzoo/InceptionV1_caffe_places205-labels.txt'
+  image_shape = [224, 224, 3]
+  image_value_range = (-1,1)
+  input_name = 'data'
+
+
 class AlexNet_caffe(Model):
   """Original AlexNet weights ported to TF.
   
