@@ -99,7 +99,7 @@ class InceptionV1_caffe_Places365(Model):
   labels_path = 'gs://modelzoo/InceptionV1_caffe_places365-labels.txt'
   image_shape = [224, 224, 3]
   # range based on emperical testing
-  image_value_range = (-1,1)
+  image_value_range = (-IMAGENET_MEAN, 255-IMAGENET_MEAN)
   input_name = 'data'
 
 
