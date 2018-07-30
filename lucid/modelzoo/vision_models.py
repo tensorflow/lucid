@@ -16,11 +16,13 @@
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
+import numpy as np
+
 from lucid.modelzoo.vision_base import Model
 
 
 IMAGENET_MEAN = np.asarray([123.68, 116.779, 103.939])
-
+IMAGENET_MEAN_BGR = np.asarray([103.939, 116.779, 123.68])
 
 def populate_inception_bottlenecks(scope):
   """Add Inception bottlenecks and their pre-Relu versions to the graph."""
@@ -273,4 +275,44 @@ class ResnetV2_152_slim(Model):
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class VGG16_caffe(Model):
+  """VGG16 model used in ImageNet ILSVRC-2014, ported from caffe.
+
+  VGG16 was introduced by Simonyan & Zisserman (2014):
+  https://arxiv.org/pdf/1409.1556.pdf
+  http://www.robots.ox.ac.uk/~vgg/research/very_deep/
+  as the Oxford Visual Geometry Group's submission for the ImageNet ILSVRC-2014
+  contest. We download their caffe trained model from
+  https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
+  and convert it with caffe-tensorflow.
+  """
+  #TODO -- this model uses a BGR (!!!!!!) channel format!
+  #        what do we do about that?
+  model_path = 'gs://modelzoo/VGG16_caffe.pb'
+  labels_path = 'gs://modelzoo/InceptionV1_caffe-labels.txt'
+  image_shape = [224, 224, 3]
+  image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
+  input_name = 'input'
+
+
+class VGG19_caffe(Model):
+  """VGG16 model used in ImageNet ILSVRC-2014, ported from caffe.
+
+  VGG19 was introduced by Simonyan & Zisserman (2014):
+  https://arxiv.org/pdf/1409.1556.pdf
+  http://www.robots.ox.ac.uk/~vgg/research/very_deep/
+  as the Oxford Visual Geometry Group's submission for the ImageNet ILSVRC-2014
+  contest. We download their caffe trained model from
+  https://gist.github.com/ksimonyan/3785162f95cd2d5fee77#file-readme-md
+  and convert it with caffe-tensorflow.
+  """
+  #TODO -- this model uses a BGR (!!!!!!) channel format!
+  #        what do we do about that?
+  model_path = 'gs://modelzoo/VGG19_caffe.pb'
+  labels_path = 'gs://modelzoo/InceptionV1_caffe-labels.txt'
+  image_shape = [224, 224, 3]
+  image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'input'
