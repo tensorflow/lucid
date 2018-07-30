@@ -124,18 +124,130 @@ class AlexNet_caffe(Model):
   input_name = 'Placeholder'
 
 
+class InceptionV1_slim(Model):
+  """InceptionV1 as implemented by the TensorFlow slim framework.
+
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+
+  model_path  = 'gs://modelzoo/InceptionV1_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [-1, 224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class InceptionV2_slim(Model):
+  """InceptionV2 as implemented by the TensorFlow slim framework.
+
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+
+  model_path  = 'gs://modelzoo/InceptionV2_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [-1, 224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
 class InceptionV3_slim(Model):
   """InceptionV3 as implemented by the TensorFlow slim framework.
-  
+
   InceptionV3 was introduced by Szegedy, et al (2015) 
   https://arxiv.org/pdf/1512.00567.pdf
   This function provides the pre-trained reimplementation from TF slim:
   https://github.com/tensorflow/models/tree/master/research/slim
   """
-  
+
   model_path  = 'gs://modelzoo/InceptionV3_slim.pb'
   labels_path = 'gs://modelzoo/InceptionV1-labels.txt'
   image_shape = [299, 299, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class InceptionV4_slim(Model):
+  """InceptionV4 as implemented by the TensorFlow slim framework.
+
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+
+  model_path  = 'gs://modelzoo/InceptionV4_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [-1, 299, 299, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class InceptionResnetV2_slim(Model):
+  """InceptionResnetV2 as implemented by the TensorFlow slim framework.
+
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+
+  model_path  = 'gs://modelzoo/InceptionResnetV2_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [-1, 299, 299, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class ResnetV2_50_slim(Model):
+  """ResnetV2_50 as implemented by the TensorFlow slim framework.
+
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+
+  model_path  = 'gs://modelzoo/ResnetV2_50_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [-1, 224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class ResnetV2_101_slim(Model):
+  """ResnetV2_101 as implemented by the TensorFlow slim framework.
+
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+
+  model_path  = 'gs://modelzoo/ResnetV2_101_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [-1, 224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class ResnetV2_152_slim(Model):
+  """ResnetV2_152 as implemented by the TensorFlow slim framework.
+
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+
+  model_path  = 'gs://modelzoo/ResnetV2_152_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [-1, 224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
