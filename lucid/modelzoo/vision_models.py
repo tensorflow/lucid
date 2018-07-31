@@ -21,10 +21,11 @@ import numpy as np
 from lucid.modelzoo.vision_base import Model
 
 
-IMAGENET_MEAN = np.asarray([123.68, 116.779, 103.939])
-IMAGENET_MEAN_BGR = np.asarray([103.939, 116.779, 123.68])
+IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
+IMAGENET_MEAN_BGR = np.flip(IMAGENET_MEAN, 0)
 
-def populate_inception_bottlenecks(scope):
+
+def _populate_inception_bottlenecks(scope):
   """Add Inception bottlenecks and their pre-Relu versions to the graph."""
   graph = tf.get_default_graph()
   for op in graph.get_operations():
@@ -41,7 +42,7 @@ def populate_inception_bottlenecks(scope):
 
 class InceptionV1(Model):
   """InceptionV1 (or 'GoogLeNet')
-  
+
   https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
   """
   model_path = 'gs://modelzoo/InceptionV1.pb'
@@ -51,8 +52,8 @@ class InceptionV1(Model):
   input_name = 'input:0'
 
   def post_import(self, scope):
-    populate_inception_bottlenecks(scope)
-    
+    _populate_inception_bottlenecks(scope)
+
   layers = [
      {'type': 'conv', 'name': 'conv2d0', 'size': 64},
      {'type': 'conv', 'name': 'conv2d1', 'size': 64},
@@ -78,7 +79,7 @@ class InceptionV1(Model):
 
 class InceptionV1_caffe(Model):
   """InceptionV1 (or 'GoogLeNet') as reimplemented in caffe.
-  
+
   This model is a reimplementation of GoogLeNet:
   https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
   reimplemented in caffe by BVLC / Sergio Guadarrama:
@@ -111,7 +112,7 @@ class InceptionV1_caffe(Model):
 
 class InceptionV1_caffe_Places205(Model):
   """InceptionV1 (or 'GoogLeNet') trained on Places205.
-  
+
   This model is a caffe reimplementation of GoogLeNet:
   https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
   trained on the MIT Places205 dataset, retrieved here:
@@ -144,7 +145,7 @@ class InceptionV1_caffe_Places205(Model):
 
 class InceptionV1_caffe_Places365(Model):
   """InceptionV1 (or 'GoogLeNet') trained on Places365.
-  
+
   This model is a caffe reimplementation of GoogLeNet:
   https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
   trained on the MIT Places365 dataset, retrieved here:
@@ -179,7 +180,7 @@ class InceptionV1_caffe_Places365(Model):
 
 class AlexNet_caffe(Model):
   """Original AlexNet weights ported to TF.
-  
+
   AlexNet is the breakthrough vision model from Krizhevsky, et al (2012):
   https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
   This implementation is a caffe re-implementation:
@@ -187,7 +188,7 @@ class AlexNet_caffe(Model):
   It was converted to TensorFlow by this GitHub project:
   https://github.com/huanzhang12/tensorflow-alexnet-model
   """
-  
+
   # The authors of code to convert AlexNet to TF host weights at
   # http://jaina.cs.ucdavis.edu/datasets/adv/imagenet/alexnet_frozen.pb
   # but it seems more polite and reliable to host our own.
@@ -210,7 +211,7 @@ class AlexNet_caffe(Model):
 
 class InceptionV1_slim(Model):
   """InceptionV1 as implemented by the TensorFlow slim framework.
-  
+
   InceptionV1 was introduced by Szegedy, et al (2014):
   https://arxiv.org/pdf/1409.4842v1.pdf
   This function provides the pre-trained reimplementation from TF slim:
@@ -225,7 +226,7 @@ class InceptionV1_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  
+
   layers = [
      {'type': 'conv', 'name': 'InceptionV1/InceptionV1/Conv2d_1a_7x7/Relu', 'size': 64},
      {'type': 'conv', 'name': 'InceptionV1/InceptionV1/Conv2d_2b_1x1/Relu', 'size': 64},
@@ -245,7 +246,7 @@ class InceptionV1_slim(Model):
 
 class InceptionV2_slim(Model):
   """InceptionV2 as implemented by the TensorFlow slim framework.
-  
+
   InceptionV2 was introduced by Ioffe & Szegedy (2015):
   https://arxiv.org/pdf/1502.03167.pdf
   This function provides the pre-trained reimplementation from TF slim:
@@ -282,7 +283,7 @@ class InceptionV2_slim(Model):
 class InceptionV3_slim(Model):
   """InceptionV3 as implemented by the TensorFlow slim framework.
 
-  InceptionV3 was introduced by Szegedy, et al (2015) 
+  InceptionV3 was introduced by Szegedy, et al (2015)
   https://arxiv.org/pdf/1512.00567.pdf
   This function provides the pre-trained reimplementation from TF slim:
   https://github.com/tensorflow/models/tree/master/research/slim
@@ -320,7 +321,7 @@ class InceptionV3_slim(Model):
 
 class InceptionV4_slim(Model):
   """InceptionV4 as implemented by the TensorFlow slim framework.
-  
+
   InceptionV4 was introduced by Szegedy, et al (2016):
   https://arxiv.org/pdf/1602.07261.pdf
   This function provides the pre-trained reimplementation from TF slim:
@@ -365,7 +366,7 @@ class InceptionV4_slim(Model):
 
 class InceptionResnetV2_slim(Model):
   """InceptionResnetV2 as implemented by the TensorFlow slim framework.
-  
+
   InceptionResnetV2 was introduced in this paper by Szegedy, et al (2016):
   https://arxiv.org/pdf/1602.07261.pdf
   This function provides the pre-trained reimplementation from TF slim:
@@ -477,7 +478,7 @@ class InceptionResnetV2_slim(Model):
 
 class ResnetV2_50_slim(Model):
   """ResnetV2_50 as implemented by the TensorFlow slim framework.
-  
+
   ResnetV2_50 was introduced by He, et al (2016):
   https://arxiv.org/pdf/1603.05027.pdf
   This function provides the pre-trained reimplementation from TF slim:
@@ -521,7 +522,7 @@ class ResnetV2_50_slim(Model):
 
 class ResnetV2_101_slim(Model):
   """ResnetV2_101 as implemented by the TensorFlow slim framework.
-  
+
   ResnetV2_101 was introduced by He, et al (2016):
   https://arxiv.org/pdf/1603.05027.pdf
   This function provides the pre-trained reimplementation from TF slim:
@@ -582,7 +583,7 @@ class ResnetV2_101_slim(Model):
 
 class ResnetV2_152_slim(Model):
   """ResnetV2_152 as implemented by the TensorFlow slim framework.
-  
+
   ResnetV2_152 was introduced by He, et al (2016):
   https://arxiv.org/pdf/1603.05027.pdf
   This function provides the pre-trained reimplementation from TF slim:
