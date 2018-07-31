@@ -19,6 +19,7 @@ from os import path
 import tensorflow as tf
 from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
 from lucid.misc.io import load
+import lucid.misc.io.showing as showing
 
 class Model(object):
   """Base pretrained model importer."""
@@ -55,6 +56,8 @@ class Model(object):
 
   def import_graph(self, t_input=None, scope='import', forget_xy_shape=True):
     """Import model GraphDef into the current graph."""
+    if self.graph_def is None:
+      raise Exception("Model.import_graph(): Must load graph def before importing it.")
     graph = tf.get_default_graph()
     assert graph.unique_name(scope, False) == scope, (
         'Scope "%s" already exists. Provide explicit scope names when '
@@ -63,6 +66,11 @@ class Model(object):
     tf.import_graph_def(
         self.graph_def, {self.input_name: t_prep_input}, name=scope)
     self.post_import(scope)
+    
+  def show_graph(self):
+    if self.graph_def is None:
+      raise Exception("Model.show_graph(): Must load graph def before showing it.")
+    showing.graph(self.graph_def)
 
 
 class SerializedModel(Model):
