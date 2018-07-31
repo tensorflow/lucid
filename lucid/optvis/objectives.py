@@ -170,19 +170,34 @@ def channel(layer, n_channel, batch=None):
     return lambda T: tf.reduce_mean(T(layer)[batch, ..., n_channel])
 
 
+def _dot(x, y):
+  return tf.reduce_sum(x * y, -1)
+
+
+def _dot_cossim(x, y, cossim_pow=0):
+  eps = 1e-4
+  xy_dot = _dot(x, y)
+  if cossim_pow == 0: return tf.reduce_mean(xy_dot)
+  x_mags = tf.sqrt(_dot(x,x))
+  y_mags = tf.sqrt(_dot(y,y))
+  cossims = xy_dot / (eps + x_mags ) / (eps + y_mags)
+  floored_cossims = tf.maximum(0.1, cossims)
+  return tf.reduce_mean(xy_dot * floored_cossims**cossim_pow)
+
+
 @wrap_objective
-def direction(layer, vec, batch=None):
+def direction(layer, vec, batch=None, cossim_pow=0):
   """Visualize a direction"""
   if batch is None:
     vec = vec[None, None, None]
-    return lambda T: tf.reduce_mean(T(layer) * vec)
+    return lambda T: _dot_cossim(T(layer), vec)
   else:
     vec = vec[None, None]
-    return lambda T: tf.reduce_mean(T(layer)[batch] * vec)
+    return lambda T: _dot_cossim(T(layer)[batch], vec)
 
 
 @wrap_objective
-def direction_neuron(layer_name, vec, batch=None, x=None, y=None):
+def direction_neuron(layer_name, vec, batch=None, x=None, y=None, cossim_pow=0):
   """Visualize a single (x, y) position along the given direction"""
   def inner(T):
     layer = T(layer_name)
@@ -190,9 +205,9 @@ def direction_neuron(layer_name, vec, batch=None, x=None, y=None):
     x_ = shape[1] // 2 if x is None else x
     y_ = shape[2] // 2 if y is None else y
     if batch is None:
-      return tf.reduce_mean(layer[:, x_, y_] * vec[None])
+      return _dot_cossim(layer[:, x_, y_], vec[None], cossim_pow=cossim_pow)
     else:
-      return tf.reduce_mean(layer[batch, x_, y_] * vec)
+      return _dot_cossim(layer[batch, x_, y_], vec, cossim_pow=cossim_pow)
   return inner
 
 @wrap_objective
