@@ -3,15 +3,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 import tensorflow as tf
-from lucid.modelzoo.vision_models import InceptionV1
 from lucid.optvis import objectives, param, render, transform
-
-
-@pytest.fixture
-def inceptionv1():
-    model = InceptionV1()
-    model.load_graphdef()
-    return model
 
 
 @pytest.mark.slow
