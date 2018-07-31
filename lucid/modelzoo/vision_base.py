@@ -49,6 +49,8 @@ class Model(object):
       t_prep_input = tf.expand_dims(t_prep_input, 0)
     if forget_xy_shape:
       t_prep_input = forget_xy(t_prep_input)
+    if hasattr(self, "is_BGR") and self.is_BGR == True:
+      t_prep_input = tf.reverse(t_prep_input, [-1])
     lo, hi = self.image_value_range
     t_prep_input = lo + t_prep_input * (hi-lo)
     return t_input, t_prep_input
