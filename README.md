@@ -130,6 +130,11 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 * [The Building Blocks of Interpretability](https://distill.pub/2018/building-blocks/)
 * [Using Artiﬁcial Intelligence to Augment Human Intelligence](https://distill.pub/2017/aia/)
 * [Visualizing Representations: Deep Learning and Human Beings](http://colah.github.io/posts/2015-01-Visualizing-Representations/)
+* [Differentiable Image Parameterizations](https://distill.pub/2018/differentiable-parameterizations/)
+
+## Related Talks
+* [Lessons from a year of Distill ML Research](https://www.youtube.com/watch?v=jlZsgUZaIyY) (Shan Carter, OpenVisConf)
+* [Machine Learning for Visualization](https://www.youtube.com/watch?v=6n-kCYn0zxU) (Ian Johnson, OpenVisConf)
 
 <br>
 <br>
