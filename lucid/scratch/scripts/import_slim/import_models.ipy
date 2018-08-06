@@ -41,16 +41,20 @@ with open("weight_urls.txt") as wf, open("names.txt") as nf:
     !curl -sS {weight_url} --output {name}.tgz
     !tar xf {name}.tgz
     ckpt  = !find . | grep "ckpt$"
-    ckpt2 = !find . | grep ".ckpt.data"
+    ckpt2 = !find . | grep ".ckpt.index"
     ckpt = (ckpt+ckpt2)[0]
+    if ".index" in ckpt: ckpt = ckpt.replace(".index", "")
     !find .
-    !cp {ckpt} "model.ckpt"
-    print ">", ckpt, "-> model.ckpt"
+    print ">", ckpt
     
     print ""
     print "Exporting inference graph...."
-    !echo "{path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb"
-    !{path}/tf.sh {path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb
+    if "vgg" not in name and "resnet_v1" not in name:
+      !echo "{path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb"
+      !{path}/tf.sh {path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb
+    else:
+      !echo "{path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb --labels_offset=1"
+      !{path}/tf.sh {path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb --labels_offset=1
     
     
     info = get_model_info("model.pb")
@@ -68,8 +72,8 @@ with open("weight_urls.txt") as wf, open("names.txt") as nf:
     
     print ""
     print "Freezing variables into graph...."
-    !echo "{path}/freeze_graph.py --input_graph=model.pb --input_checkpoint=model.ckpt --input_binary=true --output_graph=frozen.pb --output_node_names={out_name}"
-    !{path}/tf.sh {path}/freeze_graph.py --input_graph=model.pb --input_checkpoint=model.ckpt --input_binary=true --output_graph=frozen.pb --output_node_names={out_name}
+    !echo "{path}/freeze_graph.py --input_graph=model.pb --input_checkpoint={ckpt} --input_binary=true --output_graph=frozen.pb --output_node_names={out_name}"
+    !{path}/tf.sh {path}/freeze_graph.py --input_graph=model.pb --input_checkpoint={ckpt} --input_binary=true --output_graph=frozen.pb --output_node_names={out_name}
     !cp frozen.pb {path}/frozen/{pretty_name}_slim.pb
 
     print ""

@@ -475,6 +475,268 @@ class InceptionResnetV2_slim(Model):
    ]
 
 
+class ResnetV1_50_slim(Model):
+  """ResnetV150 as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/ResnetV1_50_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+  
+  layers = [
+     {'type': 'conv', 'name': 'resnet_v1_50/conv1/Relu', 'size': 64} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block1/unit_1/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block1/unit_1/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block1/unit_2/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block1/unit_2/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block1/unit_3/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block1/unit_3/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_1/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_1/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_2/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_2/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_3/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_3/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_4/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block2/unit_4/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_1/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_1/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_2/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_2/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_3/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_3/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_4/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_4/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_5/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_5/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_6/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block3/unit_6/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block4/unit_1/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block4/unit_1/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block4/unit_2/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block4/unit_2/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block4/unit_3/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_50/block4/unit_3/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'dense', 'name': 'resnet_v1_50/predictions/Softmax', 'size': 1000} ,
+   ]
+
+
+class ResnetV1_101_slim(Model):
+  """ResnetV1101 as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/ResnetV1_101_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+  
+  layers = [
+     {'type': 'conv', 'name': 'resnet_v1_101/conv1/Relu', 'size': 64} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block1/unit_1/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block1/unit_1/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block1/unit_2/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block1/unit_2/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block1/unit_3/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block1/unit_3/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_1/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_1/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_2/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_2/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_3/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_3/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_4/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block2/unit_4/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_1/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_1/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_2/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_2/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_3/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_3/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_4/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_4/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_5/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_5/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_6/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_6/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_7/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_7/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_8/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_8/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_9/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_9/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_10/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_10/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_11/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_11/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_12/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_12/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_13/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_13/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_14/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_14/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_15/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_15/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_16/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_16/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_17/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_17/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_18/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_18/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_19/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_19/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_20/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_20/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_21/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_21/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_22/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_22/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_23/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block3/unit_23/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block4/unit_1/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block4/unit_1/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block4/unit_2/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block4/unit_2/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block4/unit_3/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_101/block4/unit_3/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'dense', 'name': 'resnet_v1_101/predictions/Softmax', 'size': 1000} ,
+   ]
+
+
+
+class ResnetV1_152_slim(Model):
+  """ResnetV1152 as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/ResnetV1_152_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+  
+  layers = [
+     {'type': 'conv', 'name': 'resnet_v1_152/conv1/Relu', 'size': 64} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block1/unit_1/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block1/unit_1/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block1/unit_2/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block1/unit_2/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block1/unit_3/bottleneck_v1/add', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block1/unit_3/bottleneck_v1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_1/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_1/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_2/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_2/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_3/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_3/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_4/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_4/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_5/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_5/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_6/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_6/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_7/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_7/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_8/bottleneck_v1/add', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block2/unit_8/bottleneck_v1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_1/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_1/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_2/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_2/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_3/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_3/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_4/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_4/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_5/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_5/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_6/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_6/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_7/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_7/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_8/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_8/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_9/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_9/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_10/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_10/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_11/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_11/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_12/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_12/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_13/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_13/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_14/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_14/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_15/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_15/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_16/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_16/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_17/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_17/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_18/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_18/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_19/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_19/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_20/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_20/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_21/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_21/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_22/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_22/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_23/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_23/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_24/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_24/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_25/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_25/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_26/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_26/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_27/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_27/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_28/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_28/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_29/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_29/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_30/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_30/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_31/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_31/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_32/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_32/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_33/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_33/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_34/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_34/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_35/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_35/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_36/bottleneck_v1/add', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block3/unit_36/bottleneck_v1/Relu', 'size': 1024} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block4/unit_1/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block4/unit_1/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block4/unit_2/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block4/unit_2/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block4/unit_3/bottleneck_v1/add', 'size': 2048} ,
+     {'type': 'conv', 'name': 'resnet_v1_152/block4/unit_3/bottleneck_v1/Relu', 'size': 2048} ,
+     {'type': 'dense', 'name': 'resnet_v1_152/predictions/Softmax', 'size': 1000} ,
+   ]
+  
+
 class ResnetV2_50_slim(Model):
   """ResnetV2_50 as implemented by the TensorFlow slim framework.
   
@@ -656,6 +918,195 @@ class ResnetV2_152_slim(Model):
      {'type': 'conv', 'name': 'resnet_v2_152/postnorm/Relu', 'size': 2048},
      {'type': 'dense', 'name': 'resnet_v2_152/predictions/Softmax', 'size': 1001},
    ]
+
+
+class VGG16_slim(Model):
+  """VGG16 as implemented by the TensorFlow slim framework.
+  
+  VGG16 was introduced by Simonyan & Zisserman (2014):
+  https://arxiv.org/pdf/1409.1556.pdf
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  We believe the weights were actually trained in caffe and ported.
+  """
+  
+  model_path  = 'gs://modelzoo/VGG16_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+  
+  layers = [
+     {'type': 'conv', 'name': 'vgg_16/conv1/conv1_1/Relu', 'size': 64} ,
+     {'type': 'conv', 'name': 'vgg_16/conv1/conv1_2/Relu', 'size': 64} ,
+     {'type': 'conv', 'name': 'vgg_16/conv2/conv2_1/Relu', 'size': 128} ,
+     {'type': 'conv', 'name': 'vgg_16/conv2/conv2_2/Relu', 'size': 128} ,
+     {'type': 'conv', 'name': 'vgg_16/conv3/conv3_1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'vgg_16/conv3/conv3_2/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'vgg_16/conv3/conv3_3/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'vgg_16/conv4/conv4_1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_16/conv4/conv4_2/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_16/conv4/conv4_3/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_16/conv5/conv5_1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_16/conv5/conv5_2/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_16/conv5/conv5_3/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_16/fc6/Relu', 'size': 4096} ,
+     {'type': 'conv', 'name': 'vgg_16/fc7/Relu', 'size': 4096} ,
+   ]
+
+
+class VGG19_slim(Model):
+  """VGG19 as implemented by the TensorFlow slim framework.
+  
+  VGG19 was introduced by Simonyan & Zisserman (2014):
+  https://arxiv.org/pdf/1409.1556.pdf
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  We believe the weights were actually trained in caffe and ported.
+  """
+  
+  model_path  = 'gs://modelzoo/VGG19_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+  
+  layers = [
+     {'type': 'conv', 'name': 'vgg_19/conv1/conv1_1/Relu', 'size': 64} ,
+     {'type': 'conv', 'name': 'vgg_19/conv1/conv1_2/Relu', 'size': 64} ,
+     {'type': 'conv', 'name': 'vgg_19/conv2/conv2_1/Relu', 'size': 128} ,
+     {'type': 'conv', 'name': 'vgg_19/conv2/conv2_2/Relu', 'size': 128} ,
+     {'type': 'conv', 'name': 'vgg_19/conv3/conv3_1/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'vgg_19/conv3/conv3_2/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'vgg_19/conv3/conv3_3/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'vgg_19/conv3/conv3_4/Relu', 'size': 256} ,
+     {'type': 'conv', 'name': 'vgg_19/conv4/conv4_1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/conv4/conv4_2/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/conv4/conv4_3/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/conv4/conv4_4/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/conv5/conv5_1/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/conv5/conv5_2/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/conv5/conv5_3/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/conv5/conv5_4/Relu', 'size': 512} ,
+     {'type': 'conv', 'name': 'vgg_19/fc6/Relu', 'size': 4096} ,
+     {'type': 'conv', 'name': 'vgg_19/fc7/Relu', 'size': 4096} ,
+   ]
+
+
+class MobilenetV1_slim(Model):
+  """MobilenetV1 as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/MobilenetV1_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class MobilenetV1_050_slim(Model):
+  """MobilenetV1050 as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/MobilenetV1050_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class MobilenetV1_025_slim(Model):
+  """MobilenetV1025 as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/MobilenetV1025_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class NasnetMobile_slim(Model):
+  """NasnetMobile as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/NasnetMobile_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class NasnetLarge_slim(Model):
+  """NasnetLarge as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/NasnetLarge_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [331, 331, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class PnasnetLarge_slim(Model):
+  """PnasnetLarge as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/PnasnetLarge_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [331, 331, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
+
+
+class PnasnetMobile_slim(Model):
+  """PnasnetMobile as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  """
+  
+  model_path  = 'gs://modelzoo/PnasnetMobile_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = [224, 224, 3]
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = 'input'
 
 
 class VGG16_caffe(Model):
