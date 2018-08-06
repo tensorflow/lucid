@@ -38,7 +38,7 @@ optvis aims to be very easy to use for simple cases. For example, visualizing a
 single neuron takes only one line:
 
 ```python
-_ = render_vis(model, "mixed4a_pre_relu:499")
+_ = render.render_vis(model, "mixed4a_pre_relu:499")
 ```
 
 *Note that `render_vis()` creates and then destroys a new session/graph, so that
@@ -48,7 +48,7 @@ This is equivelant to the slightly longer objective description:
 
 ```python
 obj = objectives.channel("mixed4a_pre_relu", 2)
-render_vis(model, obj)
+render.render_vis(model, obj)
 ```
 
 Visualizing a pair of neurons:
@@ -56,7 +56,7 @@ Visualizing a pair of neurons:
 ```python
 channel = lambda n: objectives.channel("mixed4a_pre_relu", n)
 obj = channel(2) + channel(3)
-render_vis(model, obj)
+render.render_vis(model, obj)
 ```
 
 Using a different paramaterization:
@@ -64,7 +64,7 @@ Using a different paramaterization:
 ```python
 obj = objectives.channel("mixed4a_pre_relu", 2)
 param_f = lambda: param.image(128, fft=False, decorrelate=False)
-render_vis(model, obj, param_f)
+render.render_vis(model, obj, param_f)
 ```
 
 Using a different optimizer:
@@ -72,7 +72,7 @@ Using a different optimizer:
 ```python
 obj = objectives.channel("mixed4a_pre_relu", 2)
 opt = tf.train.AdamOptimizer()
-render_vis(model, obj, optimizer=opt)
+render.render_vis(model, obj, optimizer=opt)
 ```
 
 <!--
@@ -86,7 +86,7 @@ param_f = lambda: tf.concat([
     param.rgb_sigmoid(param.laplacian_pyramid([1, 128, 128, 3])/2.),
     param.fancy_colors(param.laplacian_pyramid([1, 128, 128, 8])/2./1.3),
 ], 0)
-render_vis(model, obj, param_f)
+render.render_vis(model, obj, param_f)
 ```
 -->
 

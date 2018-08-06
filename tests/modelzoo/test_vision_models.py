@@ -1,30 +1,22 @@
 from __future__ import absolute_import, division, print_function
 
 import pytest
-
 import tensorflow as tf
-from lucid.modelzoo.vision_models import InceptionV1
 
-important_layer_names = [
-  "mixed3a", "mixed3b", "mixed4a", "mixed4b", "mixed4c", "mixed4d", "mixed4e",
-  "mixed5a", "mixed5b"
-]
+from lucid.modelzoo.nets_factory import models_map, get_model
 
-def test_InceptionV1_model_download():
-  model = InceptionV1()
-  model.load_graphdef()
-  assert model.graph_def is not None
 
-def test_InceptionV1_graph_import():
-  model = InceptionV1()
-  model.load_graphdef()
-  model.import_graph()
-  nodes = tf.get_default_graph().as_graph_def().node
-  node_names = set(node.name for node in nodes)
-  for layer_name in important_layer_names:
-    assert "import/"+layer_name+"_pre_relu" in node_names
-
-def test_InceptionV1_labels():
-  model = InceptionV1()
-  assert model.labels is not None
-  assert model.labels[0] == "dummy"
+@pytest.mark.slow
+@pytest.mark.parametrize("name,model_class", models_map.items())
+def test_model_layers_shapes(name, model_class):
+    scope = "TestLucidModelzoo"
+    model = model_class()
+    model.load_graphdef()
+    with tf.Graph().as_default() as graph:
+        model.import_graph(scope=scope)
+        for layer in model.layers:
+            name, declared_size = (layer[key] for key in ("name", "size"))
+            imported_name = "{}/{}:0".format(scope, name)
+            tensor = graph.get_tensor_by_name(imported_name)
+            actual_size = tensor.shape[-1]
+            assert int(actual_size) == int(declared_size)
