@@ -168,7 +168,13 @@ global_step = global_step_t.eval()
 
 ### Running Tests
 
-Use `tox` to run the test suite on all supported environments.
+Use `tox` to run the test suite in both Python 2 and Python 3 environments.
+
+To also run slower integration tests (marked with `pytest.mark.slow`), specify the `--run-slow` option for pytest, which can be passed through `tox` like so:
+
+```
+tox -- --run-slow
+```
 
 To run tests only for a specific module, pass a folder to `tox`:
 `tox tests/misc/io`

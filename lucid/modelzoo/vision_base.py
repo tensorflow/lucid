@@ -17,9 +17,14 @@ from __future__ import absolute_import, division, print_function
 from os import path
 
 import tensorflow as tf
+import numpy as np
+
 from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
 from lucid.misc.io import load
 import lucid.misc.io.showing as showing
+
+IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
+IMAGENET_MEAN_BGR = np.flip(IMAGENET_MEAN, 0)
 
 class Model(object):
   """Base pretrained model importer."""
@@ -50,6 +55,8 @@ class Model(object):
       t_prep_input = tf.expand_dims(t_prep_input, 0)
     if forget_xy_shape:
       t_prep_input = forget_xy(t_prep_input)
+    if hasattr(self, "is_BGR") and self.is_BGR == True:
+      t_prep_input = tf.reverse(t_prep_input, [-1])
     lo, hi = self.image_value_range
     t_prep_input = lo + t_prep_input * (hi-lo)
     return t_input, t_prep_input

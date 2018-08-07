@@ -6,6 +6,7 @@ import tensorflow as tf
 from lucid.optvis import objectives, param, render, transform
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("decorrelate", [True, False])
 @pytest.mark.parametrize("fft", [True, False])
 def test_integration(decorrelate, fft, inceptionv1):

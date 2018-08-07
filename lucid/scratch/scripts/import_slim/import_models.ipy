@@ -1,0 +1,101 @@
+from lucid.modelzoo.vision_base import load_graphdef
+
+
+path=!pwd
+path=path[0]
+!rm -rf exports/
+!mkdir exports
+!mkdir frozen
+
+model_defs = open("model_defs.py", "w")
+
+def get_model_info(graphdef_path):
+    graphdef = load_graphdef(graphdef_path)
+    info = {}
+    
+    inp_node = graphdef.node[0]
+    info['input_name' ] = inp_node.name
+    info['input_shape'] = [int(dim.size) for dim in inp_node.attr['shape'].shape.dim]
+    
+    info['out_name' ] = graphdef.node[-1].name
+    return info
+
+
+with open("weight_urls.txt") as wf, open("names.txt") as nf:
+  for weight_url, name, in zip(wf, nf)[::1]:
+    weight_url, name = weight_url[:-1], name[:-1]
+    
+    print ""
+    print ""
+    print ""
+    print ""
+    print "## ", name
+    
+    export_path = path + "/exports/" + name
+    !mkdir {export_path}
+    %cd {export_path}
+    
+    # Deal with checkpoints
+    print ""
+    print "Fetching checkpoint (weights)..."
+    !curl -sS {weight_url} --output {name}.tgz
+    !tar xf {name}.tgz
+    ckpt  = !find . | grep "ckpt$"
+    ckpt2 = !find . | grep ".ckpt.index"
+    ckpt = (ckpt+ckpt2)[0]
+    if ".index" in ckpt: ckpt = ckpt.replace(".index", "")
+    !find .
+    print ">", ckpt
+    
+    print ""
+    print "Exporting inference graph...."
+    if "vgg" not in name and "resnet_v1" not in name:
+      !echo "{path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb"
+      !{path}/tf.sh {path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb
+    else:
+      !echo "{path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb --labels_offset=1"
+      !{path}/tf.sh {path}/models/research/slim/export_inference_graph.py --alsologtostderr --model_name={name} --output_file=model.pb --labels_offset=1
+    
+    
+    info = get_model_info("model.pb")
+    out_name = info["out_name"]
+    input_name = info["input_name"]
+    input_shape = info["input_shape"]
+    
+    pretty_name = name
+    pretty_name = pretty_name.replace("vgg", "VGG")
+    pretty_name = pretty_name.replace("-", "_")
+    pieces = pretty_name.split("_")
+    for i in range(len(pieces)):
+      pieces[i] = pieces[i][0:1].upper() + pieces[i][1:]
+    pretty_name = "".join(pieces)
+    
+    print ""
+    print "Freezing variables into graph...."
+    !echo "{path}/freeze_graph.py --input_graph=model.pb --input_checkpoint={ckpt} --input_binary=true --output_graph=frozen.pb --output_node_names={out_name}"
+    !{path}/tf.sh {path}/freeze_graph.py --input_graph=model.pb --input_checkpoint={ckpt} --input_binary=true --output_graph=frozen.pb --output_node_names={out_name}
+    !cp frozen.pb {path}/frozen/{pretty_name}_slim.pb
+
+    print ""
+    
+
+    
+    model_defs.write("""\n\n
+class {pretty_name}_slim(Model):
+  \"\"\"{pretty_name} as implemented by the TensorFlow slim framework.
+  
+  This function provides the pre-trained reimplementation from TF slim:
+  https://github.com/tensorflow/models/tree/master/research/slim
+  \"\"\"
+  
+  model_path  = 'gs://modelzoo/{pretty_name}_slim.pb'
+  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  image_shape = {input_shape}
+  # inpute range taken from:
+  # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
+  image_value_range = (-1, 1)
+  input_name = '{input_name}'
+  """.format(**locals())
+      )
+
+model_defs.close()
