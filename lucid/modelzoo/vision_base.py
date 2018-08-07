@@ -20,6 +20,9 @@ import tensorflow as tf
 from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
 from lucid.misc.io import load
 
+IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
+IMAGENET_MEAN_BGR = np.flip(IMAGENET_MEAN, 0)
+
 class Model(object):
   """Base pretrained model importer."""
 
