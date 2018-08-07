@@ -19,6 +19,7 @@ from lucid.modelzoo.vision_base import Model, IMAGENET_MEAN_BGR
 class CaffeNet_caffe(Model):
   """CaffeNet (AlexNet variant included in Caffe)
   
+  CaffeNet is a slight variant on AlexNet, described here:
   https://github.com/BVLC/caffe/tree/master/models/bvlc_reference_caffenet
   """
 

@@ -52,11 +52,15 @@ class AlexNet_caffe(Model):
 class AlexNet_caffe_Places365(Model):
   """AlexNet re-implementation trained on Places365.
   
+  This model is a reimplementation of AlexNet
+  https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
+  trained on the MIT Places365 dataset, retrieved here:
   https://github.com/CSAILVision/places365
+  and then ported to TensorFlow using caffe-tensorflow.
   """
 
   model_path  = 'gs://modelzoo/AlexNet_caffe_places365.pb'
-  labels_path = 'gs://modelzoo/ImageNet_labels_caffe.txt'
+  labels_path = 'gs://modelzoo/InceptionV1_caffe_places365-labels.txt'
   image_shape = [227, 227, 3]
   is_BGR = True
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
