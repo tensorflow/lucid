@@ -23,6 +23,7 @@ import logging
 import numpy as np
 import IPython.display
 from string import Template
+import tensorflow as tf
 
 from lucid.misc.io.serialize_array import serialize_array, array_to_jsbuffer
 
