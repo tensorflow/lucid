@@ -17,6 +17,8 @@ from __future__ import absolute_import, division, print_function
 from os import path
 
 import tensorflow as tf
+import numpy as np
+
 from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
 from lucid.misc.io import load
 
