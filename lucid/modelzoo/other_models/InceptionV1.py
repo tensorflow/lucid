@@ -36,7 +36,16 @@ def _populate_inception_bottlenecks(scope):
 class InceptionV1(Model):
   """InceptionV1 (or 'GoogLeNet')
 
+  This is a (re?)implementation of InceptionV1
   https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  The weights were trained at Google and released in an early TensorFlow
+  tutorial. It is possible the parameters are the original weights
+  (trained in TensorFlow's predecessor), but we haven't been able to
+  confirm this.
+  
+  As far as we can tell, it is exactly the same as the model described in
+  the original paper, where as the slim and caffe implementations have 
+  minor implementation differences (such as eliding the heads).
   """
   model_path = 'gs://modelzoo/InceptionV1.pb'
   labels_path = 'gs://modelzoo/InceptionV1-labels.txt'
