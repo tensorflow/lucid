@@ -15,6 +15,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+from lucid.modelzoo.vision_base import Model
 from lucid.modelzoo.caffe_models import *
 from lucid.modelzoo.slim_models import *
 from lucid.modelzoo.other_models import *
+
+
+__all__ = [obj for obj in globals().values()
+           if isinstance(obj, type) and issubclass(obj, Model) ]
