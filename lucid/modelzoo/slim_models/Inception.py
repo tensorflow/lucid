@@ -27,7 +27,7 @@ class InceptionV1_slim(Model):
   corresponding to the name "inception_v1".
   """
 
-  model_path  = 'gs://modelzoo/InceptionV1_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/InceptionV1.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -63,7 +63,7 @@ class InceptionV2_slim(Model):
   corresponding to the name "inception_v2".
   """
 
-  model_path  = 'gs://modelzoo/InceptionV2_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/InceptionV2.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -100,7 +100,7 @@ class InceptionV3_slim(Model):
   corresponding to the name "inception_v3".
   """
 
-  model_path  = 'gs://modelzoo/InceptionV3_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/InceptionV3.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   dataset = 'ImageNet'
   image_shape = [299, 299, 3]
@@ -140,7 +140,7 @@ class InceptionV4_slim(Model):
   corresponding to the name "inception_v4".
   """
 
-  model_path  = 'gs://modelzoo/InceptionV4_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/InceptionV4.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   dataset = 'ImageNet'
   image_shape = [299, 299, 3]
@@ -186,7 +186,7 @@ class InceptionResnetV2_slim(Model):
   corresponding to the name "inception_resnet_v2".
   """
 
-  model_path  = 'gs://modelzoo/InceptionResnetV2_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/InceptionResnetV2.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   dataset = 'ImageNet'
   image_shape = [299, 299, 3]

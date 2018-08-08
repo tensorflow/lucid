@@ -35,7 +35,7 @@ from lucid.modelzoo.vision_base import Model, IMAGENET_MEAN
 #   We believe the weights were actually trained in caffe and ported.
 #   """
 # 
-#   model_path  = 'gs://modelzoo/VGG16_slim.pb'
+#   model_path  = 'gs://modelzoo/VGG16.pb'
 #   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
 #   dataset = 'ImageNet'
 #   image_shape = [224, 224, 3]
@@ -71,7 +71,7 @@ from lucid.modelzoo.vision_base import Model, IMAGENET_MEAN
 #   We believe the weights were actually trained in caffe and ported.
 #   """
 # 
-#   model_path  = 'gs://modelzoo/VGG19_slim.pb'
+#   model_path  = 'gs://modelzoo/VGG19.pb'
 #   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
 #   dataset = 'ImageNet'
 #   image_shape = [224, 224, 3]
@@ -107,7 +107,7 @@ class MobilenetV1_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/MobilenetV1_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/MobilenetV1.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -125,7 +125,7 @@ class MobilenetV1_050_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/MobilenetV1050_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/MobilenetV1050.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -143,7 +143,7 @@ class MobilenetV1_025_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/MobilenetV1025_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/MobilenetV1025.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -161,7 +161,7 @@ class NasnetMobile_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/NasnetMobile_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/NasnetMobile.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -179,7 +179,7 @@ class NasnetLarge_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/NasnetLarge_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/NasnetLarge.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   dataset = 'ImageNet'
   image_shape = [331, 331, 3]
@@ -197,7 +197,7 @@ class PnasnetLarge_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/PnasnetLarge_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/PnasnetLarge.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   dataset = 'ImageNet'
   image_shape = [331, 331, 3]
@@ -215,7 +215,7 @@ class PnasnetMobile_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/PnasnetMobile_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/PnasnetMobile.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
