@@ -34,6 +34,7 @@ class AlexNet_caffe(Model):
   # but it seems more polite and reliable to host our own.
   model_path  = 'gs://modelzoo/AlexNet.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  dataset = 'ImageNet'
   image_shape = [227, 227, 3]
   is_BGR = True
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
@@ -61,6 +62,7 @@ class AlexNet_caffe_Places365(Model):
 
   model_path  = 'gs://modelzoo/labels/Places365.txt'
   labels_path = 'gs://modelzoo/InceptionV1_caffe_places365-labels.txt'
+  dataset = 'Places365'
   image_shape = [227, 227, 3]
   is_BGR = True
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
