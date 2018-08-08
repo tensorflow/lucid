@@ -24,7 +24,8 @@ class CaffeNet_caffe(Model):
   """
 
   model_path  = 'gs://modelzoo/CaffeNet_caffe.pb'
-  labels_path = 'gs://modelzoo/ImageNet_labels_caffe.txt'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  dataset = 'ImageNet'
   image_shape = [227, 227, 3]
   is_BGR = True
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
@@ -51,7 +52,8 @@ class VGG16_caffe(Model):
   and convert it with caffe-tensorflow.
   """
   model_path = 'gs://modelzoo/VGG16_caffe.pb'
-  labels_path = 'gs://modelzoo/InceptionV1_caffe-labels.txt'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   is_BGR = True
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
@@ -89,7 +91,8 @@ class VGG19_caffe(Model):
   and convert it with caffe-tensorflow.
   """
   model_path = 'gs://modelzoo/VGG19_caffe.pb'
-  labels_path = 'gs://modelzoo/InceptionV1_caffe-labels.txt'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   is_BGR = True
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)

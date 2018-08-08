@@ -29,3 +29,10 @@ from lucid.modelzoo.other_models import *
 
 __all__ = [_name for _name, _obj in list(globals().items())
            if isinstance(_obj, type) and issubclass(_obj, Model)]
+
+# in Python 2 only, list comprehensions leak bound vars to a broader scope
+try:
+  del _obj
+  del _name
+except:
+  pass
