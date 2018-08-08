@@ -24,7 +24,7 @@ class ResnetV1_50_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/ResnetV1_50_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/ResnetV1_50.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -64,7 +64,7 @@ class ResnetV1_101_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/ResnetV1_101_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/ResnetV1_101.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -120,7 +120,7 @@ class ResnetV1_152_slim(Model):
   https://github.com/tensorflow/models/tree/master/research/slim
   """
   
-  model_path  = 'gs://modelzoo/ResnetV1_152_slim.pb'
+  model_path  = 'gs://modelzoo/vision/slim_models/ResnetV1_152.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]

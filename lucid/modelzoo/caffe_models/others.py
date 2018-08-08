@@ -23,7 +23,7 @@ class CaffeNet_caffe(Model):
   https://github.com/BVLC/caffe/tree/master/models/bvlc_reference_caffenet
   """
 
-  model_path  = 'gs://modelzoo/CaffeNet_caffe.pb'
+  model_path  = 'gs://modelzoo/vision/caffe_models/CaffeNet.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
   dataset = 'ImageNet'
   image_shape = [227, 227, 3]
@@ -51,7 +51,7 @@ class VGG16_caffe(Model):
   https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
   and convert it with caffe-tensorflow.
   """
-  model_path = 'gs://modelzoo/VGG16_caffe.pb'
+  model_path = 'gs://modelzoo/vision/caffe_models/VGG16.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
@@ -90,7 +90,7 @@ class VGG19_caffe(Model):
   https://gist.github.com/ksimonyan/3785162f95cd2d5fee77#file-readme-md
   and convert it with caffe-tensorflow.
   """
-  model_path = 'gs://modelzoo/VGG19_caffe.pb'
+  model_path = 'gs://modelzoo/vision/caffe_models/VGG19.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]

@@ -48,7 +48,7 @@ class InceptionV1(Model):
   the original paper, where as the slim and caffe implementations have
   minor implementation differences (such as eliding the heads).
   """
-  model_path = 'gs://modelzoo/InceptionV1.pb'
+  model_path = 'gs://modelzoo/vision/other_models/InceptionV1.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_alternate.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
