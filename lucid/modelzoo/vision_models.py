@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Clean export of vision_models.
 
-from __future__ import absolute_import, division, print_function
+We manually remove the following symbols from this module to keep tab
+completion as clean as possible--even when it doesn't respect `__all__`.
+Clean namespaces for those lucid.modelzoo modules that contain models are
+enforced by tests in test/modelzoo/test_vision_models.
+"""
 
 from lucid.modelzoo.vision_base import Model
 
@@ -22,6 +27,5 @@ from lucid.modelzoo.slim_models import *
 from lucid.modelzoo.other_models import *
 
 
-# filter imported module names to clean up autocompletion
-__all__ = [name for name, obj in list(globals().items())
-           if isinstance(obj, type) and issubclass(obj, Model)]
+__all__ = [_name for _name, _obj in list(globals().items())
+           if isinstance(_obj, type) and issubclass(_obj, Model)]
