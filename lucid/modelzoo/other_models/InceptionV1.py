@@ -14,6 +14,7 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
+
 import tensorflow as tf
 from lucid.modelzoo.vision_base import Model
 
@@ -42,9 +43,9 @@ class InceptionV1(Model):
   tutorial. It is possible the parameters are the original weights
   (trained in TensorFlow's predecessor), but we haven't been able to
   confirm this.
-  
+
   As far as we can tell, it is exactly the same as the model described in
-  the original paper, where as the slim and caffe implementations have 
+  the original paper, where as the slim and caffe implementations have
   minor implementation differences (such as eliding the heads).
   """
   model_path = 'gs://modelzoo/InceptionV1.pb'
