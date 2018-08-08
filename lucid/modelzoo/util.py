@@ -47,6 +47,11 @@ def load_graphdef(model_url, reset_device=True):
 
 
 def forget_xy(t):
-  """Forget sizes of dimensions [1, 2] of a 4d tensor."""
+  """Ignore sizes of dimensions (1, 2) of a 4d tensor in shape inference.
+
+  This allows using smaller input sizes, which create an invalid graph at higher
+  layers (for example because a spatial dimension becomes smaller than a conv
+  filter) when we only use early parts of it.
+  """
   shape = (t.shape[0], None, None, t.shape[3])
   return tf.placeholder_with_default(t, shape)
