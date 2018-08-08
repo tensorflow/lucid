@@ -21,5 +21,5 @@ from lucid.modelzoo.slim_models import *
 from lucid.modelzoo.other_models import *
 
 
-__all__ = [obj for obj in globals().values()
+__all__ = [name for name, obj in globals().iteritems()
            if isinstance(obj, type) and issubclass(obj, Model) ]
