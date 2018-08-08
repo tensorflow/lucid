@@ -64,8 +64,8 @@ class InceptionV1_caffe_Places205(Model):
   labels_path = 'gs://modelzoo/labels/Places205.txt'
   dataset = 'Places205'
   image_shape = [224, 224, 3]
-  # range based on emperical testing
-  image_value_range = (-1,1)
+  is_BGR = True
+  image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
   layers = [
