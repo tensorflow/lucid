@@ -60,8 +60,8 @@ class AlexNet_caffe_Places365(Model):
   and then ported to TensorFlow using caffe-tensorflow.
   """
 
-  model_path  = 'gs://modelzoo/labels/Places365.txt'
-  labels_path = 'gs://modelzoo/InceptionV1_caffe_places365-labels.txt'
+  model_path  = 'gs://modelzoo/AlexNet_caffe_places365.pb'
+  labels_path = 'gs://modelzoo/labels/Places365.txt'
   dataset = 'Places365'
   image_shape = [227, 227, 3]
   is_BGR = True
