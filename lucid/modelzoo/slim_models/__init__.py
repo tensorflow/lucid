@@ -24,3 +24,10 @@ del division
 del print_function
 
 del IMAGENET_MEAN
+
+# in Python 2 only, list comprehensions leak bound vars to a broader scope
+try:
+  del _obj
+  del _name
+except:
+  pass

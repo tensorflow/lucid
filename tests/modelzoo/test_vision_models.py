@@ -43,6 +43,19 @@ def test_consistent_namespaces():
         assert difference == 'Model' or difference.startswith("__")
 
 
+@pytest.mark.parametrize("name,model_class", models_map.items())
+def test_model_properties(name, model_class):
+    assert hasattr(model_class, "model_path")
+    assert model_class.model_path.endswith(".pb")
+    assert hasattr(model_class, "labels_path")
+    assert model_class.labels_path.endswith(".txt")
+    assert hasattr(model_class, "dataset")
+    assert hasattr(model_class, "image_shape")
+    assert len(model_class.image_shape) == 3
+    assert hasattr(model_class, "image_value_range")
+    assert hasattr(model_class, "input_name")
+    assert hasattr(model_class, "layers")
+
 @pytest.mark.slow
 @pytest.mark.parametrize("name,model_class", models_map.items())
 def test_model_layers_shapes(name, model_class):

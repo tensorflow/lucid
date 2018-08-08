@@ -27,8 +27,9 @@ class ResnetV2_50_slim(Model):
   corresponding to the name "resnet_v2_50".
   """
 
-  model_path  = 'gs://modelzoo/ResnetV2_50_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  model_path  = 'gs://modelzoo/vision/slim_models/ResnetV2_50.pb'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -71,8 +72,9 @@ class ResnetV2_101_slim(Model):
   corresponding to the name "resnet_v2_101".
   """
 
-  model_path  = 'gs://modelzoo/ResnetV2_101_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  model_path  = 'gs://modelzoo/vision/slim_models/ResnetV2_101.pb'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -132,8 +134,9 @@ class ResnetV2_152_slim(Model):
   corresponding to the name "resnet_v2_152".
   """
 
-  model_path  = 'gs://modelzoo/ResnetV2_152_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  model_path  = 'gs://modelzoo/vision/slim_models/ResnetV2_152.pb'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280

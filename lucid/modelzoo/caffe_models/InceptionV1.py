@@ -26,8 +26,9 @@ class InceptionV1_caffe(Model):
   https://github.com/BVLC/caffe/tree/master/models/bvlc_googlenet
   and then ported to TensorFlow using caffe-tensorflow.
   """
-  model_path = 'gs://modelzoo/InceptionV1_caffe.pb'
-  labels_path = 'gs://modelzoo/InceptionV1_caffe-labels.txt'
+  model_path = 'gs://modelzoo/vision/caffe_models/InceptionV1.pb'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   is_BGR = True
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
@@ -59,11 +60,12 @@ class InceptionV1_caffe_Places205(Model):
   http://places.csail.mit.edu/downloadCNN.html
   and then ported to TensorFlow using caffe-tensorflow.
   """
-  model_path = 'gs://modelzoo/InceptionV1_caffe_places205.pb'
-  labels_path = 'gs://modelzoo/InceptionV1_caffe_places205-labels.txt'
+  model_path = 'gs://modelzoo/vision/caffe_models/InceptionV1_places205.pb'
+  labels_path = 'gs://modelzoo/labels/Places205.txt'
+  dataset = 'Places205'
   image_shape = [224, 224, 3]
-  # range based on emperical testing
-  image_value_range = (-1,1)
+  is_BGR = True
+  image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
   layers = [
@@ -92,9 +94,9 @@ class InceptionV1_caffe_Places365(Model):
   https://github.com/CSAILVision/places365
   and then ported to TensorFlow using caffe-tensorflow.
   """
-  model_path = 'gs://modelzoo/InceptionV1_caffe_places365.pb'
-  # TODO - check labels match predictions
-  labels_path = 'gs://modelzoo/InceptionV1_caffe_places365-labels.txt'
+  model_path = 'gs://modelzoo/vision/caffe_models/InceptionV1_places365.pb'
+  labels_path = 'gs://modelzoo/labels/Places365.txt'
+  dataset = 'Places365'
   image_shape = [224, 224, 3]
   # What is the correct input range???
   is_BGR = True
