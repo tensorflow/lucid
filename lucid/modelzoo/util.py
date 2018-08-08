@@ -39,6 +39,8 @@ def load_graphdef(model_url, reset_device=True):
   except DecodeError:
     cache_path = local_cache_path(model_url)
     log.error("Could not decode graphdef protobuf. Maybe check if you have a corrupted file cached at {}?".format(cache_path))
+    raise RuntimeError('Could not load_graphdef!')
+
   if reset_device:
     for n in graph_def.node:
       n.device = ""
