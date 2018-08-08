@@ -48,7 +48,7 @@ class InceptionV1(Model):
   minor implementation differences (such as eliding the heads).
   """
   model_path = 'gs://modelzoo/InceptionV1.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt'
+  labels_path = 'gs://modelzoo/labels/ImageNet_alternate.txt'
   image_shape = [224, 224, 3]
   image_value_range = (-117, 255-117)
   input_name = 'input:0'

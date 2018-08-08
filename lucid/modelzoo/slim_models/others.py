@@ -28,7 +28,7 @@ class VGG16_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/VGG16_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -65,7 +65,7 @@ class VGG19_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/VGG19_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -102,7 +102,7 @@ class MobilenetV1_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/MobilenetV1_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -119,7 +119,7 @@ class MobilenetV1_050_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/MobilenetV1050_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -136,7 +136,7 @@ class MobilenetV1_025_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/MobilenetV1025_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -153,7 +153,7 @@ class NasnetMobile_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/NasnetMobile_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -170,7 +170,7 @@ class NasnetLarge_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/NasnetLarge_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [331, 331, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -187,7 +187,7 @@ class PnasnetLarge_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/PnasnetLarge_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [331, 331, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -204,7 +204,7 @@ class PnasnetMobile_slim(Model):
   """
   
   model_path  = 'gs://modelzoo/PnasnetMobile_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280

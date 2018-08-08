@@ -28,7 +28,7 @@ class InceptionV1_slim(Model):
   """
 
   model_path  = 'gs://modelzoo/InceptionV1_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -63,7 +63,7 @@ class InceptionV2_slim(Model):
   """
 
   model_path  = 'gs://modelzoo/InceptionV2_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [224, 224, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -99,7 +99,7 @@ class InceptionV3_slim(Model):
   """
 
   model_path  = 'gs://modelzoo/InceptionV3_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt'
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   image_shape = [299, 299, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -138,7 +138,7 @@ class InceptionV4_slim(Model):
   """
 
   model_path  = 'gs://modelzoo/InceptionV4_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [299, 299, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
@@ -183,7 +183,7 @@ class InceptionResnetV2_slim(Model):
   """
 
   model_path  = 'gs://modelzoo/InceptionResnetV2_slim.pb'
-  labels_path = 'gs://modelzoo/InceptionV1-labels.txt' #TODO
+  labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
   image_shape = [299, 299, 3]
   # inpute range taken from:
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
