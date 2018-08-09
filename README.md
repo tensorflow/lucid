@@ -41,7 +41,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 <img src="https://storage.googleapis.com/lucid-static/common/stickers/colab-tutorial.png" width="500" alt=""></img>
 </a>
 
-<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/tutorial.ipynb">**Modelzoo Notebook**</a>
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/modelzoo.ipynb">**Modelzoo Notebook**</a> - If you want to study techniques for visualizing and understanding neural networks, it's important to be able to try your experiments on multiple models. As of lucid v0.3, we provide a consistent API for interacting with 27 different vision models.
 
 ## Feature Visualization Notebooks
 *Notebooks corresponding to the [Feature Visualization](https://distill.pub/2017/feature-visualization/) article*
