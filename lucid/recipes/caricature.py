@@ -47,7 +47,7 @@ def feature_inversion(img, model, layer=None, n_steps=512, cossim_pow=0.0):
       transform.pad(8, mode='constant', constant_value=.5),
       transform.jitter(8),
       transform.random_scale([0.9, 0.95, 1.05, 1.1] + [1]*4),
-      transform.random_rotate(range(-5, 5) + [0]*5),
+      transform.random_rotate(list(range(-5, 5)) + [0]*5),
       transform.jitter(2),
     ]
 
