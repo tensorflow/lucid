@@ -41,6 +41,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 <img src="https://storage.googleapis.com/lucid-static/common/stickers/colab-tutorial.png" width="500" alt=""></img>
 </a>
 
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/tutorial.ipynb">**Modelzoo Notebook**</a>
 
 ## Feature Visualization Notebooks
 *Notebooks corresponding to the [Feature Visualization](https://distill.pub/2017/feature-visualization/) article*
