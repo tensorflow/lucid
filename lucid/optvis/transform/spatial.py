@@ -27,6 +27,7 @@ import uuid
 
 from lucid.optvis import param
 from lucid.optvis.transform.utils import compose, angle2rads, rand_select
+from lucid.optvis.transform.operators import _parameterized_flattened_homography
 
 
 def pad(w, mode="REFLECT", constant_value=0.5):
@@ -80,5 +81,49 @@ def rotate(angles, units="degrees", seed=None):
         angle = rand_select(angles, seed=seed)
         angle_rad = angle2rads(angle, units)
         return tf.contrib.image.rotate(image_t, angle_rad)
+
+    return inner
+
+
+def homography(seed=None, interpolation="BILINEAR"):
+    """Most general 2D transform that can replace all our spatial transforms.
+    Consists of an affine transformation + a perspective projection.
+    TODO: how should we pass all the parameters? Dict with defaults? Bunch of bools? Long list of arguments?
+    """
+    def inner(image_t):
+        translation1_x = tf.truncated_normal([], stddev=4)
+        translation1_y = tf.truncated_normal([], stddev=4)
+        rotationAngleInRadians = angle2rads(tf.truncated_normal([], stddev=5.0))
+        shearingAngleInRadians = angle2rads(tf.truncated_normal([], stddev=2.5))
+        shear_x = tf.truncated_normal([], stddev=1e-2)
+        shear_y = tf.truncated_normal([], stddev=1e-2)
+        vanishing_point_x = tf.truncated_normal([], stddev=1e-4)
+        vanishing_point_y = tf.truncated_normal([], stddev=1e-4)
+        translation2_x = tf.truncated_normal([], stddev=2)
+        translation2_y = tf.truncated_normal([], stddev=2)
+        shape_xy = tf.shape(image_t)[1:3]
+
+        transform_t = tf.py_func(
+            _parameterized_flattened_homography,
+            [
+                translation1_x,
+                translation1_y,
+                rotationAngleInRadians,
+                shearingAngleInRadians,
+                shear_x,
+                shear_y,
+                vanishing_point_x,
+                vanishing_point_y,
+                translation2_x,
+                translation2_y,
+                shape_xy,
+            ],
+            (tf.float32,),
+            stateful=False,
+        )
+        transformed_t = tf.contrib.image.transform(
+            image_t, transform_t, interpolation=interpolation
+        )
+        return transformed_t
 
     return inner

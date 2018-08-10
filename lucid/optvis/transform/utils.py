@@ -22,7 +22,7 @@ def rand_select(xs, seed=None):
     return tf.constant(xs)[rand_n]
 
 
-def angle2rads(angle, unit):
+def angle2rads(angle, unit="degrees"):
     angle = tf.cast(angle, "float32")
     if unit.lower() in ["degrees", "degs", "deg"]:
         angle = math.pi * angle / 180.
