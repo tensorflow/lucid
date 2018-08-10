@@ -32,7 +32,7 @@ def test_cppn_fits_xor():
         objective = optimizer.minimize(loss_t)
         tf.global_variables_initializer().run()
         loss = loss_t.eval()
-        for i in range(100):
+        for i in range(500):
             _, vis = sess.run([objective, cppn_param])
             close_enough = (
                 vis[0, 0] > .99

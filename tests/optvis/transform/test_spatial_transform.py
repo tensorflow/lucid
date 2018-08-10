@@ -30,7 +30,7 @@ def _find_single_dot(array):
     return weighted_location
 
 MAX_SPREAD = 3 # px that a single pixel may have been stretched over
-MAX_DISTANCE = 10 # distance in px that a single pixel may have been moved
+MAX_DISTANCE = 15 # distance in px that a single pixel may have been moved
 MIN_DISTANCE = 0
 
 @pytest.mark.parametrize("transform, arg", [

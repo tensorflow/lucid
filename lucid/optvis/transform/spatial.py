@@ -114,9 +114,9 @@ def homography(_, seed=None, interpolation="BILINEAR"):
     """
 
     def inner(image_t):
-        translation1_x = tf.truncated_normal([], stddev=4)
-        translation1_y = tf.truncated_normal([], stddev=4)
-        rotationAngleInRadians = angle2rads(tf.truncated_normal([], stddev=5.0))
+        translation1_x = tf.truncated_normal([], stddev=3)
+        translation1_y = tf.truncated_normal([], stddev=3)
+        rotationAngleInRadians = angle2rads(tf.truncated_normal([], stddev=2.5))
         shearingAngleInRadians = angle2rads(tf.truncated_normal([], stddev=2.5))
         shear_x = tf.truncated_normal([], stddev=1e-2)
         shear_y = tf.truncated_normal([], stddev=1e-2)
