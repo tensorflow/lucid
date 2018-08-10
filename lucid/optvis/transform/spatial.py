@@ -46,6 +46,28 @@ def pad(w, mode="REFLECT", constant_value=0.5):
     return inner
 
 
+def crop_or_pad_to_shape(target_shape):
+    """Ensures output has a specified shape.
+    Will crop down or enlarge the passed tensor, but not scale its contents.
+    May extend in future to allow REFLECT padding, for now use built in.
+
+    Args:
+      target_shape: scalar or tuple defining either the square length or the
+        [x,y] shape that the result should have
+    """
+    if len(target_shape) != 2:
+        raise ValueError("Target shape must be a list of length 2: [w,h].")
+
+    for value in target_shape:
+        if value <= 0:
+            raise ValueError("Target width or height must be positive.")
+
+    def inner(image_t):
+        return tf.image.resize_image_with_crop_or_pad(image_t, *target_shape)
+
+    return inner
+
+
 def jitter(d, seed=None):
     def inner(image_t):
         image_t = tf.convert_to_tensor(image_t, preferred_dtype=tf.float32)
@@ -75,21 +97,22 @@ def scale(scales, seed=None):
     return inner
 
 
-def rotate(angles, units="degrees", seed=None):
+def rotate(angles, units="degrees", interpolation="BILINEAR", seed=None):
     def inner(image_t):
         image_t = tf.convert_to_tensor(image_t, preferred_dtype=tf.float32)
         angle = rand_select(angles, seed=seed)
         angle_rad = angle2rads(angle, units)
-        return tf.contrib.image.rotate(image_t, angle_rad)
+        return tf.contrib.image.rotate(image_t, angle_rad, interpolation=interpolation)
 
     return inner
 
 
-def homography(seed=None, interpolation="BILINEAR"):
+def homography(_, seed=None, interpolation="BILINEAR"):
     """Most general 2D transform that can replace all our spatial transforms.
     Consists of an affine transformation + a perspective projection.
     TODO: how should we pass all the parameters? Dict with defaults? Bunch of bools? Long list of arguments?
     """
+
     def inner(image_t):
         translation1_x = tf.truncated_normal([], stddev=4)
         translation1_y = tf.truncated_normal([], stddev=4)
@@ -118,9 +141,12 @@ def homography(seed=None, interpolation="BILINEAR"):
                 translation2_y,
                 shape_xy,
             ],
-            (tf.float32,),
+            [tf.float32],
             stateful=False,
-        )
+        )[0]
+        transform_t.set_shape([8])
+        print(transform_t.eval())
+        # print([t.eval() for t in result])
         transformed_t = tf.contrib.image.transform(
             image_t, transform_t, interpolation=interpolation
         )

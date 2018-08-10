@@ -17,10 +17,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+import numpy as np
 
 def rotation(angleInRadians, axis):
-    cos = np.cos(angle)
-    sin = np.sin(angle)
+    cos = np.cos(angleInRadians)
+    sin = np.sin(angleInRadians)
 
     if axis == 0:
         raise NotImplementedError
@@ -40,7 +41,11 @@ def deformation(x, y):
 
 
 def shearing(angle, x, y):
-    return rotation(-angle) @ deformation(x, y) @ rotation(angle)
+    axis = 2 # z
+    rotate = rotation(angle, axis)
+    unrotate = rotation(-angle, axis)
+    deform = deformation(x, y)
+    return  np.matmul(unrotate, np.matmul(deform, rotate))
 
 
 def translation(translation_x, translation_y):
@@ -63,15 +68,15 @@ def homography(
     center = translation(shape[0] // 2, shape[1] // 2)
     uncenter = translation(-shape[0] // 2, -shape[1] // 2)
 
-    shear_centered = center @ shear @ uncenter
-    rotate_centered = center @ rotation @ uncenter
+    shear_centered = np.matmul(center, np.matmul(shear, uncenter))
+    rotate_centered = np.matmul(center, np.matmul(rotation, uncenter))
 
     return (
-        final_translation
-        @ projection
-        @ shear_centered
-        @ rotate_centered
-        @ initial_translation
+        np.matmul(final_translation,
+        np.matmul(projection,
+        np.matmul(shear_centered,
+        np.matmul(rotate_centered,
+                  initial_translation))))
     )
 
 
@@ -95,7 +100,7 @@ def _parameterized_flattened_homography(
     project = projection(vanishing_point_x, vanishing_point_y)
     final_translate = translation(translation2_x, translation2_y)
     matrix = homography(
-        initial_translation, rotate, shear, project, final_translate, shape_xy
+        initial_translate, rotate, shear, project, final_translate, shape_xy
     )
     # return first 8 entries to conform to tf.contrib.image.transform intrerface
-    return np.reshape(matrix, [-1])[:8]
+    return np.reshape(matrix, [-1])[:8].astype(np.float32)

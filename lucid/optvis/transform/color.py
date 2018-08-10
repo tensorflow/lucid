@@ -22,6 +22,7 @@ tensorflow tensor. The functions are of the form:
 
 """
 
+import tensorflow as tf
 import math
 from lucid.optvis.transform.utils import angle2rads
 
@@ -60,14 +61,14 @@ def contrast(lower=0.8, upper=1.2, seed=None):
 def hue(max_hue_rotation, unit="degrees", seed=None):
     """Adjusts hue by converting to YIQ and rotating around color axis."""
 
-    if max_hue_rotation > math.pi:
+    angle_rad = angle2rads(max_hue_rotation, unit)
+
+    if angle_rad > math.pi:
       raise ValueError('angle_range must be smaller than pi'
                        '--otherwise it just wraps around.')
 
-    if max_hue_rotation <= 0:
+    if angle_rad <= 0:
       raise ValueError('angle_range must be positive.')
-
-    angle_rad = angle2rads(max_hue_rotation, unit)
 
     def rotation_matrix(angle_t):
       cos = tf.cos(angle_t)

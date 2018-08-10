@@ -23,7 +23,9 @@ def rand_select(xs, seed=None):
 
 
 def angle2rads(angle, unit="degrees"):
-    angle = tf.cast(angle, "float32")
+    if isinstance(angle, tf.Tensor):
+        # TODO: why is this needed?
+        angle = tf.cast(angle, "float32")
     if unit.lower() in ["degrees", "degs", "deg"]:
         angle = math.pi * angle / 180.
     elif unit.lower() in ["radians", "rads", "rad"]:
