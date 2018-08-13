@@ -6,7 +6,8 @@ install:
   - pip install -U pip wheel
   - pip install python-coveralls
   - pip install tox-travis
-  - pip install nbconvert jupyter_client
+  - pip install nbconvert jupyter_client ipykernel
+  - python -m jupyter kernelspec install-self
 script:
   - tox
   - shopt -s globstar
