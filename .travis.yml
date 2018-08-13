@@ -6,7 +6,7 @@ install:
   - pip install -U pip wheel
   - pip install python-coveralls
   - pip install tox-travis
-  - pip install nbconvert
+  - pip install nbconvert jupyter_client
 script:
   - tox
   - shopt -s globstar
