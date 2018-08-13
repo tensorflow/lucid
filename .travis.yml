@@ -10,8 +10,9 @@ install:
 script:
   - tox
   - shopt -s globstar
+  - jupyter kernelspec list
   - for nb in **/*ipynb; do
-    jupyter nbconvert --ExecutePreprocessor.timeout=3600 --execute "$nb" --to markdown |& tee nb_to_md.txt;
+    jupyter nbconvert --ExecutePreprocessor.timeout=3600 --ExecutePreprocessor.kernel_name= --execute "$nb" --to markdown |& tee nb_to_md.txt;
     traceback=$(grep "Traceback (most recent call last):" nb_to_md.txt);
     if [[ $traceback ]]; then
         exit 1;
