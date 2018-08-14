@@ -20,14 +20,6 @@ and flexible abstractions that make it very easy to explore new research
 directions.
 
 
-# Special consideration for TensorFlow dependency
-
-Lucid requires `tensorflow`, but does not explicitly depend on it in `setup.py`. Due to the way [tensorflow is packaged](https://github.com/tensorflow/tensorflow/issues/7166) and some deficiencies in how pip handles dependencies, specifying either the GPU or the non-GPU version of tensorflow will conflict with the version of tensorflow your already may have installed.
-
-If you don't want to add your own dependency on tensorflow, you can specify which tensorflow version you want lucid to install by selecting from `extras_require` like so: `lucid[tf]` or `lucid[tf_gpu]`.
-
-**In actual practice, we recommend you use your already installed version of tensorflow.**
-
 # Notebooks
 
 Start visualizing neural networks ***with no setup***. The following notebooks
@@ -148,6 +140,13 @@ You may use this software under the Apache 2.0 License. See [LICENSE](LICENSE).
 
 This project is research code. It is not an official Google product.
 
+## Special consideration for TensorFlow dependency
+
+Lucid requires `tensorflow`, but does not explicitly depend on it in `setup.py`. Due to the way [tensorflow is packaged](https://github.com/tensorflow/tensorflow/issues/7166) and some deficiencies in how pip handles dependencies, specifying either the GPU or the non-GPU version of tensorflow will conflict with the version of tensorflow your already may have installed.
+
+If you don't want to add your own dependency on tensorflow, you can specify which tensorflow version you want lucid to install by selecting from `extras_require` like so: `lucid[tf]` or `lucid[tf_gpu]`.
+
+**In actual practice, we recommend you use your already installed version of tensorflow.**
 
 ## Development
 
