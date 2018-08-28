@@ -412,9 +412,6 @@ def complete_render_model_graph(model):
     parsed_graph.alignment = "min"
   
   groups = find_groups(graph)
-  
-  #render_with_groups(parsed_graph, groups)
-  
-  label_groups_seq(parsed_graph, groups)
+
   return render_with_groups(parsed_graph, groups)
   
