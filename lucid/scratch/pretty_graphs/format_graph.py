@@ -407,7 +407,7 @@ def complete_render_model_graph(model):
   graph = filter_graph_collapse_sequence(graph, ["Conv2D", "Relu"])
   parsed_graph = parse_graph(graph)
   #parsed_graph.render().show()
-  if "Resnet" in name:
+  if "Resnet" in model.model_path:
     print parsed_graph.alignment
     parsed_graph.alignment = "min"
   
