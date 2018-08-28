@@ -397,7 +397,9 @@ def render_with_groups(seq, groups, bg_pad=6, pad_diff=8, pad_none=2):
 
   
   #new_container = FragmentContainer(edges + all_final_node_grags, fragment_container.shape)
-  return {"svg_inner" : "\n".join(edges + all_final_node_frags), "shape" : fragment_container.shape, "node_boxes" : node_boxes }
+  final_fragments = edges + all_final_node_frags
+  inners = [frag.render() for frag in final_fragments]
+  return {"svg_inner" : "\n".join(inners), "shape" : fragment_container.shape, "node_boxes" : node_boxes }
   
     
 def complete_render_model_graph(model):
