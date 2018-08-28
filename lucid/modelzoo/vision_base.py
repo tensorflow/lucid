@@ -73,7 +73,7 @@ class Model(object):
     tf.import_graph_def(
         self.graph_def, {self.input_name: t_prep_input}, name=scope)
     self.post_import(scope)
-    
+
   def show_graph(self):
     if self.graph_def is None:
       raise Exception("Model.show_graph(): Must load graph def before showing it.")

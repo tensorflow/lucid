@@ -9,3 +9,4 @@ notebooks/.ipynb_checkpoints
 coverage.txt
 .coverage
 lucidenv
+lucid-env

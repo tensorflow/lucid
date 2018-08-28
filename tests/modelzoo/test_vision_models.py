@@ -55,10 +55,14 @@ def test_model_properties(name, model_class):
     assert hasattr(model_class, "image_value_range")
     assert hasattr(model_class, "input_name")
     assert hasattr(model_class, "layers")
+    assert len(model_class.layers) > 0
+    last_layer = model_class.layers[-1]
+    assert last_layer['type'] == 'dense'
 
 @pytest.mark.slow
-@pytest.mark.parametrize("name,model_class", models_map.items())
-def test_model_layers_shapes(name, model_class):
+@pytest.mark.parametrize("model_class", models_map.values())
+def test_model_layers_shapes(model_class):
+    name = model_class.__name__
     scope = "TestLucidModelzoo"
     model = model_class()
     model.load_graphdef()
