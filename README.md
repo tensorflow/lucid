@@ -14,11 +14,16 @@
 Lucid is a collection of infrastructure and tools for research in neural
 network interpretability.
 
-In particular, it provides state of the art implementations of [feature
-visualization techniques](https://distill.pub/2017/feature-visualization/),
-and flexible abstractions that make it very easy to explore new research
-directions.
+* [📓 **Notebooks**](#notebooks) -- Get started without any setup!
+* [📚 **Reading**](#recomended-reading) -- Learn more about visualizing neural nets.
+* [💬 **Community**](#community) -- Want to get involved? Please reach out!
+* [🔧 **Additional Information**](#additional-information) -- Licensing, code style, etc.
 
+<!-- * 🔬 **Start Doing Research!** -- Want to get involved? Chat with us on slack. :) -->
+
+
+
+<br>
 
 # Notebooks
 
@@ -111,6 +116,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 <img src="https://storage.googleapis.com/lucid-static/differentiable-parameterizations/stickers/colab-3d-style.png" width="500" alt=""></img>
 </a>
 
+<br>
 
 ## Miscellaneous Notebooks
 
@@ -121,6 +127,8 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/misc/neuron_interaction_grids.ipynb">
 <img src="https://storage.googleapis.com/lucid-static/misc/stickers/colab-interaction-grid.png" width="500" alt=""></img>
 </a>
+
+<br> 
 
 # Recomended Reading
 
@@ -134,7 +142,12 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 * [Lessons from a year of Distill ML Research](https://www.youtube.com/watch?v=jlZsgUZaIyY) (Shan Carter, OpenVisConf)
 * [Machine Learning for Visualization](https://www.youtube.com/watch?v=6n-kCYn0zxU) (Ian Johnson, OpenVisConf)
 
-<br>
+# Community
+
+We're on the [Distill slack](https://join.slack.com/t/distillpub/shared_invite/enQtMzg1NzU3MzEzMTg3LWJkNmQ4Y2JlNjJkNDlhYTU2ZmQxMGFkM2NiMTI2NGVjNzJkOTdjNTFiOGZmNDBjNTEzZGUwM2U0Mzg4NDAyN2E) in `#proj-lucid`.
+
+We'd love to see more people doing research in this space!
+
 <br>
 
 # Additional Information
