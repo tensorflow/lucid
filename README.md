@@ -144,7 +144,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 
 # Community
 
-We're on the [Distill slack](https://join.slack.com/t/distillpub/shared_invite/enQtMzg1NzU3MzEzMTg3LWJkNmQ4Y2JlNjJkNDlhYTU2ZmQxMGFkM2NiMTI2NGVjNzJkOTdjNTFiOGZmNDBjNTEzZGUwM2U0Mzg4NDAyN2E) in `#proj-lucid`.
+We're in `#proj-lucid` on the Distill slack ([join link](https://join.slack.com/t/distillpub/shared_invite/enQtMzg1NzU3MzEzMTg3LWJkNmQ4Y2JlNjJkNDlhYTU2ZmQxMGFkM2NiMTI2NGVjNzJkOTdjNTFiOGZmNDBjNTEzZGUwM2U0Mzg4NDAyN2E)).
 
 We'd love to see more people doing research in this space!
 
