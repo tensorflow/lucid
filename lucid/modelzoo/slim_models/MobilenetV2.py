@@ -13,16 +13,16 @@
 # limitations under the License.
 
 from __future__ import absolute_import, division, print_function
-from lucid.modelzoo.vision_base import Model
+from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts
 
 
 class MobilenetV2_10_slim(Model):
   """MobilenetV2 1.0 as implemented by the TensorFlow slim framework.
-  
+
   This function provides the pre-trained reimplementation from TF slim:
   https://github.com/tensorflow/models/tree/master/research/slim
   """
-  
+
   model_path  = 'gs://modelzoo/vision/slim_models/MobilenetV2_10.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   dataset = 'ImageNet'
@@ -31,28 +31,28 @@ class MobilenetV2_10_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = [
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_2/add', 'size': 24} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_4/add', 'size': 32} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_5/add', 'size': 32} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_7/add', 'size': 64} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_8/add', 'size': 64} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_9/add', 'size': 64} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_11/add', 'size': 96} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_12/add', 'size': 96} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_14/add', 'size': 160} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_15/add', 'size': 160} ,
-     {'type': 'dense', 'name': 'MobilenetV2/Predictions/Softmax', 'size': 1001} ,
-   ]
+  layers = _layers_from_list_of_dicts([
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 24} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 32} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 32} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_7/add', 'depth': 64} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_8/add', 'depth': 64} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_9/add', 'depth': 64} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_11/add', 'depth': 96} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_12/add', 'depth': 96} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_14/add', 'depth': 160} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_15/add', 'depth': 160} ,
+     {'tags': ['dense'], 'name': 'MobilenetV2/Predictions/Softmax', 'depth': 1001} ,
+   ])
 
 
 class MobilenetV2_14_slim(Model):
   """MobilenetV2 1.4 as implemented by the TensorFlow slim framework.
-  
+
   This function provides the pre-trained reimplementation from TF slim:
   https://github.com/tensorflow/models/tree/master/research/slim
   """
-  
+
   model_path  = 'gs://modelzoo/vision/slim_models/MobilenetV2_14.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
   dataset = 'ImageNet'
@@ -61,19 +61,17 @@ class MobilenetV2_14_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  
-  layers = [
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_2/add', 'size': 32} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_4/add', 'size': 48} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_5/add', 'size': 48} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_7/add', 'size': 88} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_8/add', 'size': 88} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_9/add', 'size': 88} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_11/add', 'size': 136} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_12/add', 'size': 136} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_14/add', 'size': 224} ,
-     {'type': 'conv', 'name': 'MobilenetV2/expanded_conv_15/add', 'size': 224} ,
-     {'type': 'dense', 'name': 'MobilenetV2/Predictions/Softmax', 'size': 1001} ,
-   ]
-  
-  
+
+  layers = _layers_from_list_of_dicts([
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 32} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 48} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 48} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_7/add', 'depth': 88} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_8/add', 'depth': 88} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_9/add', 'depth': 88} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_11/add', 'depth': 136} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_12/add', 'depth': 136} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_14/add', 'depth': 224} ,
+     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_15/add', 'depth': 224} ,
+     {'tags': ['dense'], 'name': 'MobilenetV2/Predictions/Softmax', 'depth': 1001} ,
+   ])

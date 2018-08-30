@@ -16,7 +16,7 @@
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
-from lucid.modelzoo.vision_base import Model
+from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts
 
 
 def _populate_inception_bottlenecks(scope):
@@ -58,24 +58,24 @@ class InceptionV1(Model):
   def post_import(self, scope):
     _populate_inception_bottlenecks(scope)
 
-  layers = [
-     {'type': 'conv', 'name': 'conv2d0', 'size': 64},
-     {'type': 'conv', 'name': 'conv2d1', 'size': 64},
-     {'type': 'conv', 'name': 'conv2d2', 'size': 192},
-     {'type': 'conv', 'name': 'mixed3a', 'size': 256},
-     {'type': 'conv', 'name': 'mixed3b', 'size': 480},
-     {'type': 'conv', 'name': 'mixed4a', 'size': 508},
-     {'type': 'conv', 'name': 'mixed4b', 'size': 512},
-     {'type': 'conv', 'name': 'mixed4c', 'size': 512},
-     {'type': 'conv', 'name': 'mixed4d', 'size': 528},
-     {'type': 'conv', 'name': 'mixed4e', 'size': 832},
-     {'type': 'conv', 'name': 'mixed5a', 'size': 832},
-     {'type': 'conv', 'name': 'mixed5b', 'size': 1024},
-     {'type': 'conv', 'name': 'head0_bottleneck', 'size': 128},
-     {'type': 'dense', 'name': 'nn0', 'size': 1024},
-     {'type': 'dense', 'name': 'softmax0', 'size': 1008},
-     {'type': 'conv', 'name': 'head1_bottleneck', 'size': 128},
-     {'type': 'dense', 'name': 'nn1', 'size': 1024},
-     {'type': 'dense', 'name': 'softmax1', 'size': 1008},
-     {'type': 'dense', 'name': 'softmax2', 'size': 1008},
-   ]
+  layers = _layers_from_list_of_dicts([
+     {'tags': ['conv'], 'name': 'conv2d0', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2d1', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2d2', 'depth': 192},
+     {'tags': ['conv'], 'name': 'mixed3a', 'depth': 256},
+     {'tags': ['conv'], 'name': 'mixed3b', 'depth': 480},
+     {'tags': ['conv'], 'name': 'mixed4a', 'depth': 508},
+     {'tags': ['conv'], 'name': 'mixed4b', 'depth': 512},
+     {'tags': ['conv'], 'name': 'mixed4c', 'depth': 512},
+     {'tags': ['conv'], 'name': 'mixed4d', 'depth': 528},
+     {'tags': ['conv'], 'name': 'mixed4e', 'depth': 832},
+     {'tags': ['conv'], 'name': 'mixed5a', 'depth': 832},
+     {'tags': ['conv'], 'name': 'mixed5b', 'depth': 1024},
+     {'tags': ['conv'], 'name': 'head0_bottleneck', 'depth': 128},
+     {'tags': ['dense'], 'name': 'nn0', 'depth': 1024},
+     {'tags': ['dense'], 'name': 'softmax0', 'depth': 1008},
+     {'tags': ['conv'], 'name': 'head1_bottleneck', 'depth': 128},
+     {'tags': ['dense'], 'name': 'nn1', 'depth': 1024},
+     {'tags': ['dense'], 'name': 'softmax1', 'depth': 1008},
+     {'tags': ['dense'], 'name': 'softmax2', 'depth': 1008},
+   ])

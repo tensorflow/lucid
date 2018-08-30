@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from lucid.modelzoo.nets_factory import models_map, get_model
 from lucid.modelzoo import caffe_models, other_models, slim_models, vision_models
+from lucid.modelzoo.vision_base import Layer
 
 
 clean_modules = [
@@ -24,7 +25,8 @@ forbidden_names = [
     "division",
     "print_function",
     "IMAGENET_MEAN",
-    "IMAGENET_MEAN_BGR"
+    "IMAGENET_MEAN_BGR",
+    "_layers_from_list_of_dicts"
 ]
 
 
@@ -58,6 +60,11 @@ def test_model_properties(name, model_class):
     assert len(model_class.layers) > 0
     last_layer = model_class.layers[-1]
     assert last_layer['type'] == 'dense'
+    assert type(last_layer) == Layer
+    assert hasattr(model_class, "name")
+    assert model_class.name == model_class.__name__
+    model_instance = model_class()
+    assert model_instance.name == model_class.__name__
 
 @pytest.mark.slow
 @pytest.mark.parametrize("model_class", models_map.values())
@@ -69,7 +76,7 @@ def test_model_layers_shapes(model_class):
     with tf.Graph().as_default() as graph:
         model.import_graph(scope=scope)
         for layer in model.layers:
-            name, declared_size = (layer[key] for key in ("name", "size"))
+            name, declared_size = layer.name, layer.depth
             imported_name = "{}/{}:0".format(scope, name)
             tensor = graph.get_tensor_by_name(imported_name)
             actual_size = tensor.shape[-1]

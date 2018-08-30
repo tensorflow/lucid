@@ -14,7 +14,7 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
-from lucid.modelzoo.vision_base import Model, IMAGENET_MEAN_BGR
+from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts, IMAGENET_MEAN_BGR
 
 
 class InceptionV1_caffe(Model):
@@ -34,21 +34,21 @@ class InceptionV1_caffe(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
-  layers = [
-     {'type': 'conv', 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'size': 64},
-     {'type': 'conv', 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'size': 64},
-     {'type': 'conv', 'name': 'conv2_3x3/conv2_3x3', 'size': 192},
-     {'type': 'conv', 'name': 'inception_3a_output', 'size': 256},
-     {'type': 'conv', 'name': 'inception_3b_output', 'size': 480},
-     {'type': 'conv', 'name': 'inception_4a_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4b_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4c_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4d_output', 'size': 528},
-     {'type': 'conv', 'name': 'inception_4e_output', 'size': 832},
-     {'type': 'conv', 'name': 'inception_5a_output', 'size': 832},
-     {'type': 'conv', 'name': 'inception_5b_output', 'size': 1024},
-     {'type': 'dense', 'name': 'prob', 'size': 1000},
-   ]
+  layers = _layers_from_list_of_dicts([
+     {'tags': ['conv'], 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2_3x3/conv2_3x3', 'depth': 192},
+     {'tags': ['conv'], 'name': 'inception_3a_output', 'depth': 256},
+     {'tags': ['conv'], 'name': 'inception_3b_output', 'depth': 480},
+     {'tags': ['conv'], 'name': 'inception_4a_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4b_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4c_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4d_output', 'depth': 528},
+     {'tags': ['conv'], 'name': 'inception_4e_output', 'depth': 832},
+     {'tags': ['conv'], 'name': 'inception_5a_output', 'depth': 832},
+     {'tags': ['conv'], 'name': 'inception_5b_output', 'depth': 1024},
+     {'tags': ['dense'], 'name': 'prob', 'depth': 1000},
+   ])
 
 
 class InceptionV1_caffe_Places205(Model):
@@ -68,21 +68,21 @@ class InceptionV1_caffe_Places205(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
-  layers = [
-     {'type': 'conv', 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'size': 64},
-     {'type': 'conv', 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'size': 64},
-     {'type': 'conv', 'name': 'conv2_3x3/conv2_3x3', 'size': 192},
-     {'type': 'conv', 'name': 'inception_3a_output', 'size': 256},
-     {'type': 'conv', 'name': 'inception_3b_output', 'size': 480},
-     {'type': 'conv', 'name': 'inception_4a_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4b_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4c_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4d_output', 'size': 528},
-     {'type': 'conv', 'name': 'inception_4e_output', 'size': 832},
-     {'type': 'conv', 'name': 'inception_5a_output', 'size': 832},
-     {'type': 'conv', 'name': 'inception_5b_output', 'size': 1024},
-     {'type': 'dense', 'name': 'prob', 'size': 205},
-   ]
+  layers = _layers_from_list_of_dicts([
+     {'tags': ['conv'], 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2_3x3/conv2_3x3', 'depth': 192},
+     {'tags': ['conv'], 'name': 'inception_3a_output', 'depth': 256},
+     {'tags': ['conv'], 'name': 'inception_3b_output', 'depth': 480},
+     {'tags': ['conv'], 'name': 'inception_4a_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4b_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4c_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4d_output', 'depth': 528},
+     {'tags': ['conv'], 'name': 'inception_4e_output', 'depth': 832},
+     {'tags': ['conv'], 'name': 'inception_5a_output', 'depth': 832},
+     {'tags': ['conv'], 'name': 'inception_5b_output', 'depth': 1024},
+     {'tags': ['dense'], 'name': 'prob', 'depth': 205},
+   ])
 
 
 class InceptionV1_caffe_Places365(Model):
@@ -103,18 +103,18 @@ class InceptionV1_caffe_Places365(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
-  layers = [
-     {'type': 'conv', 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'size': 64},
-     {'type': 'conv', 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'size': 64},
-     {'type': 'conv', 'name': 'conv2_3x3/conv2_3x3', 'size': 192},
-     {'type': 'conv', 'name': 'inception_3a_output', 'size': 256},
-     {'type': 'conv', 'name': 'inception_3b_output', 'size': 480},
-     {'type': 'conv', 'name': 'inception_4a_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4b_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4c_output', 'size': 512},
-     {'type': 'conv', 'name': 'inception_4d_output', 'size': 528},
-     {'type': 'conv', 'name': 'inception_4e_output', 'size': 832},
-     {'type': 'conv', 'name': 'inception_5a_output', 'size': 832},
-     {'type': 'conv', 'name': 'inception_5b_output', 'size': 1024},
-     {'type': 'dense', 'name': 'prob', 'size': 365},
-   ]
+  layers = _layers_from_list_of_dicts([
+     {'tags': ['conv'], 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'depth': 64},
+     {'tags': ['conv'], 'name': 'conv2_3x3/conv2_3x3', 'depth': 192},
+     {'tags': ['conv'], 'name': 'inception_3a_output', 'depth': 256},
+     {'tags': ['conv'], 'name': 'inception_3b_output', 'depth': 480},
+     {'tags': ['conv'], 'name': 'inception_4a_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4b_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4c_output', 'depth': 512},
+     {'tags': ['conv'], 'name': 'inception_4d_output', 'depth': 528},
+     {'tags': ['conv'], 'name': 'inception_4e_output', 'depth': 832},
+     {'tags': ['conv'], 'name': 'inception_5a_output', 'depth': 832},
+     {'tags': ['conv'], 'name': 'inception_5b_output', 'depth': 1024},
+     {'tags': ['dense'], 'name': 'prob', 'depth': 365},
+   ])

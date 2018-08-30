@@ -20,7 +20,7 @@ Clean namespaces for those lucid.modelzoo modules that contain models are
 enforced by tests in test/modelzoo/test_vision_models.
 """
 
-from lucid.modelzoo.vision_base import Model
+from lucid.modelzoo.vision_base import Model, Layer
 
 from lucid.modelzoo.caffe_models import *
 from lucid.modelzoo.slim_models import *

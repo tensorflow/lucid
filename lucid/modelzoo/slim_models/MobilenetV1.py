@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import absolute_import, division, print_function
-from lucid.modelzoo.vision_base import Model
+from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts
 
 
 class MobilenetV1_slim(Model):
@@ -31,25 +31,25 @@ class MobilenetV1_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = [
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'size': 32, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'size': 64, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'size': 128, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6', 'size': 128, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6', 'size': 1024, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6', 'size': 1024, 'type': 'conv'},
-    # {'name': u'MobilenetV1/Logits/AvgPool_1a/AvgPool', 'size': 1024, 'type': 'avgpool'},
-    # {'name': u'MobilenetV1/Logits/Conv2d_1c_1x1/Conv2D', 'size': 1001, 'type': 'conv'},
-    {'name': u'MobilenetV1/Predictions/Softmax', 'size': 1001, 'type': 'dense'},
-  ]
+  layers = _layers_from_list_of_dicts([
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'depth': 32, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'depth': 64, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'depth': 128, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6', 'depth': 128, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6', 'depth': 1024, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6', 'depth': 1024, 'tags': ['conv']},
+    # {'name': 'MobilenetV1/Logits/AvgPool_1a/AvgPool', 'depth': 1024, 'type': 'avgpool'},
+    # {'name': 'MobilenetV1/Logits/Conv2d_1c_1x1/Conv2D', 'depth': 1001, 'tags': ['conv']},
+    {'name': 'MobilenetV1/Predictions/Softmax', 'depth': 1001, 'tags': ['dense']},
+  ])
 
 
 class MobilenetV1_050_slim(Model):
@@ -67,25 +67,25 @@ class MobilenetV1_050_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = [
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'size': 16, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'size': 32, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'size': 64, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6', 'size': 64, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6', 'size': 128, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6', 'size': 128, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6', 'size': 256, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    {'name': u'MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6', 'size': 512, 'type': 'conv'},
-    # {'name': u'MobilenetV1/Logits/AvgPool_1a/AvgPool', 'size': 512, 'type': 'avgpool'},
-    # {'name': u'MobilenetV1/Logits/Conv2d_1c_1x1/Conv2D', 'size': 1001, 'type': 'conv'},
-    {'name': u'MobilenetV1/Predictions/Softmax', 'size': 1001, 'type': 'dense'},
-  ]
+  layers = _layers_from_list_of_dicts([
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'depth': 16, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'depth': 32, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'depth': 64, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6', 'depth': 64, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6', 'depth': 128, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6', 'depth': 128, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6', 'depth': 256, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    {'name': 'MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6', 'depth': 512, 'tags': ['conv']},
+    # {'name': 'MobilenetV1/Logits/AvgPool_1a/AvgPool', 'depth': 512, 'type': 'avgpool'},
+    # {'name': 'MobilenetV1/Logits/Conv2d_1c_1x1/Conv2D', 'depth': 1001, 'tags': ['conv']},
+    {'name': 'MobilenetV1/Predictions/Softmax', 'depth': 1001, 'tags': ['dense']},
+  ])
 
 
 class MobilenetV1_025_slim(Model):
@@ -103,22 +103,22 @@ class MobilenetV1_025_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = [
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'size': 8},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'size': 16},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'size': 32},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6', 'size': 32},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6', 'size': 64},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6', 'size': 64},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6', 'size': 128},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6', 'size': 128},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6', 'size': 128},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6', 'size': 128},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6', 'size': 128},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6', 'size': 128},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6', 'size': 256},
-    {'type': 'conv', 'name': u'MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6', 'size': 256},
-    # {'type': 'avgpool', 'name': u'MobilenetV1/Logits/AvgPool_1a/AvgPool', 'size': 256},
-    # {'type': 'conv', 'name': u'MobilenetV1/Logits/Conv2d_1c_1x1/Conv2D', 'size': 1001},
-    {'type': 'dense', 'name': u'MobilenetV1/Predictions/Softmax', 'size': 1001},
-  ]
+  layers = _layers_from_list_of_dicts([
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'depth': 8},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'depth': 16},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'depth': 32},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6', 'depth': 32},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6', 'depth': 64},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6', 'depth': 64},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6', 'depth': 128},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6', 'depth': 128},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6', 'depth': 128},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6', 'depth': 128},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6', 'depth': 128},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6', 'depth': 128},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6', 'depth': 256},
+    {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6', 'depth': 256},
+    # {'tags': 'avgpool', 'name': 'MobilenetV1/Logits/AvgPool_1a/AvgPool', 'depth': 256},
+    # {'tags': ['conv'], 'name': 'MobilenetV1/Logits/Conv2d_1c_1x1/Conv2D', 'depth': 1001},
+    {'tags': ['dense'], 'name': 'MobilenetV1/Predictions/Softmax', 'depth': 1001},
+  ])

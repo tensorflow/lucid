@@ -14,12 +14,12 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
-from lucid.modelzoo.vision_base import Model, IMAGENET_MEAN_BGR
+from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts, IMAGENET_MEAN_BGR
 
 
 class AlexNet_caffe_Places365(Model):
   """AlexNet re-implementation trained on Places365.
-  
+
   This model is a reimplementation of AlexNet
   https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
   trained on the MIT Places365 dataset, retrieved here:
@@ -36,10 +36,10 @@ class AlexNet_caffe_Places365(Model):
   input_name = 'input'
 
   # TODO - Sanity check this graph and layers
-  layers = [
-    {'type': 'conv', 'name': 'conv5/concat', 'size': 256} ,
-    {'type': 'conv', 'name': 'conv5/conv5', 'size': 256} ,
-    {'type': 'dense', 'name': 'fc6/fc6', 'size': 4096} ,
-    {'type': 'dense', 'name': 'fc7/fc7', 'size': 4096} ,
-    {'type': 'dense', 'name': 'prob', 'size': 365} ,
-   ]
+  layers = _layers_from_list_of_dicts([
+    {'tags': ['conv'], 'name': 'conv5/concat', 'depth': 256} ,
+    {'tags': ['conv'], 'name': 'conv5/conv5', 'depth': 256} ,
+    {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096} ,
+    {'tags': ['dense'], 'name': 'fc7/fc7', 'depth': 4096} ,
+    {'tags': ['dense'], 'name': 'prob', 'depth': 365} ,
+   ])

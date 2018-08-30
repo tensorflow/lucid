@@ -14,7 +14,7 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
-from lucid.modelzoo.vision_base import Model, IMAGENET_MEAN_BGR
+from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts, IMAGENET_MEAN_BGR
 
 
 class AlexNet(Model):
@@ -41,10 +41,10 @@ class AlexNet(Model):
   input_name = 'Placeholder'
 
   # TODO - Sanity check this graph and layers
-  layers = [
-     {'type': 'conv', 'name': 'concat_2', 'size': 256},
-     {'type': 'conv', 'name': 'conv5_1', 'size': 256},
-     {'type': 'dense', 'name': 'Relu', 'size': 4096},
-     {'type': 'dense', 'name': 'Relu_1', 'size': 4096},
-     {'type': 'dense', 'name': 'Softmax', 'size': 1000},
-   ]
+  layers = _layers_from_list_of_dicts([
+     {'tags': ['conv'], 'name': 'concat_2', 'depth': 256},
+     {'tags': ['conv'], 'name': 'conv5_1', 'depth': 256},
+     {'tags': ['dense'], 'name': 'Relu', 'depth': 4096},
+     {'tags': ['dense'], 'name': 'Relu_1', 'depth': 4096},
+     {'tags': ['dense'], 'name': 'Softmax', 'depth': 1000},
+   ])

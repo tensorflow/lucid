@@ -26,19 +26,70 @@ import lucid.misc.io.showing as showing
 IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
 IMAGENET_MEAN_BGR = np.flip(IMAGENET_MEAN, 0)
 
-class Model(object):
-  """Base pretrained model importer."""
+
+import warnings
+
+
+class Layer(object):
+  """Layer provides information on a model's layers."""
+
+  def __init__(self, name, depth, tags):
+    self.name = name
+    self.depth = depth
+    self.tags = set(tags)
+
+  def __getitem__(self, name):
+    if name == 'type':
+      warnings.warn("Property 'type' is deprecated on model layers. Please check if 'tags' contains the type you are looking for in the future! We're simply a tag for now.", DeprecationWarning)
+      return list(self.tags)[0]
+    if name not in self.__dict__:
+      error_message = "'Layer' object has no attribute '{}'".format(name)
+      raise AttributeError(error_message)
+    return self.__dict__[name]
+
+  @property
+  def size(self):
+    warnings.warn("Property 'size' is deprecated on model layers because it may be confused with the spatial 'size' of a layer. Please use 'depth' in the future!", DeprecationWarning)
+    return self.depth
+
+  def __repr__(self):
+    return "Layer <{s.name}: {s.depth}> ([{s.tags}])".format(s=self)
+
+
+def _layers_from_list_of_dicts(list_of_dicts):
+  layers = []
+  for layer_info in list_of_dicts:
+    name, depth, tags = layer_info['name'], layer_info['depth'], layer_info['tags']
+    layer = Layer(name, depth, tags)
+    layers.append(layer)
+  return layers
+
+
+class ModelPropertiesMetaClass(type):
+
+  @property
+  def name(cls):
+      return cls.__name__
+
+
+class Model(object, metaclass=ModelPropertiesMetaClass):
+  """Model allows importing pre-trained models."""
 
   model_path = None
   labels_path = None
   labels = None
   image_value_range = (-1, 1)
   image_shape = [None, None, 3]
+  layers = []
 
   def __init__(self):
     self.graph_def = None
     if self.labels_path is not None:
       self.labels = load_text_labels(self.labels_path)
+
+  @property
+  def name(self):
+    return self.__class__.name
 
   def load_graphdef(self):
     self.graph_def = load_graphdef(self.model_path)
