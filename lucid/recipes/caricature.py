@@ -9,6 +9,7 @@ import lucid.optvis.render as render
 import lucid.optvis.transform as transform
 from lucid.misc.io import show, load
 from lucid.misc.io.reading import read
+import lucid.misc.io.showing
 
 def imgToModelSize(arr, model):
   W = model.image_shape[0]
@@ -23,25 +24,34 @@ def imgToModelSize(arr, model):
 @objectives.wrap_objective
 def dot_compare(layer, batch=1, cossim_pow=0):
   def inner(T):
-    dot = tf.reduce_sum(T(layer)[batch] * T(layer)[0])
-    mag = tf.sqrt(tf.reduce_sum(T(layer)[0]**2))
+    acts1 = T(layer)[0]
+    acts2 = T(layer)[batch]
+    dot = tf.reduce_sum(acts1 * acts2)
+    mag = tf.sqrt(tf.reduce_sum(acts2**2))
     cossim = dot / (1e-6 + mag)
     cossim = tf.maximum(0.1, cossim)
     return dot * cossim ** cossim_pow
   return inner
 
-def feature_inversion(img, model, layer=None, n_steps=512, cossim_pow=0.0):
+def feature_inversion(img, model, layer, n_steps=512, cossim_pow=0.0, verbose=True):
+  if isinstance(layer, str):
+    layers = [layer]
+  elif isinstance(layer, (tuple, list)):
+    layers = layer
+  else:
+    raise TypeError("layer must be str, tuple or list")
+  
   with tf.Graph().as_default(), tf.Session() as sess:
     img = imgToModelSize(img, model)
     
     objective = objectives.Objective.sum([
-        1.0 * dot_compare(layer, cossim_pow=cossim_pow),
-        objectives.blur_input_each_step(),
+        1.0 * dot_compare(layer, cossim_pow=cossim_pow, batch=i+1)
+        for i, layer in enumerate(layers)
     ])
 
     t_input = tf.placeholder(tf.float32, img.shape)
-    param_f = param.image(img.shape[0], decorrelate=True, fft=True, alpha=False)
-    param_f = tf.stack([param_f[0], t_input])
+    param_f = param.image(img.shape[0], decorrelate=True, fft=True, alpha=False, batch=len(layers))
+    param_f = tf.concat([t_input[None], param_f], 0)
 
     transforms = [
       transform.pad(8, mode='constant', constant_value=.5),
@@ -58,4 +68,6 @@ def feature_inversion(img, model, layer=None, n_steps=512, cossim_pow=0.0):
     for i in range(n_steps): _ = sess.run([vis_op], {t_input: img})
 
     result = t_image.eval(feed_dict={t_input: img})
-    show(result[0])
+    if verbose:
+      lucid.misc.io.showing.images(result[1:], layers)
+    return result
