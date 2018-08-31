@@ -16,8 +16,11 @@
 from __future__ import absolute_import, division, print_function
 
 from lucid.misc.io.sanitizing import sanitize
+from lucid.misc.io import load
 
-PATH_TEMPLATE = "gs://modelzoo/aligned-activations/{}/{}-{page:05d}-of-01000.npy"
+import numpy as np
+
+PATH_TEMPLATE = "gs://modelzoo/aligned-activations/{}/{}-{:05d}-of-01000.npy"
 PAGE_SIZE = 10000
 NUMBER_OF_AVAILABLE_SAMPLES = 100000
 assert NUMBER_OF_AVAILABLE_SAMPLES % PAGE_SIZE == 0
@@ -26,8 +29,9 @@ NUMBER_OF_PAGES = NUMBER_OF_AVAILABLE_SAMPLES // PAGE_SIZE
 
 def get_aligned_activations(layer):
     activation_paths = [
-        template.format(sanitize(layer.model_class.name), sanitize(layer.name), page)
+        PATH_TEMPLATE.format(sanitize(layer.model_class.name), sanitize(layer.name), page)
         for page in range(NUMBER_OF_PAGES)
     ]
-    activations = [load(path) for path in activations_paths]
+    print(activation_paths)
+    activations = [load(path) for path in activation_paths]
     return np.vstack(activations)
