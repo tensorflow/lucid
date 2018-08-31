@@ -14,6 +14,7 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
+from future.utils import with_metaclass
 from os import path
 
 import tensorflow as tf
@@ -86,7 +87,7 @@ class ModelPropertiesMetaClass(type):
       return cls.__name__
 
 
-class Model(object, metaclass=ModelPropertiesMetaClass):
+class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   """Model allows importing pre-trained models."""
 
   model_path = None
