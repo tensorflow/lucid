@@ -31,13 +31,13 @@ class CaffeNet_caffe(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
-  layers = _layers_from_list_of_dicts([
-    {'tags': ['conv'], 'name': 'conv5/concat', 'depth': 256} ,
-    {'tags': ['conv'], 'name': 'conv5/conv5', 'depth': 256} ,
-    {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096} ,
-    {'tags': ['dense'], 'name': 'fc7/fc7', 'depth': 4096} ,
-    {'tags': ['dense'], 'name': 'prob', 'depth': 1000} ,
-   ])
+CaffeNet_caffe.layers = _layers_from_list_of_dicts(CaffeNet_caffe, [
+  {'tags': ['conv'], 'name': 'conv5/concat', 'depth': 256} ,
+  {'tags': ['conv'], 'name': 'conv5/conv5', 'depth': 256} ,
+  {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096} ,
+  {'tags': ['dense'], 'name': 'fc7/fc7', 'depth': 4096} ,
+  {'tags': ['dense'], 'name': 'prob', 'depth': 1000} ,
+])
 
 
 class VGG16_caffe(Model):
@@ -59,24 +59,24 @@ class VGG16_caffe(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'input'
 
-  layers = _layers_from_list_of_dicts([
-     {'tags': ['conv'], 'name': 'conv1_1/conv1_1', 'depth': 64},
-     {'tags': ['conv'], 'name': 'conv1_2/conv1_2', 'depth': 64},
-     {'tags': ['conv'], 'name': 'conv2_1/conv2_1', 'depth': 128},
-     {'tags': ['conv'], 'name': 'conv2_2/conv2_2', 'depth': 128},
-     {'tags': ['conv'], 'name': 'conv3_1/conv3_1', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv3_2/conv3_2', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv3_3/conv3_3', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv4_1/conv4_1', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv4_2/conv4_2', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv4_3/conv4_3', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv5_1/conv5_1', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv5_2/conv5_2', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv5_3/conv5_3', 'depth': 512},
-     {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096},
-     {'tags': ['dense'], 'name': 'fc7/fc7', 'depth': 4096},
-     {'tags': ['dense'], 'name': 'prob', 'depth': 1000},
-   ])
+VGG16_caffe.layers = _layers_from_list_of_dicts(VGG16_caffe, [
+  {'tags': ['conv'], 'name': 'conv1_1/conv1_1', 'depth': 64},
+  {'tags': ['conv'], 'name': 'conv1_2/conv1_2', 'depth': 64},
+  {'tags': ['conv'], 'name': 'conv2_1/conv2_1', 'depth': 128},
+  {'tags': ['conv'], 'name': 'conv2_2/conv2_2', 'depth': 128},
+  {'tags': ['conv'], 'name': 'conv3_1/conv3_1', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv3_2/conv3_2', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv3_3/conv3_3', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv4_1/conv4_1', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv4_2/conv4_2', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv4_3/conv4_3', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv5_1/conv5_1', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv5_2/conv5_2', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv5_3/conv5_3', 'depth': 512},
+  {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096},
+  {'tags': ['dense'], 'name': 'fc7/fc7', 'depth': 4096},
+  {'tags': ['dense'], 'name': 'prob', 'depth': 1000},
+])
 
 
 class VGG19_caffe(Model):
@@ -98,24 +98,24 @@ class VGG19_caffe(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'input'
 
-  layers = _layers_from_list_of_dicts([
-     {'tags': ['conv'], 'name': 'conv1_1/conv1_1', 'depth': 64},
-     {'tags': ['conv'], 'name': 'conv1_2/conv1_2', 'depth': 64},
-     {'tags': ['conv'], 'name': 'conv2_1/conv2_1', 'depth': 128},
-     {'tags': ['conv'], 'name': 'conv2_2/conv2_2', 'depth': 128},
-     {'tags': ['conv'], 'name': 'conv3_1/conv3_1', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv3_2/conv3_2', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv3_3/conv3_3', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv3_4/conv3_4', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv4_1/conv4_1', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv4_2/conv4_2', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv4_3/conv4_3', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv4_4/conv4_4', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv5_1/conv5_1', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv5_2/conv5_2', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv5_3/conv5_3', 'depth': 512},
-     {'tags': ['conv'], 'name': 'conv5_4/conv5_4', 'depth': 512},
-     {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096},
-     {'tags': ['dense'], 'name': 'fc7/fc7', 'depth': 4096},
-     {'tags': ['dense'], 'name': 'prob', 'depth': 1000},
-   ])
+VGG19_caffe.layers = _layers_from_list_of_dicts(VGG19_caffe, [
+  {'tags': ['conv'], 'name': 'conv1_1/conv1_1', 'depth': 64},
+  {'tags': ['conv'], 'name': 'conv1_2/conv1_2', 'depth': 64},
+  {'tags': ['conv'], 'name': 'conv2_1/conv2_1', 'depth': 128},
+  {'tags': ['conv'], 'name': 'conv2_2/conv2_2', 'depth': 128},
+  {'tags': ['conv'], 'name': 'conv3_1/conv3_1', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv3_2/conv3_2', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv3_3/conv3_3', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv3_4/conv3_4', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv4_1/conv4_1', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv4_2/conv4_2', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv4_3/conv4_3', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv4_4/conv4_4', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv5_1/conv5_1', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv5_2/conv5_2', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv5_3/conv5_3', 'depth': 512},
+  {'tags': ['conv'], 'name': 'conv5_4/conv5_4', 'depth': 512},
+  {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096},
+  {'tags': ['dense'], 'name': 'fc7/fc7', 'depth': 4096},
+  {'tags': ['dense'], 'name': 'prob', 'depth': 1000},
+])

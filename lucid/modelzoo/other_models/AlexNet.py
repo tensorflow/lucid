@@ -40,11 +40,11 @@ class AlexNet(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'Placeholder'
 
-  # TODO - Sanity check this graph and layers
-  layers = _layers_from_list_of_dicts([
-     {'tags': ['conv'], 'name': 'concat_2', 'depth': 256},
-     {'tags': ['conv'], 'name': 'conv5_1', 'depth': 256},
-     {'tags': ['dense'], 'name': 'Relu', 'depth': 4096},
-     {'tags': ['dense'], 'name': 'Relu_1', 'depth': 4096},
-     {'tags': ['dense'], 'name': 'Softmax', 'depth': 1000},
-   ])
+# TODO - Sanity check this graph and layers
+AlexNet.layers = _layers_from_list_of_dicts(AlexNet, [
+  {'tags': ['conv'], 'name': 'concat_2', 'depth': 256},
+  {'tags': ['conv'], 'name': 'conv5_1', 'depth': 256},
+  {'tags': ['dense'], 'name': 'Relu', 'depth': 4096},
+  {'tags': ['dense'], 'name': 'Relu_1', 'depth': 4096},
+  {'tags': ['dense'], 'name': 'Softmax', 'depth': 1000},
+])

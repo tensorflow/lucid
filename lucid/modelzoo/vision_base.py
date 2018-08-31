@@ -20,6 +20,7 @@ import tensorflow as tf
 import numpy as np
 
 from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
+from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_aligned_activations
 from lucid.misc.io import load
 import lucid.misc.io.showing as showing
 
@@ -33,7 +34,13 @@ import warnings
 class Layer(object):
   """Layer provides information on a model's layers."""
 
-  def __init__(self, name, depth, tags):
+  width = None  # reserved for future use
+  height = None  # reserved for future use
+  shape = None  # reserved for future use
+
+  def __init__(self, model_class, name, depth, tags):
+    self._activations = None
+    self.model_class = model_class
     self.name = name
     self.depth = depth
     self.tags = set(tags)
@@ -52,15 +59,22 @@ class Layer(object):
     warnings.warn("Property 'size' is deprecated on model layers because it may be confused with the spatial 'size' of a layer. Please use 'depth' in the future!", DeprecationWarning)
     return self.depth
 
+  @property
+  def activations(self):
+    """Loads sampled activations, which requires network access."""
+    if self._activations is None:
+      self._activations = _get_aligned_activations(self)
+    return self._activations
+
   def __repr__(self):
-    return "Layer <{s.name}: {s.depth}> ([{s.tags}])".format(s=self)
+    return "Layer (belonging to {s.model_class.name}) <{s.name}: {s.depth}> ([{s.tags}])".format(s=self)
 
 
-def _layers_from_list_of_dicts(list_of_dicts):
+def _layers_from_list_of_dicts(model_class, list_of_dicts):
   layers = []
   for layer_info in list_of_dicts:
     name, depth, tags = layer_info['name'], layer_info['depth'], layer_info['tags']
-    layer = Layer(name, depth, tags)
+    layer = Layer(model_class, name, depth, tags)
     layers.append(layer)
   return layers
 
