@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import json
 
 import lucid.modelzoo.vision_models as models
 from lucid.misc.io.showing import _image_url, _display_html
