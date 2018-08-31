@@ -32,6 +32,5 @@ def get_aligned_activations(layer):
         PATH_TEMPLATE.format(sanitize(layer.model_class.name), sanitize(layer.name), page)
         for page in range(NUMBER_OF_PAGES)
     ]
-    print(activation_paths)
     activations = [load(path) for path in activation_paths]
     return np.vstack(activations)
