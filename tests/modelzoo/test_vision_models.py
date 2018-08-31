@@ -42,7 +42,7 @@ def test_consistent_namespaces():
     exported_model_names = set(dir(vision_models))
     diffs = model_names.symmetric_difference(exported_model_names)
     for difference in diffs:
-        assert difference == 'Model' or difference.startswith("__")
+        assert difference in ('Model', 'Layer') or difference.startswith("__")
 
 
 @pytest.mark.parametrize("name,model_class", models_map.items())
@@ -61,6 +61,7 @@ def test_model_properties(name, model_class):
     last_layer = model_class.layers[-1]
     assert last_layer['type'] == 'dense'
     assert type(last_layer) == Layer
+    assert last_layer.model_class == model_class
     assert hasattr(model_class, "name")
     assert model_class.name == model_class.__name__
     model_instance = model_class()

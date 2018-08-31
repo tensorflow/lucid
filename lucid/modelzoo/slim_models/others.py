@@ -115,27 +115,28 @@ class NasnetMobile_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = _layers_from_list_of_dicts([
-    {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 32},
-    {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 44},
-    {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 88},
-    {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 264},
-    {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 264},
-    {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 264},
-    {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 264},
-    {'tags': ['conv'], 'name': 'reduction_cell_0/cell_output/concat', 'depth': 352},
-    {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 528},
-    {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 528},
-    {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 528},
-    {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 528},
-    {'tags': ['conv'], 'name': 'reduction_cell_1/cell_output/concat', 'depth': 704},
-    {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 1056},
-    {'tags': ['conv'], 'name': 'cell_9/cell_output/concat', 'depth': 1056},
-    {'tags': ['conv'], 'name': 'cell_10/cell_output/concat', 'depth': 1056},
-    {'tags': ['conv'], 'name': 'cell_11/cell_output/concat', 'depth': 1056},
-    # {'tags': ['dense'], 'name': 'final_layer/FC/BiasAdd', 'depth': 1001},
-    {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001},
-  ])
+
+NasnetMobile_slim.layers = _layers_from_list_of_dicts(NasnetMobile_slim, [
+  {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 32},
+  {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 44},
+  {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 88},
+  {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 264},
+  {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 264},
+  {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 264},
+  {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 264},
+  {'tags': ['conv'], 'name': 'reduction_cell_0/cell_output/concat', 'depth': 352},
+  {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 528},
+  {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 528},
+  {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 528},
+  {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 528},
+  {'tags': ['conv'], 'name': 'reduction_cell_1/cell_output/concat', 'depth': 704},
+  {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 1056},
+  {'tags': ['conv'], 'name': 'cell_9/cell_output/concat', 'depth': 1056},
+  {'tags': ['conv'], 'name': 'cell_10/cell_output/concat', 'depth': 1056},
+  {'tags': ['conv'], 'name': 'cell_11/cell_output/concat', 'depth': 1056},
+  # {'tags': ['dense'], 'name': 'final_layer/FC/BiasAdd', 'depth': 1001},
+  {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001},
+])
 
 
 class NasnetLarge_slim(Model):
@@ -153,33 +154,34 @@ class NasnetLarge_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = _layers_from_list_of_dicts([
-    {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 96},
-    {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 168},
-    {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 336},
-    {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 1008},
-    {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 1008},
-    {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 1008},
-    {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 1008},
-    {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 1008},
-    {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 1008},
-    {'tags': ['conv'], 'name': 'reduction_cell_0/cell_output/concat', 'depth': 1344},
-    {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 2016},
-    {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 2016},
-    {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 2016},
-    {'tags': ['conv'], 'name': 'cell_9/cell_output/concat', 'depth': 2016},
-    {'tags': ['conv'], 'name': 'cell_10/cell_output/concat', 'depth': 2016},
-    {'tags': ['conv'], 'name': 'cell_11/cell_output/concat', 'depth': 2016},
-    {'tags': ['conv'], 'name': 'reduction_cell_1/cell_output/concat', 'depth': 2688},
-    {'tags': ['conv'], 'name': 'cell_12/cell_output/concat', 'depth': 4032},
-    {'tags': ['conv'], 'name': 'cell_13/cell_output/concat', 'depth': 4032},
-    {'tags': ['conv'], 'name': 'cell_14/cell_output/concat', 'depth': 4032},
-    {'tags': ['conv'], 'name': 'cell_15/cell_output/concat', 'depth': 4032},
-    {'tags': ['conv'], 'name': 'cell_16/cell_output/concat', 'depth': 4032},
-    {'tags': ['conv'], 'name': 'cell_17/cell_output/concat', 'depth': 4032},
-    # {'tags': ['conv'], 'name': 'final_layer/FC/BiasAdd', 'depth': 1001},
-    {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001},
-  ])
+
+NasnetLarge_slim.layers = _layers_from_list_of_dicts(NasnetLarge_slim, [
+  {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 96},
+  {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 168},
+  {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 336},
+  {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 1008},
+  {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 1008},
+  {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 1008},
+  {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 1008},
+  {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 1008},
+  {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 1008},
+  {'tags': ['conv'], 'name': 'reduction_cell_0/cell_output/concat', 'depth': 1344},
+  {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 2016},
+  {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 2016},
+  {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 2016},
+  {'tags': ['conv'], 'name': 'cell_9/cell_output/concat', 'depth': 2016},
+  {'tags': ['conv'], 'name': 'cell_10/cell_output/concat', 'depth': 2016},
+  {'tags': ['conv'], 'name': 'cell_11/cell_output/concat', 'depth': 2016},
+  {'tags': ['conv'], 'name': 'reduction_cell_1/cell_output/concat', 'depth': 2688},
+  {'tags': ['conv'], 'name': 'cell_12/cell_output/concat', 'depth': 4032},
+  {'tags': ['conv'], 'name': 'cell_13/cell_output/concat', 'depth': 4032},
+  {'tags': ['conv'], 'name': 'cell_14/cell_output/concat', 'depth': 4032},
+  {'tags': ['conv'], 'name': 'cell_15/cell_output/concat', 'depth': 4032},
+  {'tags': ['conv'], 'name': 'cell_16/cell_output/concat', 'depth': 4032},
+  {'tags': ['conv'], 'name': 'cell_17/cell_output/concat', 'depth': 4032},
+  # {'tags': ['conv'], 'name': 'final_layer/FC/BiasAdd', 'depth': 1001},
+  {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001},
+])
 
 
 class PnasnetMobile_slim(Model):
@@ -197,21 +199,22 @@ class PnasnetMobile_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = _layers_from_list_of_dicts([
-    {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 32},
-    {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 65},
-    {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 135},
-    {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 270},
-    {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 270},
-    {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 270},
-    {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 540},
-    {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 540},
-    {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 540},
-    {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 1080},
-    {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 1080},
-    {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 1080},
-    {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001}
-  ])
+
+PnasnetMobile_slim.layers = _layers_from_list_of_dicts(PnasnetMobile_slim, [
+  {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 32},
+  {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 65},
+  {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 135},
+  {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 270},
+  {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 270},
+  {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 270},
+  {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 540},
+  {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 540},
+  {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 540},
+  {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 1080},
+  {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 1080},
+  {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 1080},
+  {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001}
+])
 
 
 class PnasnetLarge_slim(Model):
@@ -229,21 +232,22 @@ class PnasnetLarge_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = _layers_from_list_of_dicts([
-    {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 96},
-    {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 270},
-    {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 540},
-    {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 1080},
-    {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 1080},
-    {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 1080},
-    {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 1080},
-    {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 2160},
-    {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 2160},
-    {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 2160},
-    {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 2160},
-    {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 4320},
-    {'tags': ['conv'], 'name': 'cell_9/cell_output/concat', 'depth': 4320},
-    {'tags': ['conv'], 'name': 'cell_10/cell_output/concat', 'depth': 4320},
-    {'tags': ['conv'], 'name': 'cell_11/cell_output/concat', 'depth': 4320},
-    {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001}
-  ])
+
+PnasnetLarge_slim.layers = _layers_from_list_of_dicts(PnasnetLarge_slim, [
+  {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 96},
+  {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 270},
+  {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 540},
+  {'tags': ['conv'], 'name': 'cell_0/cell_output/concat', 'depth': 1080},
+  {'tags': ['conv'], 'name': 'cell_1/cell_output/concat', 'depth': 1080},
+  {'tags': ['conv'], 'name': 'cell_2/cell_output/concat', 'depth': 1080},
+  {'tags': ['conv'], 'name': 'cell_3/cell_output/concat', 'depth': 1080},
+  {'tags': ['conv'], 'name': 'cell_4/cell_output/concat', 'depth': 2160},
+  {'tags': ['conv'], 'name': 'cell_5/cell_output/concat', 'depth': 2160},
+  {'tags': ['conv'], 'name': 'cell_6/cell_output/concat', 'depth': 2160},
+  {'tags': ['conv'], 'name': 'cell_7/cell_output/concat', 'depth': 2160},
+  {'tags': ['conv'], 'name': 'cell_8/cell_output/concat', 'depth': 4320},
+  {'tags': ['conv'], 'name': 'cell_9/cell_output/concat', 'depth': 4320},
+  {'tags': ['conv'], 'name': 'cell_10/cell_output/concat', 'depth': 4320},
+  {'tags': ['conv'], 'name': 'cell_11/cell_output/concat', 'depth': 4320},
+  {'tags': ['dense'], 'name': 'final_layer/predictions', 'depth': 1001}
+])

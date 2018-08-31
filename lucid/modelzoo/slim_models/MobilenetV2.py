@@ -31,19 +31,20 @@ class MobilenetV2_10_slim(Model):
   # https://github.com/tensorflow/models/blob/master/research/slim/preprocessing/inception_preprocessing.py#L280
   image_value_range = (-1, 1)
   input_name = 'input'
-  layers = _layers_from_list_of_dicts([
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 24} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 32} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 32} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_7/add', 'depth': 64} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_8/add', 'depth': 64} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_9/add', 'depth': 64} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_11/add', 'depth': 96} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_12/add', 'depth': 96} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_14/add', 'depth': 160} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_15/add', 'depth': 160} ,
-     {'tags': ['dense'], 'name': 'MobilenetV2/Predictions/Softmax', 'depth': 1001} ,
-   ])
+
+MobilenetV2_10_slim.layers = _layers_from_list_of_dicts(MobilenetV2_10_slim, [
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 24},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 32},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 32},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_7/add', 'depth': 64},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_8/add', 'depth': 64},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_9/add', 'depth': 64},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_11/add', 'depth': 96},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_12/add', 'depth': 96},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_14/add', 'depth': 160},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_15/add', 'depth': 160},
+  {'tags': ['dense'], 'name': 'MobilenetV2/Predictions/Softmax', 'depth': 1001},
+])
 
 
 class MobilenetV2_14_slim(Model):
@@ -62,16 +63,16 @@ class MobilenetV2_14_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-  layers = _layers_from_list_of_dicts([
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 32} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 48} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 48} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_7/add', 'depth': 88} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_8/add', 'depth': 88} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_9/add', 'depth': 88} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_11/add', 'depth': 136} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_12/add', 'depth': 136} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_14/add', 'depth': 224} ,
-     {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_15/add', 'depth': 224} ,
-     {'tags': ['dense'], 'name': 'MobilenetV2/Predictions/Softmax', 'depth': 1001} ,
-   ])
+MobilenetV2_14_slim.layers = _layers_from_list_of_dicts(MobilenetV2_14_slim, [
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 32},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 48},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 48},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_7/add', 'depth': 88},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_8/add', 'depth': 88},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_9/add', 'depth': 88},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_11/add', 'depth': 136},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_12/add', 'depth': 136},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_14/add', 'depth': 224},
+  {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_15/add', 'depth': 224},
+  {'tags': ['dense'], 'name': 'MobilenetV2/Predictions/Softmax', 'depth': 1001},
+])
