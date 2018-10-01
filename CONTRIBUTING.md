@@ -5,7 +5,7 @@ just a few small guidelines you need to follow.
 
 ### Pull Requests
 
-All submissions, including submissions by project collaborators, require review. We use GitHub pull requests for this purpose. Consult GitHub Help for more information on using pull requests. Before sending your pull requests, please make sure you've completed this list.
+All submissions, including submissions by project collaborators, require review. We use GitHub pull requests for this purpose. Consult [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests. Before sending your pull requests, please make sure you've completed this list.
 
 - You've read this document, the [Contributing Guidelines](CONTRIBUTING.md).
 - Your changes are consistent with the [Coding Style](https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#coding-style).
