@@ -5,11 +5,11 @@ just a few small guidelines you need to follow.
 
 ### Pull Requests
 
-All submissions, including submissions by project collaborators, require review. We use GitHub pull requests for this purpose. Consult [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests. Before sending your pull requests, please make sure you've completed this list.
+Most submissions, including submissions by project collaborators, require review. Files in `scratch/` and `notebooks/` are excempt. We use GitHub pull requests for this purpose. Consult [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more information on using pull requests. Before sending your pull requests, please make sure you've completed this list.
 
 - You've read this document, the [Contributing Guidelines](CONTRIBUTING.md).
 - Your changes are consistent with the [Coding Style](https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#coding-style).
-- You've run all [Unit Tests] on all supported versions of Python(https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#unit-tests).
+- You've run all [Unit Tests](https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#unit-tests) on all supported versions of Python.
 - If you've added new files, you've [included a License](https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#unit-tests) at the top of those files.
 - You've signed Google's [Contributor License Agreement (CLA)](https://cla.developers.google.com/). No worries about this—you do [not surrender ownership of your contribution, and you do not give up any of your rights to use your contribution elsewhere](https://cla.developers.google.com/about).
 
