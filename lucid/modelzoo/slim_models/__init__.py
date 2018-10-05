@@ -23,6 +23,7 @@ __all__ = [_name for _name, _obj in list(globals().items())
 del absolute_import
 del division
 del print_function
+del _layers_from_list_of_dicts
 
 del IMAGENET_MEAN
 

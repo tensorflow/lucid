@@ -13,14 +13,35 @@
 # limitations under the License.
 # ==============================================================================
 
+import warnings
+
 import numpy as np
 import tensorflow as tf
 
 from lucid.optvis.param.lowres import lowres_tensor
 
+def pixel_image(shape, sd=None, init_val=None):
+  """A naive, pixel-based image parameterization.
+  Defaults to a random initialization, but can take a supplied init_val argument
+  instead.
+
+  Args:
+    shape: shape of resulting image, [batch, width, height, channels].
+    sd: standard deviation of param initialization noise.
+    init_val: an initial value to use instead of a random initialization. Needs
+      to have the same shape as the supplied shape argument.
+
+  Returns:
+    tensor with shape from first argument.
+  """
+  sd = sd or 0.01
+  init_val = init_val or sd * np.random.randn(*shape).astype("float32")
+  return tf.Variable(init_val)
+
 
 def naive(shape, sd=None):
-  return lowres_tensor(shape, shape, sd=sd)
+  warnings.warn("`naive` has been renamed `pixel_image` for clarity.", DeprecationWarning)
+  return pixel_image(shape, sd)
 
 
 def _rfft2d_freqs(h, w):
@@ -36,28 +57,32 @@ def _rfft2d_freqs(h, w):
 
 
 def fft_image(shape, sd=None, decay_power=1):
-  b, h, w, ch = shape
-  imgs = []
-  for _ in range(b):
-    freqs = _rfft2d_freqs(h, w)
-    fh, fw = freqs.shape
-    sd = sd or 0.01
-    init_val = sd*np.random.randn(2, ch, fh, fw).astype("float32")
-    spectrum_var = tf.Variable(init_val)
-    spectrum = tf.complex(spectrum_var[0], spectrum_var[1])
-    spertum_scale = 1.0 / np.maximum(freqs, 1.0/max(h, w))**decay_power
-    # Scale the spectrum by the square-root of the number of pixels
-    # to get a unitary transformation. This allows to use similar
-    # leanring rates to pixel-wise optimisation.
-    spertum_scale *= np.sqrt(w*h)
-    scaled_spectrum = spectrum * spertum_scale
-    img = tf.spectral.irfft2d(scaled_spectrum)
-    # in case of odd input dimension we cut off the additional pixel
-    # we get from irfft2d length computation
-    img = img[:ch, :h, :w]
-    img = tf.transpose(img, [1, 2, 0])
-    imgs.append(img)
-  return tf.stack(imgs)/4.
+  sd = sd or 0.01
+  batch, h, w, ch = shape
+  freqs = _rfft2d_freqs(h, w)
+  fh, fw = freqs.shape
+  images = []
+  for _ in range(batch):
+    # Create a random variable holding 2D fourier coefficients
+    init_val = sd * np.random.randn(2, ch, fh, fw).astype("float32")
+    spectrum_real_imag_t = tf.Variable(init_val)
+    spectrum_t = tf.complex(spectrum_real_imag_t[0], spectrum_real_imag_t[1])
+
+    # Scale the spectrum. First normalize energy, then scale by the square-root
+    # of the number of pixels to get a unitary transformation.
+    # This allows to use similar leanring rates to pixel-wise optimisation.
+    scale = 1.0 / np.maximum(freqs, 1.0/max(w, h))**decay_power
+    scale *= np.sqrt(w * h)
+    scaled_spectrum_t = scale * spectrum_t
+
+    image_channels_first_t = tf.spectral.irfft2d(scaled_spectrum_t)
+    image_t = tf.transpose(image_channels_first_t, [1, 2, 0])
+
+    # in case of odd spatial input dimensions we need to crop
+    image_t = image_t[:h, :w, :ch]
+
+    images.append(image_t)
+  return tf.stack(images)/4. # TODO: is that a magic constant?
 
 
 def laplacian_pyramid(shape, n_levels=4, sd=None):
