@@ -18,10 +18,7 @@ network interpretability.
 * [📚 **Reading**](#recomended-reading) -- Learn more about visualizing neural nets.
 * [💬 **Community**](#community) -- Want to get involved? Please reach out!
 * [🔧 **Additional Information**](#additional-information) -- Licensing, code style, etc.
-
-<!-- * 🔬 **Start Doing Research!** -- Want to get involved? Chat with us on slack. :) -->
-
-
+* [🔬 **Start Doing Research!**](https://github.com/tensorflow/lucid/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Aresearch) -- Want to get involved? We're trying to research openly!
 
 <br>
 
