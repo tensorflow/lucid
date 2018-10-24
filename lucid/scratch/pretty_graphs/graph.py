@@ -72,7 +72,7 @@ class Graph(object):
           print("  }")
     for node in self.nodes:
       for inp in node.inputs:
-        print("  ", '"' + (inp.pretty_name or inp.name) + '"', " -> ", '"' + (node.pretty_name or node.name) + '")'
+        print("  ", '"' + (inp.pretty_name or inp.name) + '"', " -> ", '"' + (node.pretty_name or node.name) + '"')
     print("}")
 
   @staticmethod
