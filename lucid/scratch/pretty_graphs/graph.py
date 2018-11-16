@@ -53,7 +53,7 @@ class Graph(object):
     self.node_to_inputs[node2.name].append(node1)
 
   def __getitem__(self, index):
-    if isinstance(index, (str, unicode)):
+    if isinstance(index, str):
       return self.name_map[index]
     elif isinstance(index, Node):
       return self.name_map[index.name]
@@ -63,16 +63,16 @@ class Graph(object):
   def graphviz(self, groups=None):
     print("digraph G {")
     if groups is not None:
-        for root, group in groups.iteritems():
+        for root, group in groups.items():
           print("")
-          print("  subgraph", "cluster_%s" % root.name.replace("/", "_"), "{")
-          print("  label = \"%s\"") % (root.pretty_name or root.name)
+          print(("  subgraph", "cluster_%s" % root.name.replace("/", "_"), "{"))
+          print(("  label = \"%s\"") % (root.pretty_name or root.name))
           for node in group:
-            print("    \"%s\"") % (node.pretty_name or node.name)
+            print(("    \"%s\"") % (node.pretty_name or node.name))
           print("  }")
     for node in self.nodes:
       for inp in node.inputs:
-        print("  ", '"' + (inp.pretty_name or inp.name) + '"', " -> ", '"' + (node.pretty_name or node.name) + '"')
+        print(("  ", '"' + (inp.pretty_name or inp.name) + '"', " -> ", '"' + (node.pretty_name or node.name) + '"'))
     print("}")
 
   @staticmethod
@@ -220,7 +220,7 @@ def find_groups(graph):
     groups[root_node] = set([root_node]) | branch_uniq
     group_children |= branch_uniq
 
-  for root in groups.keys():
+  for root in list(groups.keys()):
     if root in group_children:
       del groups[root]
 

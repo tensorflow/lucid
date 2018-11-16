@@ -316,7 +316,7 @@ def parse_graph(graph):
 def render_with_groups(seq, groups, bg_pad=6, pad_diff=8, pad_none=2):
 
   for child in seq.nodes:
-    matched_groups = [root.name for root, group_set in groups.items()
+    matched_groups = [root.name for root, group_set in list(groups.items())
                       if any(grandchild in group_set for grandchild in child.contained_nodes)]
     match_group = matched_groups[0] if matched_groups else None
     child.group = match_group
@@ -341,7 +341,7 @@ def render_with_groups(seq, groups, bg_pad=6, pad_diff=8, pad_none=2):
   # Generate groups
   used = []
   group_joined_frags = []
-  for root, group_nodes in reversed(groups.items()):
+  for root, group_nodes in reversed(list(groups.items())):
     group_frags = [frag for frag in fragments if frag.node in group_nodes]
     used += group_frags
     box = FragmentContainer(group_frags, []).box
@@ -410,7 +410,7 @@ def complete_render_model_graph(model):
   parsed_graph = parse_graph(graph)
   #parsed_graph.render().show()
   if "Resnet" in model.model_path:
-    print(parsed_graph.alignment)
+    print((parsed_graph.alignment))
     parsed_graph.alignment = "min"
 
   groups = find_groups(graph)
