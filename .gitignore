@@ -10,3 +10,11 @@ coverage.txt
 .coverage
 lucidenv
 lucid-env
+
+pip-selfcheck.json
+
+# virtual envs
+bin
+include
+lib
+share
