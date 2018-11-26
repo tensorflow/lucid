@@ -13,6 +13,8 @@ lucid-env
 
 pip-selfcheck.json
 
+.DS_Store
+
 # virtual envs
 bin
 include

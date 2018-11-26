@@ -10,7 +10,7 @@ Most submissions, including submissions by project collaborators, require review
 - You've read this document, the [Contributing Guidelines](CONTRIBUTING.md).
 - Your changes are consistent with the [Coding Style](https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#coding-style).
 - You've run all [Unit Tests](https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#unit-tests) on all supported versions of Python.
-- You've added at least integration-level unit tests for your code. A reasonable indicator is that your PR doesn't substantially reduce [test coverage](https://coveralls.io/github/tensorflow/lucid). 
+- You've added at least integration-level unit tests for your code. A reasonable indicator is that your PR doesn't substantially reduce [test coverage](https://coveralls.io/github/tensorflow/lucid).
 - If you've added new files, you've [included a License](https://github.com/tensorflow/lucid/blob/master/CONTRIBUTING.md#unit-tests) at the top of those files.
 - You've signed Google's [Contributor License Agreement (CLA)](https://cla.developers.google.com/). No worries about this—you do [not surrender ownership of your contribution, and you do not give up any of your rights to use your contribution elsewhere](https://cla.developers.google.com/about).
 
@@ -53,6 +53,11 @@ via the `-e` flag: `tox -e py27`.
 
 After adding dependencies to `setup.py`, run tox with the `--recreate` flag to
 update the environments' dependencies.
+
+#### During Development
+
+If you'd like to develop using [TDD](https://en.wikipedia.org/wiki/Test-driven_development), we recommend  calling the tests you're currently working on [using `pytest` directly](https://docs.pytest.org/en/latest/usage.html), e.g. `python -m pytest tests/path/to/your/test.py`. Please don't forget to run all tests using `tox` before submitting a PR, though!
+
 
 ### License
 
