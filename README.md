@@ -18,10 +18,7 @@ network interpretability.
 * [📚 **Reading**](#recomended-reading) -- Learn more about visualizing neural nets.
 * [💬 **Community**](#community) -- Want to get involved? Please reach out!
 * [🔧 **Additional Information**](#additional-information) -- Licensing, code style, etc.
-
-<!-- * 🔬 **Start Doing Research!** -- Want to get involved? Chat with us on slack. :) -->
-
-
+* [🔬 **Start Doing Research!**](https://github.com/tensorflow/lucid/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Aresearch) -- Want to get involved? We're trying to research openly!
 
 <br>
 
@@ -165,40 +162,3 @@ Lucid requires `tensorflow`, but does not explicitly depend on it in `setup.py`.
 If you don't want to add your own dependency on tensorflow, you can specify which tensorflow version you want lucid to install by selecting from `extras_require` like so: `lucid[tf]` or `lucid[tf_gpu]`.
 
 **In actual practice, we recommend you use your already installed version of tensorflow.**
-
-## Development
-
-### Style guide deviations
-
-We use naming conventions to help differentiate tensors, operations, and values:
-
-* Suffix variable names representing **tensors** with `_t`
-* Suffix variable names representing **operations** with `_op`
-* Don't suffix variable names representing concrete values
-
-Usage example:
-
-```
-global_step_t = tf.train.get_or_create_global_step()
-global_step_init_op = tf.variables_initializer([global_step_t])
-global_step = global_step_t.eval()
-```
-
-### Running Tests
-
-Use `tox` to run the test suite in both Python 2 and Python 3 environments.
-
-To also run slower integration tests (marked with `pytest.mark.slow`), specify the `--run-slow` option for pytest, which can be passed through `tox` like so:
-
-```
-tox -- --run-slow
-```
-
-To run tests only for a specific module, pass a folder to `tox`:
-`tox tests/misc/io`
-
-To run tests only in a specific environment, pass the environment's identifier
-via the `-e` flag: `tox -e py27`.
-
-After adding dependencies to `setup.py`, run tox with the `--recreate` flag to
-update the environments' dependencies.
