@@ -97,20 +97,15 @@ def render_icons(
         param_f = lambda: param.image(
             size, batch=directions.shape[0], fft=True, decorrelate=True, alpha=alpha
         )
-        if S is not None:
-            if cossim is True:
-                obj_list = [
-                    direction_neuron_cossim_S(layer, v, batch=n, S=S, cossim_pow=2)
-                    for n, v in enumerate(directions)
-                ]
-            else:
-                obj_list = [
-                    direction_neuron_S(layer, v, batch=n, S=S)
-                    for n, v in enumerate(directions)
-                ]
+
+        if cossim is True:
+            obj_list = [
+                direction_neuron_cossim_S(layer, v, batch=n, S=S)
+                for n, v in enumerate(directions)
+            ]
         else:
             obj_list = [
-                objectives.direction_neuron(layer, v, batch=n)
+                direction_neuron_S(layer, v, batch=n, S=S)
                 for n, v in enumerate(directions)
             ]
 

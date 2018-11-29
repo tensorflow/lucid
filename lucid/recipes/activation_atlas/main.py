@@ -22,6 +22,7 @@ from lucid.modelzoo.aligned_activations import (
 )
 from lucid.recipes.activation_atlas.layout import aligned_umap
 from lucid.recipes.activation_atlas.render import render_icons
+from lucid.misc.batching import batch
 
 
 def activation_atlas(
@@ -39,10 +40,13 @@ def activation_atlas(
     directions, coordinates, _ = _bin_laid_out_activations(
         layout, activations, grid_size
     )
-    icon_batch, losses = render_icons(
-        directions, model, layer=layer.name, size=icon_size, num_attempts=1
-    )
-    canvas = _make_canvas(icon_batch, coordinates, grid_size)
+    icons = []
+    for directions_batch in batch(directions, batch_size=64):
+        icon_batch, losses = render_icons(
+            directions_batch, model, layer=layer.name, size=icon_size, num_attempts=1
+        )
+        icons += icon_batch
+    canvas = _make_canvas(icons, coordinates, grid_size)
 
     return canvas
 
@@ -67,16 +71,19 @@ def aligned_activation_atlas(
         directions, coordinates, densities = _bin_laid_out_activations(
             layout, layer.activations[:number_activations, ...], grid_size
         )
-        icon_batch, losses = render_icons(
-            directions,
-            model,
-            alpha=False,
-            layer=layer.name,
-            size=icon_size,
-            num_attempts=1,
-            n_steps=1024,
-        )
-        canvas = _make_canvas(icon_batch, coordinates, grid_size)
+        icons = []
+        for directions_batch in batch(directions, batch_size=64):
+            icon_batch, losses = render_icons(
+                directions_batch,
+                model,
+                alpha=False,
+                layer=layer.name,
+                size=icon_size,
+                num_attempts=1,
+                n_steps=1024,
+            )
+            icons += icon_batch
+        canvas = _make_canvas(icons, coordinates, grid_size)
         atlasses.append(canvas)
 
     return atlasses
