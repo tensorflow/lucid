@@ -24,22 +24,16 @@ import logging
 # create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
 
-from lucid.misc.io.reading import read, local_cache_path
+from lucid.misc.io import load
 
 
 def load_text_labels(labels_path):
-  return read(labels_path, encoding='utf-8').splitlines()
+  return load(labels_path).splitlines()
 
 
-def load_graphdef(model_url, reset_device=True):
+def load_graphdef(model_url, reset_device=True, retry_on_decode_error=True):
   """Load GraphDef from a binary proto file."""
-  graphdef_string = read(model_url)
-  try:
-    graph_def = tf.GraphDef.FromString(graphdef_string)
-  except DecodeError:
-    cache_path = local_cache_path(model_url)
-    log.error("Could not decode graphdef protobuf. Maybe check if you have a corrupted file cached at {}?".format(cache_path))
-    raise RuntimeError('Could not load_graphdef!')
+  graph_def = load(model_url)
 
   if reset_device:
     for n in graph_def.node:

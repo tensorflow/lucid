@@ -63,6 +63,7 @@ setup(
         "decorator",
         "pyopengl",
         "click",
+        "filelock",
     ],
     tests_require=test_deps,
     extras_require=extras,
