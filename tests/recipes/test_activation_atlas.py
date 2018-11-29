@@ -5,13 +5,11 @@ from lucid.modelzoo.vision_models import AlexNet, InceptionV1
 from lucid.recipes.activation_atlas import activation_atlas, aligned_activation_atlas
 from lucid.misc.io import save
 
-# TODO(schubert@): think of actually automatable tests?
-
 # Run test with just 1/10th of available samples
 subset = NUMBER_OF_AVAILABLE_SAMPLES // 10
 
 
-@pytest.mark.slow
+@pytest.mark.skip(reason="takes too long to complete on CI")
 def test_activation_atlas():
     model = AlexNet()
     model.load_graphdef()
@@ -20,7 +18,7 @@ def test_activation_atlas():
     save(atlas, "tests/recipes/results/activation_atlas/atlas.jpg")
 
 
-@pytest.mark.slow
+@pytest.mark.skip(reason="takes too long to complete on CI")
 def test_aligned_activation_atlas():
     model1 = AlexNet()
     model1.load_graphdef()

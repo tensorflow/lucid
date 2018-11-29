@@ -18,7 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 from setuptools import setup, find_packages
 
-version = "0.3.3"
+version = "0.3.4"
 
 test_deps = ["future", "twine", "pytest", "pytest-mock", "python-coveralls"]
 
