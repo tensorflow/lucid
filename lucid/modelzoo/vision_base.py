@@ -16,6 +16,8 @@
 from __future__ import absolute_import, division, print_function
 from future.utils import with_metaclass
 from os import path
+import warnings
+import logging
 
 import tensorflow as tf
 import numpy as np
@@ -29,7 +31,7 @@ IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
 IMAGENET_MEAN_BGR = np.flip(IMAGENET_MEAN, 0)
 
 
-import warnings
+log = logging.getLogger(__name__)
 
 
 class Layer(object):
@@ -121,10 +123,10 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
       t_prep_input = tf.expand_dims(t_prep_input, 0)
     if forget_xy_shape:
       t_prep_input = forget_xy(t_prep_input)
-    if hasattr(self, "is_BGR") and self.is_BGR == True:
+    if hasattr(self, "is_BGR") and self.is_BGR is True:
       t_prep_input = tf.reverse(t_prep_input, [-1])
     lo, hi = self.image_value_range
-    t_prep_input = lo + t_prep_input * (hi-lo)
+    t_prep_input = lo + t_prep_input * (hi - lo)
     return t_input, t_prep_input
 
   def import_graph(self, t_input=None, scope='import', forget_xy_shape=True):
@@ -144,6 +146,18 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     if self.graph_def is None:
       raise Exception("Model.show_graph(): Must load graph def before showing it.")
     showing.graph(self.graph_def)
+
+  def get_layer(self, name):
+    # Search by exact match
+    for layer in self.layers:
+      if layer.name == name:
+        return layer
+    # if not found by exact match, search fuzzy and warn user:
+    for layer in self.layers:
+      if name.lower() in layer.name.lower():
+        log.warning("Found layer by fuzzy matching, please use '%s' in the future!", layer.name)
+        return layer
+    raise KeyError(f"Could not find layer with name '{name}'! Existing layer names are: {[l.name for l in self.layers]}")
 
 
 class SerializedModel(Model):

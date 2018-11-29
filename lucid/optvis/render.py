@@ -108,7 +108,7 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
             print_objective_func(sess)
             show(np.hstack(vis))
     except KeyboardInterrupt:
-      log.warn("Interrupted optimization at step {:d}.".format(i+1))
+      log.warning("Interrupted optimization at step {:d}.".format(i+1))
       vis = t_image.eval()
       show(np.hstack(vis))
 
