@@ -157,8 +157,8 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
       if name.lower() in layer.name.lower():
         log.warning("Found layer by fuzzy matching, please use '%s' in the future!", layer.name)
         return layer
-    key_error_message = "Could not find layer with name '%s'! Existing layer names are: %s"
-    layer_names = str([l.name for l in self.layers]))
+    key_error_message = "Could not find layer with name '{}'! Existing layer names are: {}"
+    layer_names = str([l.name for l in self.layers])
     raise KeyError(key_error_message.format(name, layer_names))
 
 
