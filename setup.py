@@ -18,7 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 from setuptools import setup, find_packages
 
-version = "0.3.5"
+version = "0.3.6"
 
 test_deps = ["future", "twine", "pytest", "pytest-mock", "python-coveralls"]
 
@@ -64,6 +64,7 @@ setup(
         "pyopengl",
         "click",
         "filelock",
+        "cachetools"
     ],
     tests_require=test_deps,
     extras_require=extras,

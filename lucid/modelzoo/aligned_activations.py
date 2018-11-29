@@ -19,7 +19,7 @@ from lucid.misc.io.sanitizing import sanitize
 from lucid.misc.io import load
 
 import numpy as np
-from functools import lru_cache
+from cachetools.func import lru_cache
 
 PATH_TEMPLATE = "gs://modelzoo/aligned-activations/{}/{}-{:05d}-of-01000.npy"
 PAGE_SIZE = 10000

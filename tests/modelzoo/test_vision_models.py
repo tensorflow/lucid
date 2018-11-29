@@ -59,7 +59,7 @@ def test_model_properties(name, model_class):
     assert hasattr(model_class, "layers")
     assert len(model_class.layers) > 0
     last_layer = model_class.layers[-1]
-    assert last_layer['type'] == 'dense'
+    assert 'dense' in last_layer.tags
     assert type(last_layer) == Layer
     assert last_layer.model_class == model_class
     assert hasattr(model_class, "name")
