@@ -24,7 +24,7 @@ from lucid.modelzoo.aligned_activations import (
 )
 from lucid.recipes.activation_atlas.layout import aligned_umap
 from lucid.recipes.activation_atlas.render import render_icons
-from lucid.misc.batching import batch
+from more_itertools import chunked
 
 
 def activation_atlas(
@@ -33,6 +33,7 @@ def activation_atlas(
     grid_size=10,
     icon_size=96,
     number_activations=NUMBER_OF_AVAILABLE_SAMPLES,
+    icon_batch_size=32,
     verbose=False,
 ):
     """Renders an Activation Atlas of the given model's layer."""
@@ -43,7 +44,7 @@ def activation_atlas(
         layout, activations, grid_size
     )
     icons = []
-    for directions_batch in batch(directions, batch_size=64):
+    for directions_batch in chunked(directions, icon_batch_size):
         icon_batch, losses = render_icons(
             directions_batch, model, layer=layer.name, size=icon_size, num_attempts=1
         )
@@ -61,8 +62,9 @@ def aligned_activation_atlas(
     grid_size=10,
     icon_size=80,
     num_steps=1024,
-    whiten_layers=False,
+    whiten_layers=True,
     number_activations=NUMBER_OF_AVAILABLE_SAMPLES,
+    icon_batch_size=32,
     verbose=False,
 ):
     """Renders two aligned Activation Atlases of the given models' layers.
@@ -82,7 +84,7 @@ def aligned_activation_atlas(
 
         def _progressive_canvas_iterator():
             icons = []
-            for directions_batch in batch(directions, batch_size=32, as_list=True):
+            for directions_batch in chunked(directions, icon_batch_size):
                 icon_batch, losses = render_icons(
                     directions_batch,
                     model,

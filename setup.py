@@ -64,7 +64,8 @@ setup(
         "pyopengl",
         "click",
         "filelock",
-        "cachetools"
+        "cachetools",
+        "more-itertools"
     ],
     tests_require=test_deps,
     extras_require=extras,
