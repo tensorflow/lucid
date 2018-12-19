@@ -130,8 +130,8 @@ def load_using_loader(url_or_handle, loader, cache, encoding):
         try:
             with read_handle(url, cache=cache) as handle:
                 result = loader(handle, encoding=encoding)
-        except DecodeError:
-            log.warning("While loading '%s' a DecodeError occurred. Purging cache once and trying again; if this fails we will raise an Exception!", url)
+        except (DecodeError, ValueError):
+            log.warning("While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception!", url)
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
             with read_handle(url, cache='purge') as handle:

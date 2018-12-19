@@ -117,5 +117,6 @@ def save(thing, url_or_handle, **kwargs):
       with write_handle(url_or_handle) as handle:
         saver(thing, handle, **kwargs)
   else:
+    saver_names = [(key, function.__name__) for (key, value) in savers.items()]
     message = "Unknown extension '{}', supports {}."
-    raise RuntimeError(message.format(ext, savers))
+    raise RuntimeError(message.format(ext, saver_names))
