@@ -30,16 +30,17 @@ def test_cppn_fits_xor():
         loss_t = xor_objective(cppn_param)
         optimizer = tf.train.AdamOptimizer(0.01)
         objective = optimizer.minimize(loss_t)
-        tf.global_variables_initializer().run()
-        loss = loss_t.eval()
-        for i in range(100):
-            _, vis = sess.run([objective, cppn_param])
-            close_enough = (
-                vis[0, 0] > .99
-                and vis[-1, -1] > .99
-                and vis[-1, 0] < .01
-                and vis[0, -1] < .01
-            )
-            if close_enough:
-                return
-        assert False, "fitting XOR took more than 100 steps, failing test"
+        for try_i in range(3):
+            tf.global_variables_initializer().run()
+            # loss = loss_t.eval()
+            for i in range(200):
+                _, vis = sess.run([objective, cppn_param])
+                close_enough = (
+                    vis[0, 0] > .99
+                    and vis[-1, -1] > .99
+                    and vis[-1, 0] < .01
+                    and vis[0, -1] < .01
+                )
+                if close_enough:
+                    return
+        assert False, "fitting XOR took more than 200 steps, failing test"
