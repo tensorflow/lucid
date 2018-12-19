@@ -17,6 +17,7 @@ from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
 import numpy as np
+from itertools import chain
 
 
 # TODO(schubert@): simplify, cleanup, dedupe objectives
@@ -82,20 +83,26 @@ def render_icons(
     n_steps=128,
     verbose=False,
     S=None,
-    num_attempts=2,
+    num_attempts=3,
     cossim=True,
     alpha=False,
 ):
 
+    model.load_graphdef()
+
     image_attempts = []
     loss_attempts = []
+
+    depth = 4 if alpha else 3
+    batch = len(directions)
+    input_shape = (batch, size, size, depth)
 
     # Render two attempts, and pull the one with the lowest loss score.
     for attempt in range(num_attempts):
 
         # Render an image for each activation vector
         param_f = lambda: param.image(
-            size, batch=directions.shape[0], fft=True, decorrelate=True, alpha=alpha
+            size, batch=len(directions), fft=True, decorrelate=True, alpha=alpha
         )
 
         if cossim is True:
@@ -109,15 +116,31 @@ def render_icons(
                 for n, v in enumerate(directions)
             ]
 
+        obj_list += [
+          objectives.penalize_boundary_complexity(input_shape, w=5)
+        ]
+
         obj = objectives.Objective.sum(obj_list)
 
-        transforms = transform.standard_transforms
+        # holy mother of transforms
+        transforms = [
+           transform.pad(16, mode='constant'),
+           transform.jitter(4),
+           transform.jitter(4),
+           transform.jitter(8),
+           transform.jitter(8),
+           transform.jitter(8),
+           transform.random_scale(0.998**n for n in range(20,40)),
+           transform.random_rotate(chain(range(-20,20), range(-10,10), range(-5,5), 5*[0])),
+           transform.jitter(2),
+           transform.crop_or_pad_to(size, size)
+        ]
         if alpha:
             transforms.append(transform.collapse_alpha_random())
 
         # This is the tensorflow optimization process
 
-        print("attempt: ", attempt)
+        # print("attempt: ", attempt)
         with tf.Graph().as_default(), tf.Session() as sess:
             learning_rate = 0.05
             losses = []
@@ -129,13 +152,13 @@ def render_icons(
             for i in range(n_steps):
                 loss, _ = sess.run([losses_, vis_op])
                 losses.append(loss)
-                if i % 100 == 0:
-                    print(i)
+                # if i % 100 == 0:
+                    # print(i)
 
             img = t_image.eval()
             img_rgb = img[:, :, :, :3]
             if alpha:
-                print("alpha true")
+                # print("alpha true")
                 k = 0.8
                 bg_color = 0.0
                 img_a = img[:, :, :, 3:]
@@ -144,7 +167,7 @@ def render_icons(
                 )
                 image_attempts.append(img_merged)
             else:
-                print("alpha false")
+                # print("alpha false")
                 image_attempts.append(img_rgb)
 
             loss_attempts.append(losses[-1])
@@ -153,7 +176,7 @@ def render_icons(
     loss_attempts = np.asarray(loss_attempts)
     loss_final = []
     image_final = []
-    print("merging best scores from attempts...")
+    # print("merging best scores from attempts...")
     for i, d in enumerate(directions):
         # note, this should be max, it is not a traditional loss
         mi = np.argmax(loss_attempts[:, i])

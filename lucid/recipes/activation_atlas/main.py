@@ -13,12 +13,14 @@
 # limitations under the License.
 # ==============================================================================
 
-import numpy as np
 from enum import Enum, auto
+
+import numpy as np
 
 from lucid.modelzoo.aligned_activations import (
     push_activations,
     NUMBER_OF_AVAILABLE_SAMPLES,
+    layer_inverse_covariance,
 )
 from lucid.recipes.activation_atlas.layout import aligned_umap
 from lucid.recipes.activation_atlas.render import render_icons
@@ -37,7 +39,7 @@ def activation_atlas(
 
     activations = layer.activations[:number_activations, ...]
     layout, = aligned_umap(activations, verbose=verbose)
-    directions, coordinates, _ = _bin_laid_out_activations(
+    directions, coordinates, _ = bin_laid_out_activations(
         layout, activations, grid_size
     )
     icons = []
@@ -46,7 +48,7 @@ def activation_atlas(
             directions_batch, model, layer=layer.name, size=icon_size, num_attempts=1
         )
         icons += icon_batch
-    canvas = _make_canvas(icons, coordinates, grid_size)
+    canvas = make_canvas(icons, coordinates, grid_size)
 
     return canvas
 
@@ -57,36 +59,43 @@ def aligned_activation_atlas(
     model2,
     layer2,
     grid_size=10,
-    icon_size=96,
+    icon_size=80,
+    num_steps=1024,
+    whiten_layers=False,
     number_activations=NUMBER_OF_AVAILABLE_SAMPLES,
     verbose=False,
 ):
+    """Renders two aligned Activation Atlases of the given models' layers.
+
+    Returns a generator of the two atlasses, and a nested generator for intermediate
+    atlasses while they're being rendered.
+    """
     combined_activations = _combine_activations(
         layer1, layer2, number_activations=number_activations
     )
     layouts = aligned_umap(combined_activations, verbose=verbose)
 
-    atlasses = []
     for model, layer, layout in zip((model1, model2), (layer1, layer2), layouts):
-        directions, coordinates, densities = _bin_laid_out_activations(
-            layout, layer.activations[:number_activations, ...], grid_size
+        directions, coordinates, densities = bin_laid_out_activations(
+            layout, layer.activations[:number_activations, ...], grid_size, threshold=10
         )
-        icons = []
-        for directions_batch in batch(directions, batch_size=64):
-            icon_batch, losses = render_icons(
-                directions_batch,
-                model,
-                alpha=False,
-                layer=layer.name,
-                size=icon_size,
-                num_attempts=1,
-                n_steps=1024,
-            )
-            icons += icon_batch
-        canvas = _make_canvas(icons, coordinates, grid_size)
-        atlasses.append(canvas)
 
-    return atlasses
+        def _progressive_canvas_iterator():
+            icons = []
+            for directions_batch in batch(directions, batch_size=32, as_list=True):
+                icon_batch, losses = render_icons(
+                    directions_batch,
+                    model,
+                    alpha=False,
+                    layer=layer.name,
+                    size=icon_size,
+                    n_steps=num_steps,
+                    S=layer_inverse_covariance(layer) if whiten_layers else None,
+                )
+                icons += icon_batch
+                yield make_canvas(icons, coordinates, grid_size)
+
+        yield _progressive_canvas_iterator()
 
 
 # Helpers
@@ -100,6 +109,8 @@ class ActivationTranslation(Enum):
 def _combine_activations(
     layer1,
     layer2,
+    activations1=None,
+    activations2=None,
     mode=ActivationTranslation.BIDIRECTIONAL,
     number_activations=NUMBER_OF_AVAILABLE_SAMPLES,
 ):
@@ -114,8 +125,8 @@ def _combine_activations(
       into the space of layer 1, concatenate them along their channels, and returns a
       tuple of the concatenated activations for each layer.
     """
-    activations1 = layer1.activations[:number_activations, ...]
-    activations2 = layer2.activations[:number_activations, ...]
+    activations1 = activations1 or layer1.activations[:number_activations, ...]
+    activations2 = activations2 or layer2.activations[:number_activations, ...]
 
     if mode is ActivationTranslation.ONE_TO_TWO:
 
@@ -133,10 +144,10 @@ def _combine_activations(
         return activations_model1, activations_model2
 
 
-def _bin_laid_out_activations(layout, activations, grid_size, threshold=5):
+def bin_laid_out_activations(layout, activations, grid_size, threshold=5):
     """Given a layout and activations, overlays a grid on the layout and returns
     averaged activations for each grid cell. If a cell contains less than `threshold`
-    activations it will not be used, so the number of returned directions is variable."""
+    activations it will be discarded, so the number of returned data is variable."""
 
     assert layout.shape[0] == activations.shape[0]
 
@@ -151,28 +162,30 @@ def _bin_laid_out_activations(layout, activations, grid_size, threshold=5):
 
     # iterate over all grid cell coordinates to compute their average directions
     grid_coordinates = np.indices((grid_size, grid_size)).transpose().reshape(-1, 2)
-    for xy in grid_coordinates:
-        mask = np.equal(xy, indices).all(axis=1)
+    for xy_coordinates in grid_coordinates:
+        mask = np.equal(xy_coordinates, indices).all(axis=1)
         count = np.count_nonzero(mask)
         if count > threshold:
             counts.append(count)
-            coordinates.append(xy)
+            coordinates.append(xy_coordinates)
             mean = np.average(activations[mask], axis=0)
             means.append(mean)
 
     assert len(means) == len(coordinates) == len(counts)
+    if len(coordinates) == 0:
+        raise RuntimeError("Binning activations led to 0 cells containing activations!")
 
-    return np.array(means), np.array(coordinates), np.array(counts)
+    return means, coordinates, counts
 
 
-def _make_canvas(icon_batch, coordinates, grid_size):
+def make_canvas(icon_batch, coordinates, grid_size):
     """Given a list of images and their coordinates, places them on a white canvas."""
 
     grid_shape = (grid_size, grid_size)
     icon_shape = icon_batch[0].shape
     canvas = np.ones((*grid_shape, *icon_shape))
 
-    for (x, y), icon in zip(coordinates, icon_batch):
+    for icon, (x, y) in zip(icon_batch, coordinates):
         canvas[x, y] = icon
 
     return np.hstack(np.hstack(canvas))

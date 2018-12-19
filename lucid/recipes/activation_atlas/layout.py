@@ -60,14 +60,15 @@ def aligned_umap(activations, umap_options={}, normalize=True, verbose=False):
         combined_activations = activations
     try:
         layout = UMAP(**umap_defaults).fit_transform(combined_activations)
-    except RecursionError:
+    except (RecursionError, SystemError) as exception:
         log.error("UMAP failed to fit these activations. We're not yet sure why this sometimes occurs.")
-        raise
+        raise ValueError("UMAP failed to fit activations: %s", exception)
 
     if normalize:
         layout = normalize_layout(layout)
 
     if num_activation_groups > 1:
-        return np.split(layout, num_activation_groups, axis=0)
+        layouts = np.split(layout, num_activation_groups, axis=0)
+        return layouts
     else:
         return layout
