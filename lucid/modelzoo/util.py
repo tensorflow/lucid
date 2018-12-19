@@ -31,7 +31,7 @@ def load_text_labels(labels_path):
   return load(labels_path).splitlines()
 
 
-def load_graphdef(model_url, reset_device=True, retry_on_decode_error=True):
+def load_graphdef(model_url, reset_device=True):
   """Load GraphDef from a binary proto file."""
   graph_def = load(model_url)
 
