@@ -44,15 +44,27 @@ def _load_npy(handle, **kwargs):
     return np.load(handle)
 
 
-def _load_img(handle, **kwargs):
+def _load_img(handle, target_dtype=np.float32, **kwargs):
     """Load image file as numpy array."""
-    del kwargs
-    # PIL.Image will infer image type from provided handle's file extension
-    pil_img = PIL.Image.open(handle)
-    img_array = np.asarray(pil_img)
-    dtype = img_array.dtype
+
+    image_pil = PIL.Image.open(handle)
+
+    # resize the image to the requested size, if one was specified
+    if 'size' in kwargs:
+      requested_image_size = kwargs['size']
+      image_pil = image_pil.resize(requested_image_size, resample=PIL.Image.LANCZOS)
+
+    image_array = np.asarray(image_pil)
+
+    # remove alpha channel if it contains no information
+    # if image_array.shape[-1] > 3 and 'A' not in image_pil.mode:
+    # image_array = image_array[..., :-1]
+
+    image_dtype = image_array.dtype
+    image_max_value = np.iinfo(image_dtype).max  # ...for uint8 that's 255, etc.
+
     # using np.divide should avoid an extra copy compared to doing division first
-    return np.divide(img_array, np.iinfo(dtype).max, dtype=np.float32)
+    return np.divide(image_array, image_max_value, dtype=target_dtype)
 
 
 def _load_json(handle, **kwargs):
@@ -85,7 +97,7 @@ loaders = {
 }
 
 
-def load(url_or_handle, cache=None, encoding="utf-8"):
+def load(url_or_handle, cache=None, encoding="utf-8", **kwargs):
     """Load a file.
 
     File format is inferred from url. File retrieval strategy is inferred from
@@ -103,7 +115,7 @@ def load(url_or_handle, cache=None, encoding="utf-8"):
         loader = loaders[ext.lower()]
         message = "Using inferred loader '%s' due to passed file extension '%s'."
         log.debug(message, loader.__name__[6:], ext)
-        return load_using_loader(url_or_handle, loader, cache, encoding)
+        return load_using_loader(url_or_handle, loader, cache, encoding, **kwargs)
 
     except KeyError:
 
@@ -122,20 +134,20 @@ def load(url_or_handle, cache=None, encoding="utf-8"):
 
 # Helpers
 
-def load_using_loader(url_or_handle, loader, cache, encoding):
+def load_using_loader(url_or_handle, loader, cache, encoding, **kwargs):
     if is_handle(url_or_handle):
-        result = loader(url_or_handle, encoding=encoding)
+        result = loader(url_or_handle, encoding=encoding, **kwargs)
     else:
         url = url_or_handle
         try:
             with read_handle(url, cache=cache) as handle:
-                result = loader(handle, encoding=encoding)
+                result = loader(handle, encoding=encoding, **kwargs)
         except (DecodeError, ValueError):
             log.warning("While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception!", url)
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
             with read_handle(url, cache='purge') as handle:
-                result = load_using_loader(handle, loader, cache, encoding)
+                result = load_using_loader(handle, loader, cache, encoding, **kwargs)
     return result
 
 
