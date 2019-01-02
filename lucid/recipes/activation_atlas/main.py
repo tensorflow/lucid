@@ -30,6 +30,7 @@ from more_itertools import chunked
 def activation_atlas(
     model,
     layer,
+    activations=None,
     grid_size=10,
     icon_size=96,
     number_activations=NUMBER_OF_AVAILABLE_SAMPLES,
@@ -38,7 +39,11 @@ def activation_atlas(
 ):
     """Renders an Activation Atlas of the given model's layer."""
 
-    activations = layer.activations[:number_activations, ...]
+    assert not (activations is not None and number_activations is not NUMBER_OF_AVAILABLE_SAMPLES), "Please either supply custom activations or specify number_activations of the default activations to be used, but not both."
+    if activations is not None:
+        assert activations.shape[-1] == layer.depth
+
+    activations = activations or layer.activations[:number_activations, ...]
     layout, = aligned_umap(activations, verbose=verbose)
     directions, coordinates, _ = bin_laid_out_activations(
         layout, activations, grid_size
