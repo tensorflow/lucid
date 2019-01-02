@@ -40,10 +40,11 @@ def activation_atlas(
     """Renders an Activation Atlas of the given model's layer."""
 
     assert not (activations is not None and number_activations is not NUMBER_OF_AVAILABLE_SAMPLES), "Please either supply custom activations or specify number_activations of the default activations to be used, but not both."
-    if activations is not None:
+    if activations is None:
+        activations = layer.activations[:number_activations, ...]
+    else:
         assert activations.shape[-1] == layer.depth
 
-    activations = activations or layer.activations[:number_activations, ...]
     layout, = aligned_umap(activations, verbose=verbose)
     directions, coordinates, _ = bin_laid_out_activations(
         layout, activations, grid_size
