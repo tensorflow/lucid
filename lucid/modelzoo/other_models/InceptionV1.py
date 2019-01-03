@@ -50,6 +50,7 @@ class InceptionV1(Model):
   """
   model_path = 'gs://modelzoo/vision/other_models/InceptionV1.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_alternate.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_alternate_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   image_value_range = (-117, 255-117)

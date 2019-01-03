@@ -29,6 +29,7 @@ class InceptionV1_slim(Model):
   layers = None
   model_path  = 'gs://modelzoo/vision/slim_models/InceptionV1.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
@@ -64,6 +65,7 @@ class InceptionV2_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/InceptionV2.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
@@ -101,6 +103,7 @@ class InceptionV3_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/InceptionV3.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [299, 299, 3]
   # inpute range taken from:
@@ -141,6 +144,7 @@ class InceptionV4_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/InceptionV4.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [299, 299, 3]
   # inpute range taken from:
@@ -187,6 +191,7 @@ class InceptionResnetV2_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/InceptionResnetV2.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [299, 299, 3]
   # inpute range taken from:

@@ -34,6 +34,7 @@ class AlexNet(Model):
   # but it seems more polite and reliable to host our own.
   model_path  = 'gs://modelzoo/vision/other_models/AlexNet.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [227, 227, 3]
   is_BGR = True

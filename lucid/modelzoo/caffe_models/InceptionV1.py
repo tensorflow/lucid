@@ -28,6 +28,7 @@ class InceptionV1_caffe(Model):
   """
   model_path = 'gs://modelzoo/vision/caffe_models/InceptionV1.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   is_BGR = True
