@@ -37,6 +37,7 @@ from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts, IMAGEN
 #
 #   model_path  = 'gs://modelzoo/VGG16.pb'
 #   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
+#   synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
 #   dataset = 'ImageNet'
 #   image_shape = [224, 224, 3]
 #   image_value_range = (-1, 1)
@@ -73,6 +74,7 @@ from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts, IMAGEN
 #
 #   model_path  = 'gs://modelzoo/VGG19.pb'
 #   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
+#   synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
 #   dataset = 'ImageNet'
 #   image_shape = [224, 224, 3]
 #   image_value_range = (-1, 1)
@@ -109,6 +111,7 @@ class NasnetMobile_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/NasnetMobile.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
@@ -193,6 +196,7 @@ class PnasnetMobile_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/PnasnetMobile.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
@@ -226,6 +230,7 @@ class PnasnetLarge_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/PnasnetLarge.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt' #TODO
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [331, 331, 3]
   # inpute range taken from:

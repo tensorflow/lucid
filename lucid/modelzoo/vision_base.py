@@ -27,6 +27,15 @@ from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_a
 from lucid.misc.io import load
 import lucid.misc.io.showing as showing
 
+# ImageNet classes correspond to WordNet Synsets.
+# If NLTK and the WordNet corpus are installed, we can support
+# interoperability in a few places.
+try:
+    from nltk.corpus import wordnet
+except:
+    wordnet = None
+
+
 IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
 IMAGENET_MEAN_BGR = np.flip(IMAGENET_MEAN, 0)
 
@@ -103,6 +112,14 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     self.graph_def = None
     if self.labels_path is not None:
       self.labels = load_text_labels(self.labels_path)
+    if self.synsets_path is not None:
+      self.synsets = load_text_labels(self.synsets_path)
+      # If NLTK WordNet is available, provide synsets in that form as well.
+      if wordnet is not None:
+          def get_synset(id_str):
+              pos, offset = id_str[0], int(id_str[1:])
+              return wordnet.synset_from_pos_and_offset(pos, offset)
+          self.nltk_synsets = [get_synset(id) for id in self.synsets]
 
   @property
   def name(self):

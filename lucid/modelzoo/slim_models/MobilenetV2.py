@@ -25,6 +25,7 @@ class MobilenetV2_10_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/MobilenetV2_10.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
@@ -56,6 +57,7 @@ class MobilenetV2_14_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/MobilenetV2_14.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   # inpute range taken from:
