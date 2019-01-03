@@ -45,7 +45,7 @@ def activation_atlas(
     else:
         assert activations.shape[-1] == layer.depth
 
-    layout, = aligned_umap(activations, verbose=verbose)
+    layout = aligned_umap(activations, verbose=verbose)
     directions, coordinates, _ = bin_laid_out_activations(
         layout, activations, grid_size
     )
