@@ -110,9 +110,9 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   def __init__(self):
     self.graph_def = None
-    if self.labels_path is not None:
+    if hasattr(self, 'labels_path') and self.labels_path is not None:
       self.labels = load_text_labels(self.labels_path)
-    if self.synsets_path is not None:
+    if hasattr(self, 'synsets_path') and self.synsets_path is not None:
       self.synsets = load_text_labels(self.synsets_path)
       # If NLTK WordNet is available, provide synsets in that form as well.
       if wordnet is not None:
