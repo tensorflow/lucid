@@ -32,14 +32,19 @@ def activation_atlas(
     layer,
     activations=None,
     grid_size=10,
-    icon_size=96,
+    icon_size=80,
+    num_steps=1024,
+    whiten_layers=True,
     number_activations=NUMBER_OF_AVAILABLE_SAMPLES,
-    icon_batch_size=32,
+    icon_batch_size=16,
     verbose=False,
 ):
     """Renders an Activation Atlas of the given model's layer."""
 
-    assert not (activations is not None and number_activations is not NUMBER_OF_AVAILABLE_SAMPLES), "Please either supply custom activations or specify number_activations of the default activations to be used, but not both."
+    assert not (
+        activations is not None
+        and number_activations is not NUMBER_OF_AVAILABLE_SAMPLES
+    ), "Please either supply custom activations or specify number_activations of the default activations to be used, but not both."
     if activations is None:
         activations = layer.activations[:number_activations, ...]
     else:
@@ -52,7 +57,13 @@ def activation_atlas(
     icons = []
     for directions_batch in chunked(directions, icon_batch_size):
         icon_batch, losses = render_icons(
-            directions_batch, model, layer=layer.name, size=icon_size, num_attempts=1
+            directions_batch,
+            model,
+            layer=layer.name,
+            size=icon_size,
+            num_attempts=1,
+            n_steps=num_steps,
+            S=layer_inverse_covariance(layer) if whiten_layers else None,
         )
         icons += icon_batch
     canvas = make_canvas(icons, coordinates, grid_size)
@@ -70,7 +81,7 @@ def aligned_activation_atlas(
     num_steps=1024,
     whiten_layers=True,
     number_activations=NUMBER_OF_AVAILABLE_SAMPLES,
-    icon_batch_size=32,
+    icon_batch_size=16,
     verbose=False,
 ):
     """Renders two aligned Activation Atlases of the given models' layers.

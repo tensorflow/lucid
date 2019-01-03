@@ -80,12 +80,12 @@ def render_icons(
     model,
     layer,
     size=80,
-    n_steps=128,
+    n_steps=1024,
     verbose=False,
     S=None,
-    num_attempts=3,
+    num_attempts=2,
     cossim=True,
-    alpha=False,
+    alpha=True,
 ):
 
     model.load_graphdef()
