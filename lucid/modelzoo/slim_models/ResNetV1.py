@@ -26,6 +26,7 @@ class ResnetV1_50_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/ResnetV1_50.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
 
@@ -66,6 +67,7 @@ class ResnetV1_101_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/ResnetV1_101.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   image_value_range = (-117, 255-117) # Inferred by testing, may not be exactly right
@@ -122,6 +124,7 @@ class ResnetV1_152_slim(Model):
 
   model_path  = 'gs://modelzoo/vision/slim_models/ResnetV1_152.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_with_dummy_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   image_value_range = (-117, 255-117) # Inferred by testing, may not be exactly right

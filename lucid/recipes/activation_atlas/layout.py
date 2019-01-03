@@ -16,7 +16,10 @@
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
+import logging
 from umap import UMAP
+
+log = logging.getLogger(__name__)
 
 
 def normalize_layout(layout, min_percentile=1, max_percentile=99, relative_margin=0.1):
@@ -44,7 +47,7 @@ def aligned_umap(activations, umap_options={}, normalize=True, verbose=False):
     """`activations` can be a list of ndarrays. In that case a list of layouts is returned."""
 
     umap_defaults = dict(
-        n_components=2, n_neighbors=50, min_dist=0.05, verbose=True, metric="cosine"
+        n_components=2, n_neighbors=50, min_dist=0.05, verbose=verbose, metric="cosine"
     )
     umap_defaults.update(umap_options)
 
@@ -55,13 +58,17 @@ def aligned_umap(activations, umap_options={}, normalize=True, verbose=False):
     else:
         num_activation_groups = 1
         combined_activations = activations
-
-    layout = UMAP(**umap_defaults).fit_transform(combined_activations)
+    try:
+        layout = UMAP(**umap_defaults).fit_transform(combined_activations)
+    except (RecursionError, SystemError) as exception:
+        log.error("UMAP failed to fit these activations. We're not yet sure why this sometimes occurs.")
+        raise ValueError("UMAP failed to fit activations: %s", exception)
 
     if normalize:
         layout = normalize_layout(layout)
 
     if num_activation_groups > 1:
-        return np.split(layout, num_activation_groups, axis=0)
+        layouts = np.split(layout, num_activation_groups, axis=0)
+        return layouts
     else:
         return layout

@@ -108,7 +108,7 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
             print_objective_func(sess)
             show(np.hstack(vis))
     except KeyboardInterrupt:
-      log.warn("Interrupted optimization at step {:d}.".format(i+1))
+      log.warning("Interrupted optimization at step {:d}.".format(i+1))
       vis = t_image.eval()
       show(np.hstack(vis))
 
@@ -249,13 +249,16 @@ def make_optimizer(optimizer, args):
            "optimizer, or tf.train.Optimizer instance.")
 
 
-def import_model(model, t_image, t_image_raw):
+def import_model(model, t_image, t_image_raw, scope="import"):
 
-  model.import_graph(t_image, scope="import", forget_xy_shape=True)
+  model.import_graph(t_image, scope=scope, forget_xy_shape=True)
 
   def T(layer):
     if layer == "input": return t_image_raw
     if layer == "labels": return model.labels
-    return t_image.graph.get_tensor_by_name("import/%s:0"%layer)
+    if ":" in layer:
+        return t_image.graph.get_tensor_by_name("%s/%s" % (scope,layer))
+    else:
+        return t_image.graph.get_tensor_by_name("%s/%s:0" % (scope,layer))
 
   return T

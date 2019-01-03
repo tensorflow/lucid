@@ -25,6 +25,9 @@ _template = """
   </script>
  """
 
+def js_id(name):
+  # name_str will become the name of a javascript variable, and can't contain dashes.
+  return name + "_" + str(uuid.uuid4()).replace('-', '_')
 
 def build_svelte(html_fname):
   js_fname = html_fname.replace(".html", ".js")
@@ -55,7 +58,7 @@ def SvelteComponent(name, path):
     js_path = build_svelte(path)
   js_content = read(js_path, mode='r')
   def inner(data):
-    id_str = name + "_" + str(uuid.uuid4())
+    id_str = js_id(name)
     html = _template \
         .replace("$js", js_content) \
         .replace("$name", name) \
@@ -68,10 +71,9 @@ def SvelteComponent(name, path):
 @register_cell_magic
 def html_define_svelte(line, cell):
   base_name = line.split()[0]
-  # name_str will become the name of a javascript variable, and can't contain dashes.
-  name_str = base_name + "_" + str(uuid.uuid4()).replace('-', '_')
-  html_fname = osp.join(_svelte_temp_dir, name_str + ".html")
+  id_str = js_id(base_name)
+  html_fname = osp.join(_svelte_temp_dir, id_str + ".html")
   with open(html_fname, "w") as f:
     f.write(cell)
-  component = SvelteComponent(name_str, html_fname)
+  component = SvelteComponent(id_str, html_fname)
   globals()[base_name] = component

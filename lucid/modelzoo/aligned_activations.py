@@ -19,7 +19,7 @@ from lucid.misc.io.sanitizing import sanitize
 from lucid.misc.io import load
 
 import numpy as np
-from functools import lru_cache
+from cachetools.func import lru_cache
 
 PATH_TEMPLATE = "gs://modelzoo/aligned-activations/{}/{}-{:05d}-of-01000.npy"
 PAGE_SIZE = 10000
@@ -39,33 +39,31 @@ def get_aligned_activations(layer):
         )
         for page in range(NUMBER_OF_PAGES)
     ]
-    activations = [load(path) for path in activation_paths]
-    return np.vstack(activations)
+    activations = np.vstack([load(path) for path in activation_paths])
+    assert np.all(np.isfinite(activations))
+    return activations
 
 
 @lru_cache()
-def layer_correlation(layer1, layer2=None):
-    """Computes the correlation matrix between the neurons of two layers."""
-
-    # if only one layer is passed, compute the correlation matrix of that layer
-    if layer2 is None:
-        layer2 = layer1
-
+def layer_covariance(layer1, layer2=None):
+    """Computes the covariance matrix between the neurons of two layers. If only one
+    layer is passed, computes the symmetric covariance matrix of that layer."""
+    layer2 = layer2 or layer1
     act1, act2 = layer1.activations, layer2.activations
-    covariance = np.matmul(act1.T, act2)
-    return covariance / len(act1)
+    num_datapoints = act1.shape[0]  # cast to avoid numpy type promotion during division
+    return np.matmul(act1.T, act2) / float(num_datapoints)
 
 
 @lru_cache()
-def layer_decorrelation(layer):
+def layer_inverse_covariance(layer):
     """Inverse of a layer's correlation matrix. Function exists mostly for caching."""
-    return np.linalg.inv(layer_correlation(layer))
+    return np.linalg.inv(layer_covariance(layer))
 
 
 def push_activations(activations, from_layer, to_layer):
     """Push activations from one model to another using prerecorded correlations"""
-    decorrelation_matrix = layer_decorrelation(from_layer)
-    activations_decorrelated = np.dot(decorrelation_matrix, activations.T).T
-    correlation_matrix = layer_correlation(from_layer, to_layer)
-    activation_recorrelated = np.dot(activations_decorrelated, correlation_matrix)
+    inverse_covariance_matrix = layer_inverse_covariance(from_layer)
+    activations_decorrelated = np.dot(inverse_covariance_matrix, activations.T).T
+    covariance_matrix = layer_covariance(from_layer, to_layer)
+    activation_recorrelated = np.dot(activations_decorrelated, covariance_matrix)
     return activation_recorrelated

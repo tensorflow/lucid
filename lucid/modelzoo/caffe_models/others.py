@@ -25,6 +25,7 @@ class CaffeNet_caffe(Model):
 
   model_path  = 'gs://modelzoo/vision/caffe_models/CaffeNet.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [227, 227, 3]
   is_BGR = True
@@ -53,6 +54,7 @@ class VGG16_caffe(Model):
   """
   model_path = 'gs://modelzoo/vision/caffe_models/VGG16.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   is_BGR = True
@@ -92,6 +94,7 @@ class VGG19_caffe(Model):
   """
   model_path = 'gs://modelzoo/vision/caffe_models/VGG19.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_standard.txt'
+  synsets_path = 'gs://modelzoo/labels/ImageNet_standard_synsets.txt'
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   is_BGR = True

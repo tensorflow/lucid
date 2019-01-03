@@ -137,8 +137,9 @@ def collapse_alpha_random(sd=0.5):
 
 
 def _rand_select(xs, seed=None):
-    rand_n = tf.random_uniform((), 0, len(xs), "int32", seed=seed)
-    return tf.constant(xs)[rand_n]
+    xs_list = list(xs)
+    rand_n = tf.random_uniform((), 0, len(xs_list), "int32", seed=seed)
+    return tf.constant(xs_list)[rand_n]
 
 
 def _angle2rads(angle, units):
@@ -149,6 +150,15 @@ def _angle2rads(angle, units):
         angle = angle
     return angle
 
+
+def crop_or_pad_to(height, width):
+    """Ensures the specified spatial shape by either padding or cropping.
+    Meant to be used as a last transform for architectures insisting on a specific
+    spatial shape of their inputs.
+    """
+    def inner(t_image):
+        return tf.image.resize_image_with_crop_or_pad(t_image, height, width)
+    return inner
 
 standard_transforms = [
     pad(12, mode="constant", constant_value=.5),

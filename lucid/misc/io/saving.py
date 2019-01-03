@@ -54,7 +54,7 @@ def save_npy(object, handle):
 def save_npz(object, handle):
   """Save dict of numpy array as npz file."""
   # there is a bug where savez doesn't actually accept a file handle.
-  log.warn("Saving npz files currently only works locally. :/")
+  log.warning("Saving npz files currently only works locally. :/")
   path = handle.name
   handle.close()
   if type(object) is dict:
@@ -62,7 +62,7 @@ def save_npz(object, handle):
   elif type(object) is list:
     np.savez(path, *object)
   else:
-    log.warn("Saving non dict or list as npz file, did you maybe want npy?")
+    log.warning("Saving non dict or list as npz file, did you maybe want npy?")
     np.savez(path, object)
 
 
@@ -117,5 +117,6 @@ def save(thing, url_or_handle, **kwargs):
       with write_handle(url_or_handle) as handle:
         saver(thing, handle, **kwargs)
   else:
+    saver_names = [(key, function.__name__) for (key, value) in savers.items()]
     message = "Unknown extension '{}', supports {}."
-    raise RuntimeError(message.format(ext, savers))
+    raise RuntimeError(message.format(ext, saver_names))

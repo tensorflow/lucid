@@ -116,13 +116,13 @@ def show(thing, domain=(0, 1)):
       log.debug("Show is assuming rank 2 or 3 tensor to be an image.")
       image(thing, domain=domain)
     else:
-      log.warn("Show only supports numpy arrays of rank 2-4. Using repr().")
+      log.warning("Show only supports numpy arrays of rank 2-4. Using repr().")
       print(repr(thing))
   elif isinstance(thing, (list, tuple)):
     log.debug("Show is assuming list or tuple to be a collection of images.")
     images(thing, domain=domain)
   else:
-    log.warn("Show only supports numpy arrays so far. Using repr().")
+    log.warning("Show only supports numpy arrays so far. Using repr().")
     print(repr(thing))
 
 

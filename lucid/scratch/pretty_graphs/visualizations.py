@@ -112,7 +112,7 @@ def display_tooltips(node_selector, tooltip_key_attr, tooltips, container_select
 
 def get_box(render, name):
   box_map = render["node_boxes"]
-  matches = [node for node in box_map.keys() if node.name == name]
+  matches = [node for node in list(box_map.keys()) if node.name == name]
   match = matches[0]
   box = box_map[match]
   return box
@@ -133,7 +133,7 @@ def model_align_display(model1, model2, lines, middle_sep=150):
   H = shape1[1] + middle_sep + shape2[1] + 20
 
   paths = []
-  for (name1, name2), weight in lines.items():
+  for (name1, name2), weight in list(lines.items()):
     box1, box2 = get_box(render1, name1), get_box(render2, name2)
     start = [(box1[0][0]+box1[0][1])/2., shape1[1] + 15 + 10]
     end = [(box2[0][0]+box2[0][1])/2., shape1[1] + middle_sep - 10]
