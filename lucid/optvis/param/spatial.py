@@ -64,7 +64,7 @@ def fft_image(shape, sd=None, decay_power=1):
     sd = sd or 0.01
     batch, h, w, ch = shape
     freqs = rfft2d_freqs(h, w)
-    init_val_size = (2, ch, *freqs.shape)
+    init_val_size = (2, ch) + freqs.shape
 
     images = []
     for _ in range(batch):
