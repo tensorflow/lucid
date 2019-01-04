@@ -24,8 +24,8 @@ def _remove(path):
   except OSError:
     pass
 
-def test_save_json():
-  path = "./tests/fixtures/dictionary.json"
+def test_save_json(tmpdir):
+  path = str(tmpdir.join("dictionary.json"))
   _remove(path)
   save(dictionary, path)
   assert os.path.isfile(path)
@@ -33,8 +33,8 @@ def test_save_json():
   assert content == dictionary_json
 
 
-def test_save_npy():
-  path = "./tests/fixtures/array.npy"
+def test_save_npy(tmpdir):
+  path = str(tmpdir.join("array.npy"))
   _remove(path)
   save(array1, path)
   assert os.path.isfile(path)
@@ -42,8 +42,8 @@ def test_save_npy():
   assert np.array_equal(array1, re_read_array)
 
 
-def test_save_npz_array():
-  path = "./tests/fixtures/arrays.npz"
+def test_save_npz_array(tmpdir):
+  path = str(tmpdir.join("arrays.npz"))
   _remove(path)
   save([array1, array2], path)
   assert os.path.isfile(path)
@@ -53,8 +53,8 @@ def test_save_npz_array():
   assert np.array_equal(array2, re_read_arrays["arr_1"])
 
 
-def test_save_npz_dict():
-  path = "./tests/fixtures/arrays.npz"
+def test_save_npz_dict(tmpdir):
+  path = str(tmpdir.join("arrays.npz"))
   _remove(path)
   arrays = { "array1": array1, "array2": array2 }
   save(arrays, path)
@@ -64,21 +64,21 @@ def test_save_npz_dict():
   assert np.array_equal(arrays["array1"], re_read_arrays["array1"])
 
 
-def test_save_image_png():
-  path = "./tests/fixtures/rgbeye.png"
+def test_save_image_png(tmpdir):
+  path = str(tmpdir.join("rgbeye.png"))
   _remove(path)
   save(array2, path)
   assert os.path.isfile(path)
 
 
-def test_save_image_jpg():
-  path = "./tests/fixtures/rgbeye.jpg"
+def test_save_image_jpg(tmpdir):
+  path = str(tmpdir.join("rgbeye.jpg"))
   _remove(path)
   save(array2, path)
   assert os.path.isfile(path)
 
-def test_save_named_handle():
-  path = "./tests/fixtures/rgbeye.jpg"
+def test_save_named_handle(tmpdir):
+  path = str(tmpdir.join("rgbeye.jpg"))
   _remove(path)
   with io.open(path, 'wb') as handle:
     save(array2, handle)
