@@ -16,9 +16,11 @@ from lucid.modelzoo.slim_models.MobilenetV1 import *
 from lucid.modelzoo.slim_models.MobilenetV2 import *
 from lucid.modelzoo.slim_models.others import *
 
-__all__ = [_name for _name, _obj in list(globals().items())
-           if isinstance(_obj, type) and issubclass(_obj, _Model)
-           and _obj is not _Model]
+__all__ = [
+    _name
+    for _name, _obj in list(globals().items())
+    if isinstance(_obj, type) and issubclass(_obj, _Model) and _obj is not _Model
+]
 
 del absolute_import
 del division
@@ -28,7 +30,8 @@ del IMAGENET_MEAN
 
 # in Python 2 only, list comprehensions leak bound vars to a broader scope
 try:
-  del _obj
-  del _name
-except:
-  pass
+    del _obj
+    del _name
+    del _layers_from_list_of_dicts
+except NameError:
+    pass

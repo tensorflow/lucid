@@ -21,9 +21,8 @@ import tensorflow as tf
 from lucid.optvis.param.resize_bilinear_nd import resize_bilinear_nd
 
 
-
 def lowres_tensor(shape, underlying_shape, offset=None, sd=None):
-  """Produces a tensor paramaterized by a interpolated lower resolution tensor.
+    """Produces a tensor paramaterized by a interpolated lower resolution tensor.
 
   This is like what is done in a laplacian pyramid, but a bit more general. It
   can be a powerful way to describe images.
@@ -42,24 +41,26 @@ def lowres_tensor(shape, underlying_shape, offset=None, sd=None):
   Returns:
     A tensor paramaterized by a lower resolution tensorflow variable.
   """
-  sd = sd or 0.01
-  init_val = sd*np.random.randn(*underlying_shape).astype("float32")
-  underlying_t = tf.Variable(init_val)
-  t = resize_bilinear_nd(underlying_t, shape)
-  if offset is not None:
-    # Deal with non-list offset
-    if not isinstance(offset, list):
-      offset = len(shape)*[offset]
-    # Deal with the non-int offset entries
-    for n in range(len(offset)):
-      if offset[n] is True:
-        offset[n] = shape[n]/underlying_shape[n]/2
-      if offset[n] is False:
-        offset[n] = 0
-      offset[n] = int(offset[n])
-    # Actually apply offset by padding and then croping off the excess.
-    padding = [(pad, 0) for pad in offset]
-    t = tf.pad(t, padding, "SYMMETRIC")
-    begin = len(shape)*[0]
-    t = tf.slice(t, begin, shape)
-  return t
+    sd = sd or 0.01
+    init_val = sd * np.random.randn(*underlying_shape).astype("float32")
+    underlying_t = tf.Variable(init_val)
+    t = resize_bilinear_nd(underlying_t, shape)
+    if offset is not None:
+        # Deal with non-list offset
+        if not isinstance(offset, list):
+            offset = len(shape) * [offset]
+
+        # Deal with the non-int offset entries
+        for n in range(len(offset)):
+            if offset[n] is True:
+                offset[n] = shape[n] / underlying_shape[n] / 2
+            if offset[n] is False:
+                offset[n] = 0
+            offset[n] = int(offset[n])
+
+        # Actually apply offset by padding and then croping off the excess.
+        padding = [(pad, 0) for pad in offset]
+        t = tf.pad(t, padding, "SYMMETRIC")
+        begin = len(shape) * [0]
+        t = tf.slice(t, begin, shape)
+    return t

@@ -10,6 +10,9 @@ def inceptionv1():
     return model
 
 
+# Add support for a slow tests marker:
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--run-slow", action="store_true", default=False, help="run slow tests"
