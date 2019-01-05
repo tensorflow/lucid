@@ -1,21 +1,27 @@
 const chai = require('chai');
+const chaiAlmost = require('chai-almost');
+chai.use(chaiAlmost());
 const expect = chai.expect;
+const fs = require('fs')
 
 const fetchMock = require('fetch-mock');
 const load = require("../public/index.cjs.js").load;
 
+
+const buffer = fs.readFileSync('test/data/float32-(4,).npy');
+const arrayBuffer = new Uint8Array(buffer).buffer;
+// console.log(arrayBuffer);
 const mockData = { 'test': 42 }
-fetchMock.mock('404', 404);
-fetchMock.mock('test.json', JSON.stringify(mockData));
-fetchMock.mock('test.csv', `NAME,VALUE,COLOR,DATE
-Minna,12,blue,Sep. 25 2009
-Hazel,27,teal,Sep. 30 2009`);
-fetchMock.mock('test.tsv', `NAME	VALUE	COLOR	DATE
-Minna	12	blue	Sep. 25, 2009
-Hazel	27	teal	Sep. 30, 2009`);
+fetchMock.config.sendAsJson = false;
+fetchMock
+  .mock('404', 404)
+  .mock('test.json', JSON.stringify(mockData))
+  .mock('test.csv', `NAME,VALUE,COLOR,DATE\nMinna,12,blue,Sep. 25 2009\nHazel,27,teal,Sep. 30 2009`)
+  .mock('test.tsv', `NAME	VALUE	COLOR	DATE\nMinna	12	blue	Sep. 25, 2009\nHazel	27	teal	Sep. 30, 2009`)
+  .mock('array.npy', arrayBuffer, {sendAsJson: false});
 
 describe('load()', function () {
-  
+
   it('should throw an error if we get a 404', function (done) {
     load('404')
       .then(result => done(new Error('Completed when it should not have.')))
@@ -25,6 +31,14 @@ describe('load()', function () {
   it('should load and parse a json file when the url has a .json extension', function (done) {
     load('test.json').then(result => {
       expect(result).to.have.property('test').and.to.equal(42);
+      done();
+    });
+  });
+
+  it('should load and parse a npy file when the url has a .npy extension', function (done) {
+    load('array.npy').then({ data: array, shape } => {
+      const norm = Math.sqrt(array.reduce((accum, x) => accum + Math.pow(x, 2), 0));
+      expect(norm).to.almost.equal(1.0);
       done();
     });
   });

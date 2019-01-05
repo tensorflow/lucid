@@ -14,15 +14,17 @@
 // ==============================================================================
 
 import { csvParse, tsvParse } from 'd3-dsv';
+import { fromArrayBuffer as npyParse } from 'numpy-parser';
+import NDArray from 'ndarray';
 
 
-// // Basic usage examples: 
+// // Basic usage examples:
 // import {load} from 'lucid-components';
-// 
+//
 // load("test.csv").then(response => console.log("1", response));
 // load(["test.csv", "test.tsv"]).then(response => console.log("2", response[0], response[1]));
 // load('3a.jpg').then(response => {this.refs.img.src = response.src;})
-// 
+//
 // // You can also namespace requests, which will cancel previous requests
 // load("test.csv", "namespace").then(response => console.log("This will never be called."))
 // load("test.tsv", "namespace").then(response => console.log("This will interrupt the previous one and be resolved instead."))
@@ -45,6 +47,7 @@ const loaders = new Map([
   ['txt', text],
   ['text', text],
   ['json', json],
+  ['npy', npy],
 ]);
 
 // Loaders
@@ -73,12 +76,38 @@ function text(url) {
   return fetch(url).then(handleErrors).then(response => response.text());
 }
 
+function arrayBuffer(url) {
+  return fetch(url).then(handleErrors).then(response => {
+    if (response.body && response.body instanceof ArrayBuffer) {
+      // within node, this is how we seem to get the ArrayBuffer from fetch-mock
+      return response.body;
+    } else {
+      // https://developer.mozilla.org/en-US/docs/Web/API/Response
+      return response.arrayBuffer();
+    }
+  });
+}
+
 function csv(url) {
   return text(url).then(text => Promise.resolve(csvParse(text)));
 }
 
 function tsv(url) {
   return text(url).then(text => Promise.resolve(tsvParse(text)));
+}
+
+function asciiDecode(buffer) {
+  const castBuffer = new Uint8Array(buffer);
+  return String.fromCharCode(...castBuffer);
+}
+
+function npy(url) {
+  return arrayBuffer(url)
+    .then(arrayBuffer => {
+      const { data, shape } = npyParse(arrayBuffer);
+      const ndarray = NDArray(data, shape);
+      return Promise.resolve(ndarray)
+    });
 }
 
 
@@ -92,15 +121,15 @@ function load(url, namespace) {
   let requestID = "namespace:" + ns + ", url:" + url + ", random:" + Date.now() + "" + Math.random();
   suppress.set(requestID, false);
 
-  // If we have a previous request in this namespace, mark it as suppressed so 
-  // that the promise is never resolved. Then we reset the current namespace to 
+  // If we have a previous request in this namespace, mark it as suppressed so
+  // that the promise is never resolved. Then we reset the current namespace to
   // the current request.
   if (namespaces.has(ns)) {
     const pendingRequestID = namespaces.get(ns);
     suppress.set(pendingRequestID, true);
   }
   namespaces.set(ns, requestID);
-  
+
   return new Promise((resolve, reject) => {
     let p;
     if (Array.isArray(url)) {
@@ -122,7 +151,7 @@ function load(url, namespace) {
           reject(error);
         }
       });
-    
+
   });
 }
 
