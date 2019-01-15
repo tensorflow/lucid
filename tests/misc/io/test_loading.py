@@ -21,6 +21,13 @@ def test_load_text():
   assert u"🐕" in string
 
 
+def test_load_multiline_text_as_list():
+  path = "./tests/fixtures/multiline.txt"
+  string_list = load(path, split=True)
+  assert isinstance(string_list, list)
+  assert all(isinstance(string, str) for string in string_list)
+
+
 def test_load_npy():
   path = "./tests/fixtures/array.npy"
   array = load(path)

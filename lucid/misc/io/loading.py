@@ -73,9 +73,15 @@ def _load_json(handle, **kwargs):
     return json.load(handle)
 
 
-def _load_text(handle, encoding="utf-8"):
+def _load_text(handle, split=False, encoding="utf-8"):
     """Load and decode a string."""
-    return handle.read().decode(encoding)
+
+    string = handle.read().decode(encoding)
+
+    if split:
+        return string.splitlines()
+    else:
+        return string
 
 
 def _load_graphdef_protobuf(handle, **kwargs):

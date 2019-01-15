@@ -110,8 +110,6 @@ def read_handle(url, cache=None, mode="rb"):
     else:
         if scheme in ("http", "https"):
             handle = _handle_web_url(url, mode=mode)
-        elif scheme == "gs":
-            handle = _handle_gcs_url(url, mode=mode)
         else:
             handle = _handle_gfile(url, mode=mode)
 
@@ -128,14 +126,6 @@ def _handle_gfile(url, mode="rb"):
 
 def _handle_web_url(url, mode="r"):
     return request.urlopen(url)
-
-
-def _handle_gcs_url(url, mode="r"):
-    # TODO: transparently allow authenticated access through storage API
-    _, resource_name = url.split("://")
-    base_url = "https://storage.googleapis.com/"
-    url = urljoin(base_url, resource_name)
-    return _handle_web_url(url, mode=mode)
 
 
 # Helper Functions
