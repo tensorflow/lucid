@@ -10,6 +10,7 @@ coverage.txt
 .coverage
 lucidenv
 lucid-env
+.idea
 
 pip-selfcheck.json
 
