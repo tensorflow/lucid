@@ -24,3 +24,6 @@ import logging
 
 logging.basicConfig(level=logging.WARN)
 del logging
+
+# Lucid uses a fixed random seed for reproducability. Use to seed sources of randomness.
+seed = 0

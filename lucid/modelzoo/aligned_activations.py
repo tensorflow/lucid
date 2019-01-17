@@ -13,6 +13,9 @@
 # limitations under the License.
 # ==============================================================================
 
+"""Helper code for downloading and using previously collected aligned activations.
+See recipes > collection for code that collected them in teh first place."""
+
 from __future__ import absolute_import, division, print_function
 
 from lucid.misc.io.sanitizing import sanitize

@@ -87,14 +87,16 @@ def save_txt(object, handle, **kwargs):
         handle.write(object)
     elif isinstance(object, list):
         for line in object:
-            if not isinstance(line, str):
-                line = repr(line)
+            if isinstance(line, str):
+                line = line.encode()
+            if not isinstance(line, bytes):
+                line_type = type(line)
+                line = repr(line).encode()
                 warnings.warn(
-                    "`save_txt` was called with an array containing objects other than "
-                    "strings; using `repr` to convert values to string."
+                    "`save_txt` found an object of type {}; using `repr` to convert it to string.".format(line_type)
                 )
-            if not line.endswith("\n"):
-                line += "\n"
+            if not line.endswith(b"\n"):
+                line += b"\n"
             handle.write(line)
 
 
