@@ -40,14 +40,13 @@ log = logging.getLogger(__name__)
 
 def _load_npy(handle, **kwargs):
     """Load npy file as numpy array."""
-    del kwargs
-    return np.load(handle)
+    return np.load(handle, **kwargs)
 
 
-def _load_img(handle, target_dtype=np.float32, size=None):
+def _load_img(handle, target_dtype=np.float32, size=None, **kwargs):
     """Load image file as numpy array."""
 
-    image_pil = PIL.Image.open(handle)
+    image_pil = PIL.Image.open(handle, **kwargs)
 
     # resize the image to the requested size, if one was specified
     if size is not None:
@@ -66,24 +65,20 @@ def _load_img(handle, target_dtype=np.float32, size=None):
     return np.divide(image_array, image_max_value, dtype=target_dtype)
 
 
-def _load_json(handle):
+def _load_json(handle, **kwargs):
     """Load json file as python object."""
-    return json.load(handle)
+    return json.load(handle, **kwargs)
 
 
 def _load_text(handle, split=False, encoding="utf-8"):
     """Load and decode a string."""
-
     string = handle.read().decode(encoding)
-
-    if split:
-        return string.splitlines()
-    else:
-        return string
+    return string.splitlines() if split else string
 
 
-def _load_graphdef_protobuf(handle):
+def _load_graphdef_protobuf(handle, **kwargs):
     """Load GraphDef from a binary proto file."""
+    del kwargs
     return tf.GraphDef.FromString(handle.read())
 
 
@@ -100,7 +95,7 @@ loaders = {
 }
 
 
-def load(url_or_handle, cache=None, encoding="utf-8", **kwargs):
+def load(url_or_handle, cache=None, **kwargs):
     """Load a file.
 
     File format is inferred from url. File retrieval strategy is inferred from
@@ -118,7 +113,7 @@ def load(url_or_handle, cache=None, encoding="utf-8", **kwargs):
         loader = loaders[ext.lower()]
         message = "Using inferred loader '%s' due to passed file extension '%s'."
         log.debug(message, loader.__name__[6:], ext)
-        return load_using_loader(url_or_handle, loader, cache, encoding, **kwargs)
+        return load_using_loader(url_or_handle, loader, cache, **kwargs)
 
     except KeyError:
 
@@ -137,20 +132,20 @@ def load(url_or_handle, cache=None, encoding="utf-8", **kwargs):
 
 # Helpers
 
-def load_using_loader(url_or_handle, loader, cache, encoding, **kwargs):
+def load_using_loader(url_or_handle, loader, cache, **kwargs):
     if is_handle(url_or_handle):
-        result = loader(url_or_handle, encoding=encoding, **kwargs)
+        result = loader(url_or_handle, **kwargs)
     else:
         url = url_or_handle
         try:
             with read_handle(url, cache=cache) as handle:
-                result = loader(handle, encoding=encoding, **kwargs)
+                result = loader(handle, **kwargs)
         except (DecodeError, ValueError):
             log.warning("While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception!", url)
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
             with read_handle(url, cache='purge') as handle:
-                result = load_using_loader(handle, loader, cache, encoding, **kwargs)
+                result = load_using_loader(handle, loader, cache, **kwargs)
     return result
 
 
