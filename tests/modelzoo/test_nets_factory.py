@@ -18,7 +18,6 @@ from __future__ import division
 from __future__ import print_function
 
 import pytest
-import tensorflow as tf
 
 from lucid.modelzoo.nets_factory import get_model, models_map
 from lucid.modelzoo.vision_models import InceptionV1

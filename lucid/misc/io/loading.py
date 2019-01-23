@@ -44,15 +44,14 @@ def _load_npy(handle, **kwargs):
     return np.load(handle)
 
 
-def _load_img(handle, target_dtype=np.float32, **kwargs):
+def _load_img(handle, target_dtype=np.float32, size=None):
     """Load image file as numpy array."""
 
     image_pil = PIL.Image.open(handle)
 
     # resize the image to the requested size, if one was specified
-    if 'size' in kwargs:
-      requested_image_size = kwargs['size']
-      image_pil = image_pil.resize(requested_image_size, resample=PIL.Image.LANCZOS)
+    if size is not None:
+      image_pil = image_pil.resize(size, resample=PIL.Image.LANCZOS)
 
     image_array = np.asarray(image_pil)
 
@@ -67,9 +66,8 @@ def _load_img(handle, target_dtype=np.float32, **kwargs):
     return np.divide(image_array, image_max_value, dtype=target_dtype)
 
 
-def _load_json(handle, **kwargs):
+def _load_json(handle):
     """Load json file as python object."""
-    del kwargs
     return json.load(handle)
 
 
@@ -84,9 +82,8 @@ def _load_text(handle, split=False, encoding="utf-8"):
         return string
 
 
-def _load_graphdef_protobuf(handle, **kwargs):
+def _load_graphdef_protobuf(handle):
     """Load GraphDef from a binary proto file."""
-    del kwargs
     return tf.GraphDef.FromString(handle.read())
 
 

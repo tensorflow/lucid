@@ -22,18 +22,13 @@ import logging
 import tensorflow as tf
 import numpy as np
 
-from lucid.modelzoo.util import load_text_labels, load_graphdef, forget_xy
+from lucid.modelzoo.util import load_graphdef, forget_xy
 from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_aligned_activations
 from lucid.misc.io import load
 import lucid.misc.io.showing as showing
 
 # ImageNet classes correspond to WordNet Synsets.
-# If NLTK and the WordNet corpus are installed, we can support
-# interoperability in a few places.
-try:
-    from nltk.corpus import wordnet
-except:
-    wordnet = None
+from lucid.modelzoo.wordnet import synset_from_id
 
 
 IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
@@ -111,15 +106,10 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   def __init__(self):
     self.graph_def = None
     if hasattr(self, 'labels_path') and self.labels_path is not None:
-      self.labels = load_text_labels(self.labels_path)
+      self.labels = load(self.labels_path, split=True)
     if hasattr(self, 'synsets_path') and self.synsets_path is not None:
-      self.synsets = load_text_labels(self.synsets_path)
-      # If NLTK WordNet is available, provide synsets in that form as well.
-      if wordnet is not None:
-          def get_synset(id_str):
-              pos, offset = id_str[0], int(id_str[1:])
-              return wordnet.synset_from_pos_and_offset(pos, offset)
-          self.nltk_synsets = [get_synset(id) for id in self.synsets]
+      self.synset_ids = load(self.synsets_path, split=True)
+      self.synsets = [synset_from_id(id) for id in self.synset_ids]
 
   @property
   def name(self):
