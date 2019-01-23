@@ -46,8 +46,6 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
   Returns:
     URL representing image
   """
-  # TODO: think about supporting saving to CNS, potential params: cns, name
-  # TODO: think about saving to Cloud Storage
   supported_modes = ("data")
   if mode not in supported_modes:
     message = "Unsupported mode '%s', should be one of '%s'."
@@ -61,7 +59,7 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
 # public functions
 
 
-def image(array, domain=None, w=None, format='png'):
+def image(array, domain=None, width=None, format='png', **kwargs):
   """Display an image.
 
   Args:
@@ -71,9 +69,10 @@ def image(array, domain=None, w=None, format='png'):
     w: width of output image, scaled using nearest neighbor interpolation.
       size unchanged if None
   """
-  data_url = _image_url(array, domain=domain, fmt=format)
-  html = '<img src=\"' + data_url + '\">'
-  _display_html(html)
+
+  image_data = serialize_array(array, fmt=format, domain=domain)
+  image = IPython.display.Image(data=image_data, format=format, width=width)
+  IPython.display.display(image)
 
 
 def images(arrays, labels=None, domain=None, w=None):
@@ -100,7 +99,7 @@ def images(arrays, labels=None, domain=None, w=None):
   _display_html(s)
 
 
-def show(thing, domain=(0, 1)):
+def show(thing, domain=(0, 1), **kwargs):
   """Display a nupmy array without having to specify what it represents.
 
   This module will attempt to infer how to display your tensor based on its
@@ -111,16 +110,16 @@ def show(thing, domain=(0, 1)):
     rank = len(thing.shape)
     if rank == 4:
       log.debug("Show is assuming rank 4 tensor to be a list of images.")
-      images(thing, domain=domain)
+      images(thing, domain=domain, **kwargs)
     elif rank in (2, 3):
       log.debug("Show is assuming rank 2 or 3 tensor to be an image.")
-      image(thing, domain=domain)
+      image(thing, domain=domain, **kwargs)
     else:
       log.warning("Show only supports numpy arrays of rank 2-4. Using repr().")
       print(repr(thing))
   elif isinstance(thing, (list, tuple)):
     log.debug("Show is assuming list or tuple to be a collection of images.")
-    images(thing, domain=domain)
+    images(thing, domain=domain, **kwargs)
   else:
     log.warning("Show only supports numpy arrays so far. Using repr().")
     print(repr(thing))
@@ -272,13 +271,13 @@ def textured_mesh(mesh, texture, background='0xffffff'):
 
 def _strip_consts(graph_def, max_const_size=32):
     """Strip large constant values from graph_def.
-    
+
     This is mostly a utility function for graph(), and also originates here:
     https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/deepdream/deepdream.ipynb
     """
     strip_def = tf.GraphDef()
     for n0 in graph_def.node:
-        n = strip_def.node.add() 
+        n = strip_def.node.add()
         n.MergeFrom(n0)
         if n.op == 'Const':
             tensor = n.attr['value'].tensor
@@ -290,7 +289,7 @@ def _strip_consts(graph_def, max_const_size=32):
 
 def graph(graph_def, max_const_size=32):
     """Visualize a TensorFlow graph.
-    
+
     This function was originally found in this notebook (also Apache licensed):
     https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/deepdream/deepdream.ipynb
     """
@@ -308,7 +307,7 @@ def graph(graph_def, max_const_size=32):
           <tf-graph-basic id="{id}"></tf-graph-basic>
         </div>
     """.format(data=repr(str(strip_def)), id='graph'+str(np.random.rand()))
-  
+
     iframe = """
         <iframe seamless style="width:100%; height:620px; border: none;" srcdoc="{}"></iframe>
     """.format(code.replace('"', '&quot;'))
