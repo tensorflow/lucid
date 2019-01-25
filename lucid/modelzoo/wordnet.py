@@ -57,7 +57,7 @@ may be subtly different between models.
 from cachetools.func import lru_cache
 
 import nltk
-nltk.download("wordnet")
+nltk.download('wordnet', quiet=True)
 from nltk.corpus import wordnet as wn
 
 from lucid.misc.io import load

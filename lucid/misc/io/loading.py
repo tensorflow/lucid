@@ -50,7 +50,10 @@ def _load_img(handle, target_dtype=np.float32, size=None, **kwargs):
 
     # resize the image to the requested size, if one was specified
     if size is not None:
-      image_pil = image_pil.resize(size, resample=PIL.Image.LANCZOS)
+        if len(size) > 2:
+            size = size[:2]
+            log.warning("`_load_img()` received size: {}, trimming to first two dims!".format(size))
+        image_pil = image_pil.resize(size, resample=PIL.Image.LANCZOS)
 
     image_array = np.asarray(image_pil)
 
@@ -62,7 +65,16 @@ def _load_img(handle, target_dtype=np.float32, size=None, **kwargs):
     image_max_value = np.iinfo(image_dtype).max  # ...for uint8 that's 255, etc.
 
     # using np.divide should avoid an extra copy compared to doing division first
-    return np.divide(image_array, image_max_value, dtype=target_dtype)
+    ndimage = np.divide(image_array, image_max_value, dtype=target_dtype)
+
+    rank = len(ndimage.shape)
+    if rank == 3:
+        return ndimage
+    elif rank == 2:
+        return np.repeat(np.expand_dims(ndimage, axis=2), 3, axis=2)
+    else:
+        message = "Loaded image has more dimensions than expected: {}".format(rank)
+        raise NotImplementedError(message)
 
 
 def _load_json(handle, **kwargs):
