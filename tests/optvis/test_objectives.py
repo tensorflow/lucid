@@ -5,6 +5,8 @@ import pytest
 import tensorflow as tf
 import numpy as np
 from lucid.optvis import objectives, param, render, transform
+from lucid.optvis.objectives import wrap_objective
+
 
 np.random.seed(42)
 
