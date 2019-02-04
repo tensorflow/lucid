@@ -11,8 +11,8 @@ def resize(image, target_size, **kwargs):
 
     if not isinstance(target_size, (list, tuple, np.ndarray)):
         message = (
-            f"`target_size` should be a single number (width) or a list"
-            f"/tuple/ndarray (height, width), not {type(target_size)}."
+            "`target_size` should be a single number (width) or a list"
+            "/tuple/ndarray (height, width), not {}.".format(type(target_size))
         )
         raise ValueError(message)
 
