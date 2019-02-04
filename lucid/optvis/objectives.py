@@ -61,19 +61,16 @@ class Objective(object):
 
   def __init__(self, objective_func, name="", description=""):
     self.objective_func = objective_func
-    self.name = name
     self.description = description
+    self.value = None # This value is populated after a call
 
   def __add__(self, other):
     if isinstance(other, (int, float)):
       objective_func = lambda T: other + self(T)
-      name = self.name
-      description = self.description
     else:
       objective_func = lambda T: self(T) + other(T)
-      name = ", ".join([self.name, other.name])
-      description = "Sum(" + " +\n".join([self.description, other.description]) + ")"
-    return Objective(objective_func, name=name, description=description)
+    description = "(" + " + ".join([str(self), str(other)]) + ")"
+    return Objective(objective_func, description=description)
 
   def __neg__(self):
     return -1 * self
@@ -81,21 +78,13 @@ class Objective(object):
   def __sub__(self, other):
     return self + (-1 * other)
 
-  @staticmethod
-  def sum(objs):
-    objective_func = lambda T: sum([obj(T) for obj in objs])
-    descriptions = [obj.description for obj in objs]
-    description = "Sum(" + " +\n".join(descriptions) + ")"
-    names = [obj.name for obj in objs]
-    name = ", ".join(names)
-    return Objective(objective_func, name=name, description=description)
-
   def __mul__(self, other):
     if isinstance(other, (int, float)):
       objective_func = lambda T: other * self(T)
     else:
       objective_func = lambda T: self(T) * other(T)
-    return Objective(objective_func, name=self.name, description=self.description)
+    description = str(self) + "·" + str(other)
+    return Objective(objective_func, description=description)
 
   def __rmul__(self, other):
     return self.__mul__(other)
@@ -104,7 +93,14 @@ class Objective(object):
     return self.__add__(other)
 
   def __call__(self, T):
-    return self.objective_func(T)
+    self.value = self.objective_func(T)
+    return self.value
+
+  def __str__(self):
+    return self.description
+
+  def __repr__(self):
+    return self.description
 
 
 def _make_arg_str(arg):
@@ -124,7 +120,7 @@ def wrap_objective(f, *args, **kwds):
   """
   objective_func = f(*args, **kwds)
   objective_name = f.__name__
-  args_str = " [" + ", ".join([_make_arg_str(arg) for arg in args]) + "]"
+  args_str = "(" + ", ".join([_make_arg_str(arg) for arg in args]) + ")"
   description = objective_name.title() + args_str
   return Objective(objective_func, objective_name, description)
 
@@ -190,10 +186,10 @@ def direction(layer, vec, batch=None, cossim_pow=0):
   """Visualize a direction"""
   if batch is None:
     vec = vec[None, None, None]
-    return lambda T: _dot_cossim(T(layer), vec)
+    return lambda T: _dot_cossim(T(layer), vec, cossim_pow = cossim_pow)
   else:
     vec = vec[None, None]
-    return lambda T: _dot_cossim(T(layer)[batch], vec)
+    return lambda T: _dot_cossim(T(layer)[batch], vec, cossim_pow = cossim_pow)
 
 
 @wrap_objective
