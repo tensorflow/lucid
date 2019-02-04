@@ -67,7 +67,7 @@ IMAGENET_SYNSETS_PATH = "gs://modelzoo/labels/ImageNet_standard_synsets.txt"
 
 
 def id_from_synset(synset):
-    return f"{synset.pos()}{synset.offset():08}"
+    return "{}{:08}".format(synset.pos(), synset.offset())
 
 
 def synset_from_id(id_str):
