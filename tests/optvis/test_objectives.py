@@ -62,7 +62,7 @@ def test_composition():
 
 
 @pytest.mark.parametrize("cossim_pow", [0, 1, 2])
-def test_cossim():
+def test_cossim(cossim_pow):
     x = np.array([1,1], dtype = np.float32)
     y = np.array([1,0], dtype = np.float32)
     T = lambda _: tf.constant(x[None, None, None, :])
