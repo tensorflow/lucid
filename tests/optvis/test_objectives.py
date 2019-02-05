@@ -65,14 +65,17 @@ def test_composition():
 
 @pytest.mark.parametrize("cossim_pow", [0, 1, 2])
 def test_cossim(cossim_pow):
+    true_values = [1.0, 2**(0.5)/2, 0.5]
     x = np.array([1,1], dtype = np.float32)
     y = np.array([1,0], dtype = np.float32)
     T = lambda _: tf.constant(x[None, None, None, :])
     objective = objectives.direction("dummy", y, cossim_pow=cossim_pow)
-    obj     = objective(T)
-    sess    = tf.Session()
-    trueval = np.dot(x,y)*(np.dot(x,y)/(np.linalg.norm(x)*np.linalg.norm(y)))**cossim_pow
-    assert abs(sess.run(obj) - trueval) < 1e-3
+    objective_t = objective(T)
+    with tf.Session() as sess:
+        trueval = np.dot(x,y)*(np.dot(x,y)/(np.linalg.norm(x)*np.linalg.norm(y)))**cossim_pow
+        print(cossim_pow, trueval)
+        objective = sess.run(objective_t)
+    assert abs(objective - true_values[cossim_pow]) < 1e-3
 
 
 def test_channel(inceptionv1):
