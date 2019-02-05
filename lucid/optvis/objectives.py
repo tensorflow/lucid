@@ -178,7 +178,13 @@ def _dot_cossim(x, y, cossim_pow=0):
   if cossim_pow == 0: return tf.reduce_mean(xy_dot)
   x_mags = tf.sqrt(_dot(x,x))
   y_mags = tf.sqrt(_dot(y,y))
-  cossims = xy_dot / (eps + x_mags ) / (eps + y_mags)
+  a = xy_dot
+  b = (eps + x_mags )
+  c = (eps + y_mags)
+  d = a / b
+  e = d / c
+  print(a,b,c,d,e)
+  cossims = e
   floored_cossims = tf.maximum(0.1, cossims)
   return tf.reduce_mean(xy_dot * floored_cossims**cossim_pow)
 
