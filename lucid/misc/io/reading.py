@@ -28,15 +28,14 @@ from contextlib import contextmanager
 import os
 import re
 import logging
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 from future.moves.urllib import request
 from tensorflow import gfile
 from tempfile import gettempdir
-from io import BytesIO, StringIO
 import gc
 from filelock import FileLock
 
-from lucid.misc.io.writing import write, write_handle
+from lucid.misc.io.writing import write_handle
 
 
 # create logger with module name, e.g. lucid.misc.io.reading
@@ -113,7 +112,7 @@ def read_handle(url, cache=None, mode="rb"):
         elif scheme in ("gs"):
             handle = _handle_gfile(url, mode=mode)
         else:
-            handle = os.open(url, mode=mode)
+            handle = open(url, mode=mode)
 
     yield handle
     handle.close()
