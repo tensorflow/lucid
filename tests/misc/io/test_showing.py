@@ -19,13 +19,11 @@ golden_eye_html = ('<img src="data:image/PNG;base64,iVBORw0KGgoAAAANSUhEUgAAAAU'
 
 def test_show_image(mocker):
   mock_display = mocker.patch('IPython.display.display')
-  mock_html = mocker.patch('IPython.display.HTML')
   array = np.eye(5)
   original = array.copy()
 
   show.image(array)
 
-  mock_html.assert_called_once_with(golden_eye_html)
   mock_display.assert_called_once()
   assert (original == array).all()
 
@@ -46,7 +44,7 @@ def test_show_images(mocker):
 
 def test_show_textured_mesh(mocker):
   mock_html = mocker.patch('IPython.display.HTML')
-  
+
   texture = np.ones((16, 16, 3), np.float32)
   old_texture = texture.copy()
   mesh = dict(

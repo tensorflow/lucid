@@ -110,7 +110,7 @@ def read_handle(url, cache=None, mode="rb"):
     else:
         if scheme in ("http", "https"):
             handle = _handle_web_url(url, mode=mode)
-        if scheme in ("gs"):
+        elif scheme in ("gs"):
             handle = _handle_gfile(url, mode=mode)
         else:
             handle = os.open(url, mode=mode)
