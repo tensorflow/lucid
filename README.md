@@ -115,6 +115,17 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 
 <br>
 
+## Activation Atlas Notebooks
+*Notebooks corresponding to the [Activation Atlas](https://distill.pub/2019/activation-atlas/) article*
+
+[Simple activation atlas](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/activation-atlas-simple.ipynb)
+
+[Class activation atlas](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/class-activation-atlas.ipynb)
+
+[Activation atlas patches](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/adversarial-activation-atlas.ipynb)
+
+[Collecting activations](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/activation-atlas-collect.ipynb)
+
 ## Miscellaneous Notebooks
 
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/misc/feature_inversion_caricatures.ipynb">
