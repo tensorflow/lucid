@@ -122,7 +122,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 
 * [Class activation atlas](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/class-activation-atlas.ipynb)
 
-* [Activation atlas patches](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/adversarial-activation-atlas.ipynb)
+* [Activation atlas patches](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/activation-atlas-adversarial.ipynb)
 
 * [Collecting activations](https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/activation-atlas-collect.ipynb)
 
