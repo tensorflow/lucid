@@ -153,6 +153,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 * [Using Artiﬁcial Intelligence to Augment Human Intelligence](https://distill.pub/2017/aia/)
 * [Visualizing Representations: Deep Learning and Human Beings](http://colah.github.io/posts/2015-01-Visualizing-Representations/)
 * [Differentiable Image Parameterizations](https://distill.pub/2018/differentiable-parameterizations/)
+* [Activation Atlas](https://distill.pub/2019/activation-atlas/)
 
 ## Related Talks
 * [Lessons from a year of Distill ML Research](https://www.youtube.com/watch?v=jlZsgUZaIyY) (Shan Carter, OpenVisConf)
