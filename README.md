@@ -115,6 +115,25 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 
 <br>
 
+## Activation Atlas Notebooks
+*Notebooks corresponding to the [Activation Atlas](https://distill.pub/2019/activation-atlas/) article*
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/activation-atlas-collect.ipynb">
+<img src="https://storage.googleapis.com/modelzoo/tmp/activation-atlas/stickers/lucid-notebook-1-collect.png" width="500" alt="Collecting activations"></img>
+</a>
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/activation-atlas-simple.ipynb">
+<img src="https://storage.googleapis.com/modelzoo/tmp/activation-atlas/stickers/lucid-notebook-2-atlas.png" width="500" alt="Simple activation atlas"></img>
+</a>
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/class-activation-atlas.ipynb">
+<img src="https://storage.googleapis.com/modelzoo/tmp/activation-atlas/stickers/lucid-notebook-3-class-atlas.png" width="500" alt="Class activation atlas"></img>
+</a>
+
+<a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/activation-atlas/activation-atlas-adversarial.ipynb">
+<img src="https://storage.googleapis.com/modelzoo/tmp/activation-atlas/stickers/lucid-notebook-4-patches.png" width="500" alt="Activation atlas patches"></img>
+</a>
+
 ## Miscellaneous Notebooks
 
 <a href="https://colab.research.google.com/github/tensorflow/lucid/blob/master/notebooks/misc/feature_inversion_caricatures.ipynb">
@@ -134,6 +153,7 @@ You can run the notebooks on your local machine, too. Clone the repository and f
 * [Using Artiﬁcial Intelligence to Augment Human Intelligence](https://distill.pub/2017/aia/)
 * [Visualizing Representations: Deep Learning and Human Beings](http://colah.github.io/posts/2015-01-Visualizing-Representations/)
 * [Differentiable Image Parameterizations](https://distill.pub/2018/differentiable-parameterizations/)
+* [Activation Atlas](https://distill.pub/2019/activation-atlas/)
 
 ## Related Talks
 * [Lessons from a year of Distill ML Research](https://www.youtube.com/watch?v=jlZsgUZaIyY) (Shan Carter, OpenVisConf)
