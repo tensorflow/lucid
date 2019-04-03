@@ -98,25 +98,53 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   model_path = None
   labels_path = None
-  labels = None
   image_value_range = (-1, 1)
   image_shape = [None, None, 3]
   layers = []
 
-  def __init__(self):
-    self.graph_def = None
-    if hasattr(self, 'labels_path') and self.labels_path is not None:
-      self.labels = load(self.labels_path, split=True)
-    if hasattr(self, 'synsets_path') and self.synsets_path is not None:
-      self.synset_ids = load(self.synsets_path, split=True)
-      self.synsets = [synset_from_id(id) for id in self.synset_ids]
+  _labels = None
+  _synset_ids = None
+  _synsets = None
+  _graph_def = None
+
+  @property
+  def labels(self):
+    if not hasattr(self, 'labels_path') or self.labels_path is None:
+      raise RuntimeError("This model does not have a labels_path specified!")
+    if not self._labels:
+      self._labels = load(self.labels_path, split=True)
+    return self._labels
+
+  @property
+  def synset_ids(self):
+    if not hasattr(self, 'synsets_path') or self.synsets_path is None:
+      raise RuntimeError("This model does not have a synset_path specified!")
+    if not self._synset_ids:
+      self._synset_ids = load(self.synsets_path, split=True)
+    return self._synset_ids
+
+  @property
+  def synsets(self):
+    if not self._synsets:
+      self._synsets = [synset_from_id(s_id) for s_id in self.synset_ids]
+    return self._synsets
 
   @property
   def name(self):
     return self.__class__.name
 
+  @property
+  def graph_def(self):
+    if not self._graph_def:
+      self._graph_def = load_graphdef(self.model_path)
+    return self._graph_def
+
   def load_graphdef(self):
-    self.graph_def = load_graphdef(self.model_path)
+    warnings.warn(
+        "Calling `load_graphdef` is no longer necessary and now a noop. Graphs are loaded lazily when a models graph_def property is accessed.",
+        DeprecationWarning,
+    )
+    pass
 
   def post_import(self, scope):
     pass
@@ -138,8 +166,6 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   def import_graph(self, t_input=None, scope='import', forget_xy_shape=True):
     """Import model GraphDef into the current graph."""
-    if self.graph_def is None:
-      raise Exception("Model.import_graph(): Must load graph def before importing it.")
     graph = tf.get_default_graph()
     assert graph.unique_name(scope, False) == scope, (
         'Scope "%s" already exists. Provide explicit scope names when '
@@ -178,12 +204,16 @@ class SerializedModel(Model):
   """
 
   @classmethod
-  def from_directory(cls, model_path):
-    manifest_path = path.join(model_path, 'manifest.json')
+  def from_directory(cls, model_path, manifest_path=None):
+
+    if manifest_path is None:
+      manifest_path = path.join(model_path, 'manifest.json')
+
     try:
       manifest = load(manifest_path)
     except Exception as e:
       raise ValueError("Could not find manifest.json file in dir {}. Error: {}".format(model_path, e))
+
     if manifest.get('type', 'frozen') == 'frozen':
       return FrozenGraphModel(model_path, manifest)
     else: # TODO: add tf.SavedModel support, etc
@@ -193,13 +223,23 @@ class SerializedModel(Model):
 class FrozenGraphModel(SerializedModel):
 
   def __init__(self, model_directory, manifest):
+    self.manifest = manifest
     model_path = manifest.get('model_path', 'graph.pb')
     if model_path.startswith("./"): # TODO: can we be less specific here?
-      self.model_path = path.join(model_directory, model_path)
+      self.model_path = path.join(model_directory, model_path[2:])
     else:
       self.model_path = model_path
     self.labels_path = manifest.get('labels_path', None)
-    self.image_value_range = manifest.get('image_value_range', None)
-    self.image_shape = manifest.get('image_shape', None)
-    self.input_name = manifest.get('input_name', 'input:0')
+    self.image_value_range = manifest.get('image_value_range')
+    self.image_shape = manifest.get('image_shape')
+    self.input_name = manifest.get('input_name')
+
+    layers_or_layer_names = manifest.get('layers')
+    if len(layers_or_layer_names) > 0:
+      if isinstance(layers_or_layer_names[0], str):
+        self.layer_names = layers_or_layer_names
+      elif isinstance(layers_or_layer_names[0], dict):
+        self.layers = _layers_from_list_of_dicts(self.__class__, layers_or_layer_names)
+        self.layer_names = [layer.name for layer in self.layers]
+
     super().__init__()
