@@ -11,6 +11,7 @@ coverage.txt
 lucidenv
 lucid-env
 .idea
+.vscode
 
 pip-selfcheck.json
 
