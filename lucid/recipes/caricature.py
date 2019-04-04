@@ -1,3 +1,6 @@
+from os.path import join
+import json
+
 import numpy as np
 import tensorflow as tf
 import scipy.ndimage as nd
@@ -7,20 +10,13 @@ import lucid.optvis.objectives as objectives
 import lucid.optvis.param as param
 import lucid.optvis.render as render
 import lucid.optvis.transform as transform
-from lucid.misc.io import show, load
+from lucid.misc.io import show, load, save
 from lucid.misc.io.reading import read
+from lucid.misc.ndimage_utils import resize
 import lucid.misc.io.showing
+from lucid.modelzoo.vision_base import SerializedModel
 
-def imgToModelSize(arr, model):
-  W = model.image_shape[0]
-  w, h, _ = arr.shape
-  s = float(W) / min(w,h)
-  arr = nd.zoom(arr, [s, s, 1], mode="nearest")
-  w, h, _ = arr.shape
-  dw, dh = (w-W)//2, (h-W)//3
-  return arr[dw:dw+W, dh:dh+W]
-  
-  
+
 @objectives.wrap_objective
 def dot_compare(layer, batch=1, cossim_pow=0):
   def inner(T):
@@ -33,17 +29,22 @@ def dot_compare(layer, batch=1, cossim_pow=0):
     return dot * cossim ** cossim_pow
   return inner
 
-def feature_inversion(img, model, layer, n_steps=512, cossim_pow=0.0, verbose=True):
+
+def feature_inversion(*args, **kwargs):
+  return caricature(*args, **kwargs)
+
+
+def caricature(img, model, layer, n_steps=512, cossim_pow=0.0, verbose=True):
   if isinstance(layer, str):
     layers = [layer]
   elif isinstance(layer, (tuple, list)):
     layers = layer
   else:
     raise TypeError("layer must be str, tuple or list")
-  
+
   with tf.Graph().as_default(), tf.Session() as sess:
-    img = imgToModelSize(img, model)
-    
+    img = resize(img, model.image_shape[:2])
+
     objective = objectives.Objective.sum([
         1.0 * dot_compare(layer, cossim_pow=cossim_pow, batch=i+1)
         for i, layer in enumerate(layers)
@@ -68,6 +69,31 @@ def feature_inversion(img, model, layer, n_steps=512, cossim_pow=0.0, verbose=Tr
     for i in range(n_steps): _ = sess.run([vis_op], {t_input: img})
 
     result = t_image.eval(feed_dict={t_input: img})
-    if verbose:
-      lucid.misc.io.showing.images(result[1:], layers)
-    return result
+
+  if verbose:
+    lucid.misc.io.showing.images(result[1:], layers)
+  return result
+
+
+def make_caricature(image_url, saved_model_folder_url, to, *args, **kwargs):
+  image = load(image_url)
+  model = SerializedModel.from_directory(saved_model_folder_url)
+  layers = model.layer_names
+  caricatures = caricature(image, model, layers, *args, verbose=False, **kwargs)
+
+  results = {"type": "caricature"}
+
+  save_input_url = join(to, "input.jpg")
+  save(caricatures[0], save_input_url)
+  results["input_image"] = save_input_url
+
+  values_list = []
+  for single_caricature, layer_name in zip(caricatures[1:], model.layer_names):
+    save_caricature_url = join(to, layer_name + ".jpg")
+    save(single_caricature, save_caricature_url)
+    values_list.append({"type": "image", "url": save_caricature_url, "shape": single_caricature.shape})
+  results["values"] = values_list
+
+  save(results, join(to, "results.json"))
+
+  return results
