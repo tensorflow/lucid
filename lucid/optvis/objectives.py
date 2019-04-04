@@ -292,15 +292,6 @@ def blur_input_each_step():
 
 @wrap_objective
 def blur_alpha_each_step():
-  """Minimizing this objective is equivelant to blurring input each step.
-
-  Optimizing (-k)*blur_input_each_step() is equivelant to:
-
-    input <- (1-k)*input + k*blur(input)
-
-  An operation that was used in early feature visualization work.
-  See Nguyen, et al., 2015.
-  """
   def inner(T):
     t_input = T("input")[..., 3:4]
     t_input_blurred = tf.stop_gradient(_tf_blur(t_input))
