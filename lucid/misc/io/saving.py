@@ -43,9 +43,21 @@ from lucid.misc.io.serialize_array import _normalize_array
 log = logging.getLogger(__name__)
 
 
+class NumpyJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(NumpyJSONEncoder, self).default(obj)
+
+
 def save_json(object, handle, indent=2):
     """Save object as json on CNS."""
-    obj_json = json.dumps(object, indent=indent)
+    obj_json = json.dumps(object, indent=indent, cls=NumpyJSONEncoder)
     handle.write(obj_json)
 
 
