@@ -1,8 +1,8 @@
 import json
 import numpy as np
-import render_tile
-import grid
-from tensorflow import gfile
+import lucid.scratch.atlas_pipeline.render_tile as render_tile
+import lucid.scratch.atlas_pipeline.grid as grid
+rom tensorflow import gfile
 
 # TODO: this is where we would distribute the tile processing
 def run(render, aggregate, params, metadata, layout):
