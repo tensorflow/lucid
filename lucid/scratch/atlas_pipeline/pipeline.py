@@ -1,3 +1,10 @@
+"""
+Take user input data and run it through the grid and tile rendering pipeline
+"""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import json
 import numpy as np
 import lucid.scratch.atlas_pipeline.render_tile as render_tile
