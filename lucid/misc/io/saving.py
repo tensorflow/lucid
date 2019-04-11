@@ -112,6 +112,14 @@ def save_txt(object, handle, **kwargs):
             handle.write(line)
 
 
+def save_protobuf(object, handle, **kwargs):
+  try:
+    handle.write(object.SerializeToString())
+  except AttributeError as e:
+    warnings.warn("`save_protobuf` failed for object {}. Re-raising original exception.".format(line_type))
+    raise e
+
+
 savers = {
     ".png": save_img,
     ".jpg": save_img,
@@ -120,6 +128,7 @@ savers = {
     ".npz": save_npz,
     ".json": save_json,
     ".txt": save_txt,
+    ".pb": save_protobuf,
 }
 
 
