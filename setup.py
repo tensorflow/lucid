@@ -14,11 +14,10 @@
 
 """Setup script for TensorFlow Lucid."""
 
-from __future__ import absolute_import, division, print_function
-
+import lucid
 from setuptools import setup, find_packages
 
-version = "0.3.8"
+version = lucid.__version__
 
 test_deps = ["future", "twine", "pytest", "pytest-mock", "python-coveralls"]
 

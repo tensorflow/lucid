@@ -43,9 +43,21 @@ from lucid.misc.io.serialize_array import _normalize_array
 log = logging.getLogger(__name__)
 
 
+class NumpyJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(NumpyJSONEncoder, self).default(obj)
+
+
 def save_json(object, handle, indent=2):
     """Save object as json on CNS."""
-    obj_json = json.dumps(object, indent=indent)
+    obj_json = json.dumps(object, indent=indent, cls=NumpyJSONEncoder)
     handle.write(obj_json)
 
 
@@ -100,6 +112,14 @@ def save_txt(object, handle, **kwargs):
             handle.write(line)
 
 
+def save_protobuf(object, handle, **kwargs):
+  try:
+    handle.write(object.SerializeToString())
+  except AttributeError as e:
+    warnings.warn("`save_protobuf` failed for object {}. Re-raising original exception.".format(line_type))
+    raise e
+
+
 savers = {
     ".png": save_img,
     ".jpg": save_img,
@@ -108,6 +128,7 @@ savers = {
     ".npz": save_npz,
     ".json": save_json,
     ".txt": save_txt,
+    ".pb": save_protobuf,
 }
 
 

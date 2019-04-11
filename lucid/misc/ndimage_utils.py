@@ -19,7 +19,7 @@ from scipy import ndimage
 
 def resize(image, target_size, **kwargs):
     """Resize an ndarray image of rank 3 or 4.
-    target_size can be a tuple `(height, width)` or scalar `width`."""
+    target_size can be a tuple `(width, height)` or scalar `width`."""
 
     if isinstance(target_size, int):
         target_size = (target_size, target_size)
@@ -27,7 +27,7 @@ def resize(image, target_size, **kwargs):
     if not isinstance(target_size, (list, tuple, np.ndarray)):
         message = (
             "`target_size` should be a single number (width) or a list"
-            "/tuple/ndarray (height, width), not {}.".format(type(target_size))
+            "/tuple/ndarray (width, height), not {}.".format(type(target_size))
         )
         raise ValueError(message)
 
@@ -44,10 +44,8 @@ def resize(image, target_size, **kwargs):
     zoom = [1] * rank
     zoom[-3:-1] = ratios
 
-    resized = ndimage.zoom(image, zoom, **kwargs)
-    assert resized.shape[-3:-1] == target_size
-
-    return resized
+    roughly_resized = ndimage.zoom(image, zoom, **kwargs)
+    return roughly_resized[..., : target_size[0], : target_size[1], :]
 
 
 def composite(
@@ -73,3 +71,18 @@ def composite(
     composite[y : y + size[0], x : x + size[1]] = foreground_resized
 
     return composite
+
+
+def soft_alpha_blend(image_with_alpha, amount_background=.333, gamma=2.2):
+    assert image_with_alpha.shape[-1] == 4
+
+    alpha = image_with_alpha[..., -1][..., np.newaxis]
+    rgb = image_with_alpha[..., :3]
+    white = np.ones_like(rgb)
+    background = amount_background * rgb + (1 - amount_background) * white
+    blended = np.power(
+        (alpha * np.power(rgb, gamma) + (1 - alpha) * np.power(background, gamma)),
+        1 / gamma,
+    )
+    return blended
+

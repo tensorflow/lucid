@@ -27,3 +27,6 @@ del logging
 
 # Lucid uses a fixed random seed for reproducability. Use to seed sources of randomness.
 seed = 0
+
+# Set the lucid version - setup.py imports this value!
+__version__ = "0.3.9"

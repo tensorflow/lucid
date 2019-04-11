@@ -73,3 +73,9 @@ def test_load_json_with_file_handle():
   with io.open(path, 'r') as handle:
     dictionary = load(handle)
   assert "key" in dictionary
+
+
+def test_load_protobuf():
+  path = "./tests/fixtures/graphdef.pb"
+  graphdef = load(path)
+  assert "int_val: 42" in repr(graphdef)

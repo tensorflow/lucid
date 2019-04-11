@@ -160,6 +160,7 @@ def crop_or_pad_to(height, width):
         return tf.image.resize_image_with_crop_or_pad(t_image, height, width)
     return inner
 
+
 standard_transforms = [
     pad(12, mode="constant", constant_value=.5),
     jitter(8),
