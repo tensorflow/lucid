@@ -30,7 +30,8 @@ import os
 def _supports_make_dirs(path):
   """Whether this path implies a storage system that supports and requires
   intermediate directories to be created explicitly."""
-  return not path.startswith("/bigstore")
+  prefixes = ["/bigstore", "gs://"]
+  return not any(path.startswith(prefix) for prefix in prefixes)
 
 
 def _supports_binary_writing(path):
