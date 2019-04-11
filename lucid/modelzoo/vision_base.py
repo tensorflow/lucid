@@ -222,17 +222,22 @@ class SerializedModel(Model):
 
 class FrozenGraphModel(SerializedModel):
 
+  _mandatory_properties = ['model_path', 'image_value_range', 'input_name', 'image_shape']
+
   def __init__(self, model_directory, manifest):
     self.manifest = manifest
+
+    for mandatory_key in self._mandatory_properties:
+      # TODO: consider if we can tell you the path of the faulty manifest here
+      assert mandatory_key in manifest.keys(), f"Mandatory property '{mandatory_key}' was not defined in json manifest."
+    for key, value in manifest.items():
+      setattr(self, key, value)
+
     model_path = manifest.get('model_path', 'graph.pb')
     if model_path.startswith("./"): # TODO: can we be less specific here?
       self.model_path = path.join(model_directory, model_path[2:])
     else:
       self.model_path = model_path
-    self.labels_path = manifest.get('labels_path', None)
-    self.image_value_range = manifest.get('image_value_range')
-    self.image_shape = manifest.get('image_shape')
-    self.input_name = manifest.get('input_name')
 
     layers_or_layer_names = manifest.get('layers')
     if len(layers_or_layer_names) > 0:
