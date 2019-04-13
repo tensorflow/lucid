@@ -32,6 +32,7 @@ import tensorflow as tf
 from google.protobuf.message import DecodeError
 
 from lucid.misc.io.reading import read_handle
+from lucid import modelzoo
 
 
 # create logger with module name, e.g. lucid.misc.io.reading
@@ -90,8 +91,17 @@ def _load_text(handle, split=False, encoding="utf-8"):
 
 def _load_graphdef_protobuf(handle, **kwargs):
     """Load GraphDef from a binary proto file."""
-    del kwargs
-    return tf.GraphDef.FromString(handle.read())
+    # as_graph_def
+    graph_def = tf.GraphDef.FromString(handle.read())
+
+    # check if this is a lucid-saved model
+    # metadata = modelzoo.util.extract_metadata(graph_def)
+    # if metadata is not None:
+    #   url = handle.name
+    #   return modelzoo.vision_base.Model.load_from_metadata(url, metadata)
+
+    # else return a normal graph_def
+    return graph_def
 
 
 loaders = {

@@ -18,13 +18,16 @@
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
+import json
 from google.protobuf.message import DecodeError
 import logging
+import warnings
 
 # create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
 
 from lucid.misc.io import load
+from lucid.misc.io.saving import NumpyJSONEncoder
 
 
 def load_text_labels(labels_path):
@@ -51,3 +54,60 @@ def forget_xy(t):
   """
   shape = (t.shape[0], None, None, t.shape[3])
   return tf.placeholder_with_default(t, shape)
+
+
+def frozen_default_graph_def(input_node_names, output_node_names):
+  """Return frozen and simplified graph_def of default graph."""
+
+  sess = tf.get_default_session()
+  input_graph_def = tf.get_default_graph().as_graph_def()
+
+  pruned_graph = tf.graph_util.remove_training_nodes(
+      input_graph_def, protected_nodes=(output_node_names + input_node_names)
+  )
+  pruned_graph = tf.graph_util.extract_sub_graph(pruned_graph, output_node_names)
+
+  # remove explicit device assignments
+  for node in pruned_graph.node:
+      node.device = ""
+
+  all_variable_names = [v.op.name for v in tf.global_variables()]
+  output_graph_def = tf.graph_util.convert_variables_to_constants(
+      sess=sess,
+      input_graph_def=pruned_graph,
+      output_node_names=output_node_names,
+      variable_names_whitelist=all_variable_names,
+  )
+
+  return output_graph_def
+
+
+metadata_node_name = "lucid_metadata_json"
+
+def infuse_metadata(graph_def, info):
+  """Embed meta data as a string constant in a TF graph.
+
+  This function takes info, converts it into json, and embeds
+  it in graph_def as a constant op called `__lucid_metadata_json`.
+  """
+  temp_graph = tf.Graph()
+  with temp_graph.as_default():
+    tf.constant(json.dumps(info, cls=NumpyJSONEncoder), name=metadata_node_name)
+  meta_node = temp_graph.as_graph_def().node[0]
+  graph_def.node.extend([meta_node])
+
+
+def extract_metadata(graph_def):
+  """Attempt to extract meta data hidden in graph_def.
+
+  Looks for a `__lucid_metadata_json` constant string op.
+  If present, extract it's content and convert it from json to python.
+  If not, returns None.
+  """
+  meta_matches = [n for n in graph_def.node if n.name==metadata_node_name]
+  if meta_matches:
+    assert len(meta_matches) == 1, "found more than 1 lucid metadata node!"
+    meta_tensor = meta_matches[0].attr['value'].tensor
+    return json.loads(meta_tensor.string_val[0])
+  else:
+    return None

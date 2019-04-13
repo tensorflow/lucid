@@ -21,14 +21,12 @@ important_layer_names = [
 @pytest.mark.slow
 def test_InceptionV1_model_download():
     model = InceptionV1()
-    model.load_graphdef()
     assert model.graph_def is not None
 
 
 @pytest.mark.slow
 def test_InceptionV1_graph_import():
     model = InceptionV1()
-    model.load_graphdef()
     model.import_graph()
     nodes = tf.get_default_graph().as_graph_def().node
     node_names = set(node.name for node in nodes)

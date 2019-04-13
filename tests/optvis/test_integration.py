@@ -4,12 +4,14 @@ import pytest
 
 import tensorflow as tf
 from lucid.optvis import objectives, param, render, transform
+from lucid.modelzoo.vision_models import InceptionV1
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize("decorrelate", [True, False])
 @pytest.mark.parametrize("fft", [True, False])
-def test_integration(decorrelate, fft, inceptionv1):
+def test_integration(decorrelate, fft):
+    inceptionv1 = InceptionV1()
     obj = objectives.neuron("mixed3a_pre_relu", 0)
     param_f = lambda: param.image(16, decorrelate=decorrelate, fft=fft)
     rendering = render.render_vis(

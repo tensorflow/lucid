@@ -22,9 +22,9 @@ import logging
 import tensorflow as tf
 import numpy as np
 
-from lucid.modelzoo.util import load_graphdef, forget_xy
+from lucid.modelzoo import util as model_util
 from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_aligned_activations
-from lucid.misc.io import load
+from lucid.misc.io import load, save
 import lucid.misc.io.showing as showing
 
 # ImageNet classes correspond to WordNet Synsets.
@@ -94,7 +94,7 @@ class ModelPropertiesMetaClass(type):
 
 
 class Model(with_metaclass(ModelPropertiesMetaClass, object)):
-  """Model allows importing pre-trained models."""
+  """Model allows using pre-trained models."""
 
   model_path = None
   labels_path = None
@@ -106,6 +106,14 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   _synset_ids = None
   _synsets = None
   _graph_def = None
+
+  # Avoid pickling the in-memory graph_def.
+  _blacklist = ['_graph_def']
+  def __getstate__(self):
+      return {k: v for k, v in self.__dict__.items() if k not in self._blacklist}
+
+  def __setstate__(self, state):
+      self.__dict__.update(state)
 
   @property
   def labels(self):
@@ -136,7 +144,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   @property
   def graph_def(self):
     if not self._graph_def:
-      self._graph_def = load_graphdef(self.model_path)
+      self._graph_def = model_util.load_graphdef(self.model_path)
     return self._graph_def
 
   def load_graphdef(self):
@@ -157,7 +165,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     if len(t_prep_input.shape) == 3:
       t_prep_input = tf.expand_dims(t_prep_input, 0)
     if forget_xy_shape:
-      t_prep_input = forget_xy(t_prep_input)
+      t_prep_input = model_util.forget_xy(t_prep_input)
     if hasattr(self, "is_BGR") and self.is_BGR is True:
       t_prep_input = tf.reverse(t_prep_input, [-1])
     lo, hi = self.image_value_range
@@ -194,30 +202,128 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     layer_names = str([l.name for l in self.layers])
     raise KeyError(key_error_message.format(name, layer_names))
 
+  @staticmethod
+  def suggest_save_args(graph_def=None):
+    if graph_def is None:
+      graph_def = tf.get_default_graph().as_graph_def()
+
+    inferred_info = {
+        "input_name" : None,
+        "image_shape" : None,
+        "output_names": None,
+    }
+
+    nodes_of_op = lambda s: [n.name for n in graph_def.node if n.op == s]
+    node_by_name = lambda s: [n for n in graph_def.node if n.name == s][0]
+    node_shape = lambda n:  [dim.size for dim in n.attr['shape'].shape.dim]
+
+    potential_input_nodes = nodes_of_op("Placeholder")
+    output_nodes = nodes_of_op("Softmax")
+
+    if len(potential_input_nodes) == 1:
+      input_name = potential_input_nodes[0]
+      print(f"Inferred: input_name = {input_name} (because it was the only Placeholder in the graph_def)")
+      inferred_info["input_name"] = input_name
+    else:
+      warnings.warn("Could not infer input_name.")
+
+    if inferred_info["input_name"] is not None:
+      input_node = node_by_name(inferred_info["input_name"])
+      shape = node_shape(input_node)
+      if len(shape) in [3,4]:
+        if len(shape) == 4:
+          shape = shape[1:]
+        if -1 not in shape:
+          print(f"Inferred: image_shape = {shape}")
+          inferred_info["image_shape"] = shape
+      if inferred_info["image_shape"] is None:
+        warnings.warn("Could not infer image_shape.")
+
+    if output_nodes:
+      print(f"Inferred: output_names = {output_nodes}  (because those are all the Softmax ops)")
+      inferred_info["output_names"] = output_nodes
+    else:
+      warnings.warn("Could not infer output_names.")
+
+    if all(inferred_info.values()):
+      return inferred_info
+    else:
+      raise AttributeError("Could not infer all arguments for saving.")
+
+
+    # print("")
+    # print("# Sanity check all inferred values before using this code!")
+    # print("save_model(")
+    # print("    save_path    = 'gs://save/model.pb', # TODO: replace")
+
+    # if inferred_info["input_name"] is not None:
+    #   print("    input_name   = %s," % repr(inferred_info["input_name"]))
+    # else:
+    #   print("    input_name   =   ,                   # TODO (eg. 'input' )")
+
+    # if inferred_info["output_names"] is not None:
+    #   print("    output_names = %s," % repr(inferred_info["output_names"]) )
+    # else:
+    #   print("    output_names = [ ],                  # TODO (eg. ['logits'] )")
+
+    # if inferred_info["image_shape"] is not None:
+    #   print("    image_shape  = %s,"% repr(inferred_info["image_shape"]) )
+    # else:
+    #   print("    image_shape  =   ,                   # TODO (eg. [224, 224, 3] )")
+
+    # print("    image_value_range =                  # TODO (eg. [0, 1], [0, 255], [-117, 138] )")
+    # print("  )")
+
+
+  @staticmethod
+  def save(save_url, input_name, output_names, image_shape, image_value_range):
+    metadata = {
+      "input_name" : input_name,
+      "image_shape" : image_shape,
+      "image_value_range": image_value_range,
+    }
+
+    graph_def = model_util.frozen_default_graph_def([input_name], output_names)
+    model_util.infuse_metadata(graph_def, metadata)
+    save(graph_def, save_url)
+
+  @staticmethod
+  def load(graphdef_url):
+    graph_def = load(graphdef_url)
+    metadata = model_util.extract_metadata(graph_def)
+    return Model.load_from_metadata(graphdef_url, metadata)
+
+  @staticmethod
+  def load_from_metadata(model_url, metadata):
+    class DynamicModel(Model):
+      model_path = model_url
+      input_name = metadata["input_name"]
+      image_shape = metadata["image_shape"]
+      image_value_range = metadata["image_value_range"]
+    return DynamicModel()
+
+  @staticmethod
+  def load_from_manifest(manifest_url):
+    try:
+      manifest = load(manifest_url)
+    except Exception as e:
+      raise ValueError("Could not find manifest.json file in dir {}. Error: {}".format(manifest_url, e))
+
+    if manifest.get('type', 'frozen') == 'frozen':
+      manifest_folder = path.dirname(manifest_url)
+      return FrozenGraphModel(manifest_folder, manifest)
+    else:
+      raise NotImplementedError("SerializedModel Manifest type '{}' has not been implemented!".format(manifest.get('type')))
+
 
 class SerializedModel(Model):
-  """Allows importing various types of serialized models from a directory.
-
-  (Currently only supports frozen graph models and relies on manifest.json file.
-  In the future we may want to support automatically detecting the type and
-  support loading more ways of saving models: tf.SavedModel, metagraphs, etc.)
-  """
 
   @classmethod
   def from_directory(cls, model_path, manifest_path=None):
-
+    warnings.warn("SerializedModel is deprecated. Please use Model.load_from_manifest instead.", DeprecationWarning)
     if manifest_path is None:
       manifest_path = path.join(model_path, 'manifest.json')
-
-    try:
-      manifest = load(manifest_path)
-    except Exception as e:
-      raise ValueError("Could not find manifest.json file in dir {}. Error: {}".format(model_path, e))
-
-    if manifest.get('type', 'frozen') == 'frozen':
-      return FrozenGraphModel(model_path, manifest)
-    else: # TODO: add tf.SavedModel support, etc
-      raise NotImplementedError("SerializedModel Manifest type '{}' has not been implemented!".format(manifest.get('type')))
+    return Model.load_from_manifest(manifest_path)
 
 
 class FrozenGraphModel(SerializedModel):
