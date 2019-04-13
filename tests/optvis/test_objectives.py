@@ -5,6 +5,8 @@ import pytest
 import tensorflow as tf
 import numpy as np
 from lucid.optvis import objectives, param, render, transform
+from lucid.optvis.objectives import wrap_objective
+
 
 np.random.seed(42)
 
@@ -40,6 +42,40 @@ def assert_gradient_ascent(objective, model, batch=None, alpha=False, shape=None
 def test_neuron(inceptionv1):
     objective = objectives.neuron("mixed4a_pre_relu", 42)
     assert_gradient_ascent(objective, inceptionv1)
+
+def test_composition():
+    @wrap_objective
+    def f(a):
+      return lambda T: a
+
+    a   = f(1)
+    b   = f(2)
+    c   = f(3)
+    ab  = a - 2*b
+    cab = c*(ab - 1)
+
+    assert str(cab)  == "F(3)·((F(1) + F(2)·2·-1) + -1)"
+    assert cab(None) == 3*(1 - 2*2 - 1)
+    assert a.value   == 1
+    assert b.value   == 2
+    assert c.value   == 3
+    assert ab.value  == (a.value - 2*b.value)
+    assert cab.value == c.value*(ab.value - 1)
+
+
+@pytest.mark.parametrize("cossim_pow", [0, 1, 2])
+def test_cossim(cossim_pow):
+    true_values = [1.0, 2**(0.5)/2, 0.5]
+    x = np.array([1,1], dtype = np.float32)
+    y = np.array([1,0], dtype = np.float32)
+    T = lambda _: tf.constant(x[None, None, None, :])
+    objective = objectives.direction("dummy", y, cossim_pow=cossim_pow)
+    objective_t = objective(T)
+    with tf.Session() as sess:
+        trueval = np.dot(x,y)*(np.dot(x,y)/(np.linalg.norm(x)*np.linalg.norm(y)))**cossim_pow
+        print(cossim_pow, trueval)
+        objective = sess.run(objective_t)
+    assert abs(objective - true_values[cossim_pow]) < 1e-3
 
 
 def test_channel(inceptionv1):
