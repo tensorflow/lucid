@@ -25,7 +25,7 @@ def test_suggest_save_args(capsys):
     assert all(inferred.values())
 
     # check that these inferred values work
-    Model.save(path, **inferred, image_value_range=(0,1))
+    Model.save(path, image_value_range=(0,1), **inferred)
     loaded_model = Model.load(path)
     assert str(shape) in repr(loaded_model.graph_def)
 

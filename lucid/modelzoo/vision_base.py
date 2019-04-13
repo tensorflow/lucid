@@ -222,7 +222,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
     if len(potential_input_nodes) == 1:
       input_name = potential_input_nodes[0]
-      print(f"Inferred: input_name = {input_name} (because it was the only Placeholder in the graph_def)")
+      print("Inferred: input_name = {} (because it was the only Placeholder in the graph_def)".format(input_name))
       inferred_info["input_name"] = input_name
     else:
       warnings.warn("Could not infer input_name.")
@@ -234,13 +234,13 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
         if len(shape) == 4:
           shape = shape[1:]
         if -1 not in shape:
-          print(f"Inferred: image_shape = {shape}")
+          print("Inferred: image_shape = {}".format(shape))
           inferred_info["image_shape"] = shape
       if inferred_info["image_shape"] is None:
         warnings.warn("Could not infer image_shape.")
 
     if output_nodes:
-      print(f"Inferred: output_names = {output_nodes}  (because those are all the Softmax ops)")
+      print("Inferred: output_names = {}  (because those are all the Softmax ops)".format(output_nodes))
       inferred_info["output_names"] = output_nodes
     else:
       warnings.warn("Could not infer output_names.")
@@ -335,7 +335,7 @@ class FrozenGraphModel(SerializedModel):
 
     for mandatory_key in self._mandatory_properties:
       # TODO: consider if we can tell you the path of the faulty manifest here
-      assert mandatory_key in manifest.keys(), f"Mandatory property '{mandatory_key}' was not defined in json manifest."
+      assert mandatory_key in manifest.keys(), "Mandatory property '{}' was not defined in json manifest.".format(mandatory_key)
     for key, value in manifest.items():
       setattr(self, key, value)
 
