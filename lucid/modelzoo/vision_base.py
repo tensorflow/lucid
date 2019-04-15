@@ -204,14 +204,11 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   @staticmethod
   def suggest_save_args(graph_def=None):
+    # TODO: Check with uint8 placeholders
     if graph_def is None:
       graph_def = tf.get_default_graph().as_graph_def()
 
-    inferred_info = {
-        "input_name" : None,
-        "image_shape" : None,
-        "output_names": None,
-    }
+    inferred_info = dict.fromkeys(("input_name", "image_shape", "output_names", "image_value_range"))
 
     nodes_of_op = lambda s: [n.name for n in graph_def.node if n.op == s]
     node_by_name = lambda s: [n for n in graph_def.node if n.name == s][0]
@@ -245,34 +242,25 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     else:
       warnings.warn("Could not infer output_names.")
 
-    if all(inferred_info.values()):
-      return inferred_info
-    else:
-      raise AttributeError("Could not infer all arguments for saving.")
+    report = []
+    report.append("# Please sanity check all inferred values before using this code!")
+    report.append("Model.save(")
 
+    suggestions = {
+        "input_name" : 'input',
+        "image_shape" : [224, 224, 3],
+        "output_names": ['logits'],
+        "image_value_range": "[-1, 1], [0, 1], [0, 255], or [-117, 138]"
+    }
+    for key, value in inferred_info.items():
+      if value is not None:
+        report.append("    {}={!r},".format(key, value))
+      else:
+        report.append("    {}=_,                   # TODO (eg. {!r})".format(key, suggestions[key]))
+    report.append("  )")
 
-    # print("")
-    # print("# Sanity check all inferred values before using this code!")
-    # print("save_model(")
-    # print("    save_path    = 'gs://save/model.pb', # TODO: replace")
-
-    # if inferred_info["input_name"] is not None:
-    #   print("    input_name   = %s," % repr(inferred_info["input_name"]))
-    # else:
-    #   print("    input_name   =   ,                   # TODO (eg. 'input' )")
-
-    # if inferred_info["output_names"] is not None:
-    #   print("    output_names = %s," % repr(inferred_info["output_names"]) )
-    # else:
-    #   print("    output_names = [ ],                  # TODO (eg. ['logits'] )")
-
-    # if inferred_info["image_shape"] is not None:
-    #   print("    image_shape  = %s,"% repr(inferred_info["image_shape"]) )
-    # else:
-    #   print("    image_shape  =   ,                   # TODO (eg. [224, 224, 3] )")
-
-    # print("    image_value_range =                  # TODO (eg. [0, 1], [0, 255], [-117, 138] )")
-    # print("  )")
+    print("\n".join(report))
+    return inferred_info
 
 
   @staticmethod
