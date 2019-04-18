@@ -258,7 +258,8 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
       warnings.warn("Could not infer output_names.")
 
     report = []
-    report.append("# Please sanity check all inferred values before using this code!")
+    report.append("# Please sanity check all inferred values before using this code.")
+    report.append("Incorrect `image_value_range` is the most common cause of feature visualization bugs! Most methods will fail silently with incorrect visualizations!")
     report.append("Model.save(")
 
     suggestions = {
