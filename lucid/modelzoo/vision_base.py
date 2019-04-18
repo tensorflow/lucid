@@ -18,13 +18,14 @@ from future.utils import with_metaclass
 from os import path
 import warnings
 import logging
+from itertools import chain
 
 import tensorflow as tf
 import numpy as np
 
-from lucid.modelzoo.util import load_graphdef, forget_xy
+from lucid.modelzoo import util as model_util
 from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_aligned_activations
-from lucid.misc.io import load
+from lucid.misc.io import load, save
 import lucid.misc.io.showing as showing
 
 # ImageNet classes correspond to WordNet Synsets.
@@ -94,7 +95,7 @@ class ModelPropertiesMetaClass(type):
 
 
 class Model(with_metaclass(ModelPropertiesMetaClass, object)):
-  """Model allows importing pre-trained models."""
+  """Model allows using pre-trained models."""
 
   model_path = None
   labels_path = None
@@ -106,6 +107,14 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   _synset_ids = None
   _synsets = None
   _graph_def = None
+
+  # Avoid pickling the in-memory graph_def.
+  _blacklist = ['_graph_def']
+  def __getstate__(self):
+      return {k: v for k, v in self.__dict__.items() if k not in self._blacklist}
+
+  def __setstate__(self, state):
+      self.__dict__.update(state)
 
   @property
   def labels(self):
@@ -136,7 +145,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   @property
   def graph_def(self):
     if not self._graph_def:
-      self._graph_def = load_graphdef(self.model_path)
+      self._graph_def = model_util.load_graphdef(self.model_path)
     return self._graph_def
 
   def load_graphdef(self):
@@ -157,7 +166,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     if len(t_prep_input.shape) == 3:
       t_prep_input = tf.expand_dims(t_prep_input, 0)
     if forget_xy_shape:
-      t_prep_input = forget_xy(t_prep_input)
+      t_prep_input = model_util.forget_xy(t_prep_input)
     if hasattr(self, "is_BGR") and self.is_BGR is True:
       t_prep_input = tf.reverse(t_prep_input, [-1])
     lo, hi = self.image_value_range
@@ -194,45 +203,154 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     layer_names = str([l.name for l in self.layers])
     raise KeyError(key_error_message.format(name, layer_names))
 
+  @staticmethod
+  def suggest_save_args(graph_def=None):
+    if graph_def is None:
+      graph_def = tf.get_default_graph().as_graph_def()
+    gdhelper = model_util.GraphDefHelper(graph_def)
+    inferred_info = dict.fromkeys(("input_name", "image_shape", "output_names", "image_value_range"))
+    node_shape = lambda n: [dim.size for dim in n.attr['shape'].shape.dim]
+    potential_input_nodes = gdhelper.by_op["Placeholder"]
+    output_nodes = [node.name for node in gdhelper.by_op["Softmax"]]
+
+    if len(potential_input_nodes) == 1:
+      input_node = potential_input_nodes[0]
+      input_dtype = tf.dtypes.as_dtype(input_node.attr['dtype'].type)
+      if input_dtype.is_floating:
+        input_name = input_node.name
+        print("Inferred: input_name = {} (because it was the only Placeholder in the graph_def)".format(input_name))
+        inferred_info["input_name"] = input_name
+      else:
+        print("Warning: found a single Placeholder, but its dtype is {}. Lucid's parameterizations can only replace float dtypes. We're now scanning to see if you maybe divide this placeholder by 255 to get a float later in the graph...".format(str(input_node.attr['dtype']).strip()))
+        neighborhood = gdhelper.neighborhood(input_node, degree=5)
+        divs = [n for n in neighborhood if n.op == "RealDiv"]
+        consts = [n for n in neighborhood if n.op == "Const"]
+        magic_number_present = any(255 in c.attr['value'].tensor.int_val for c in consts)
+        if divs and magic_number_present:
+          if len(divs) == 1:
+            input_name = divs[0].name
+            print("Guessed: input_name = {} (because it's the only division by 255 near the only placeholder)".format(input_name))
+            inferred_info["input_name"] = input_name
+            image_value_range = (0,1)
+            print("Guessed: image_value_range = {} (because you're dividing by 255 near the only placeholder)".format(image_value_range))
+            inferred_info["image_value_range"] = (0,1)
+          else:
+            warnings.warn("Could not infer input_name because there were multiple division ops near your the only placeholder. Candidates include: {}".format([n.name for n in divs]))
+    else:
+      warnings.warn("Could not infer input_name because there were multiple or no Placeholders.")
+
+    if inferred_info["input_name"] is not None:
+      input_node = gdhelper.by_name[inferred_info["input_name"]]
+      shape = node_shape(input_node)
+      if len(shape) in (3,4):
+        if len(shape) == 4:
+          shape = shape[1:]
+        if -1 not in shape:
+          print("Inferred: image_shape = {}".format(shape))
+          inferred_info["image_shape"] = shape
+      if inferred_info["image_shape"] is None:
+        warnings.warn("Could not infer image_shape.")
+
+    if output_nodes:
+      print("Inferred: output_names = {}  (because those are all the Softmax ops)".format(output_nodes))
+      inferred_info["output_names"] = output_nodes
+    else:
+      warnings.warn("Could not infer output_names.")
+
+    report = []
+    report.append("# Please sanity check all inferred values before using this code.")
+    report.append("Incorrect `image_value_range` is the most common cause of feature visualization bugs! Most methods will fail silently with incorrect visualizations!")
+    report.append("Model.save(")
+
+    suggestions = {
+        "input_name" : 'input',
+        "image_shape" : [224, 224, 3],
+        "output_names": ['logits'],
+        "image_value_range": "[-1, 1], [0, 1], [0, 255], or [-117, 138]"
+    }
+    for key, value in inferred_info.items():
+      if value is not None:
+        report.append("    {}={!r},".format(key, value))
+      else:
+        report.append("    {}=_,                   # TODO (eg. {!r})".format(key, suggestions[key]))
+    report.append("  )")
+
+    print("\n".join(report))
+    return inferred_info
+
+
+  @staticmethod
+  def save(save_url, input_name, output_names, image_shape, image_value_range):
+    metadata = {
+      "input_name" : input_name,
+      "image_shape" : image_shape,
+      "image_value_range": image_value_range,
+    }
+
+    graph_def = model_util.frozen_default_graph_def([input_name], output_names)
+    model_util.infuse_metadata(graph_def, metadata)
+    save(graph_def, save_url)
+
+  @staticmethod
+  def load(graphdef_url):
+    graph_def = load(graphdef_url)
+    metadata = model_util.extract_metadata(graph_def)
+    if metadata:
+      return Model.load_from_metadata(graphdef_url, metadata)
+    else:
+      raise ValueError("Model.load was called on a GraphDef ({}) that does not contain Lucid's metadata node. Model.load only works for models saved via Model.save. For the graphdef you're trying to load, you will need to provide custom metadata; see Model.load_from_metadata()".format(graphdef_url))
+
+  @staticmethod
+  def load_from_metadata(model_url, metadata):
+    class DynamicModel(Model):
+      model_path = model_url
+      input_name = metadata["input_name"]
+      image_shape = metadata["image_shape"]
+      image_value_range = metadata["image_value_range"]
+    return DynamicModel()
+
+  @staticmethod
+  def load_from_manifest(manifest_url):
+    try:
+      manifest = load(manifest_url)
+    except Exception as e:
+      raise ValueError("Could not find manifest.json file in dir {}. Error: {}".format(manifest_url, e))
+
+    if manifest.get('type', 'frozen') == 'frozen':
+      manifest_folder = path.dirname(manifest_url)
+      return FrozenGraphModel(manifest_folder, manifest)
+    else:
+      raise NotImplementedError("SerializedModel Manifest type '{}' has not been implemented!".format(manifest.get('type')))
+
 
 class SerializedModel(Model):
-  """Allows importing various types of serialized models from a directory.
-
-  (Currently only supports frozen graph models and relies on manifest.json file.
-  In the future we may want to support automatically detecting the type and
-  support loading more ways of saving models: tf.SavedModel, metagraphs, etc.)
-  """
 
   @classmethod
   def from_directory(cls, model_path, manifest_path=None):
-
+    warnings.warn("SerializedModel is deprecated. Please use Model.load_from_manifest instead.", DeprecationWarning)
     if manifest_path is None:
       manifest_path = path.join(model_path, 'manifest.json')
-
-    try:
-      manifest = load(manifest_path)
-    except Exception as e:
-      raise ValueError("Could not find manifest.json file in dir {}. Error: {}".format(model_path, e))
-
-    if manifest.get('type', 'frozen') == 'frozen':
-      return FrozenGraphModel(model_path, manifest)
-    else: # TODO: add tf.SavedModel support, etc
-      raise NotImplementedError("SerializedModel Manifest type '{}' has not been implemented!".format(manifest.get('type')))
+    return Model.load_from_manifest(manifest_path)
 
 
 class FrozenGraphModel(SerializedModel):
 
+  _mandatory_properties = ['model_path', 'image_value_range', 'input_name', 'image_shape']
+
   def __init__(self, model_directory, manifest):
     self.manifest = manifest
+
+    for mandatory_key in self._mandatory_properties:
+      # TODO: consider if we can tell you the path of the faulty manifest here
+      assert mandatory_key in manifest.keys(), "Mandatory property '{}' was not defined in json manifest.".format(mandatory_key)
+    for key, value in manifest.items():
+      setattr(self, key, value)
+
     model_path = manifest.get('model_path', 'graph.pb')
     if model_path.startswith("./"): # TODO: can we be less specific here?
       self.model_path = path.join(model_directory, model_path[2:])
     else:
       self.model_path = model_path
-    self.labels_path = manifest.get('labels_path', None)
-    self.image_value_range = manifest.get('image_value_range')
-    self.image_shape = manifest.get('image_shape')
-    self.input_name = manifest.get('input_name')
 
     layers_or_layer_names = manifest.get('layers')
     if len(layers_or_layer_names) > 0:

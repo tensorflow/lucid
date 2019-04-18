@@ -45,6 +45,7 @@ def test_consistent_namespaces():
         assert difference in ('Model', 'Layer') or difference.startswith("__")
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("name,model_class", models_map.items())
 def test_model_properties(name, model_class):
     assert hasattr(model_class, "model_path")
@@ -73,7 +74,6 @@ def test_model_layers_shapes(model_class):
     name = model_class.__name__
     scope = "TestLucidModelzoo"
     model = model_class()
-    model.load_graphdef()
     with tf.Graph().as_default() as graph:
         model.import_graph(scope=scope)
         for layer in model.layers:

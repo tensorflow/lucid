@@ -54,6 +54,12 @@ via the `-e` flag: `tox -e py27`.
 After adding dependencies to `setup.py`, run tox with the `--recreate` flag to
 update the environments' dependencies.
 
+If you prefer to run tests directly with pytest, ensure you manually install the test dependencies. Within the lucid repository, run:
+
+```
+pip install .[test]
+```
+
 #### During Development
 
 If you'd like to develop using [TDD](https://en.wikipedia.org/wiki/Test-driven_development), we recommend  calling the tests you're currently working on [using `pytest` directly](https://docs.pytest.org/en/latest/usage.html), e.g. `python -m pytest tests/path/to/your/test.py`. Please don't forget to run all tests using `tox` before submitting a PR, though!

@@ -12,7 +12,6 @@ subset = NUMBER_OF_AVAILABLE_SAMPLES // 10
 @pytest.mark.skip(reason="takes too long to complete on CI")
 def test_activation_atlas():
     model = AlexNet()
-    model.load_graphdef()
     layer = model.layers[1]
     atlas = activation_atlas(model, layer, number_activations=subset)
     save(atlas, "tests/recipes/results/activation_atlas/atlas.jpg")
@@ -21,11 +20,9 @@ def test_activation_atlas():
 @pytest.mark.skip(reason="takes too long to complete on CI")
 def test_aligned_activation_atlas():
     model1 = AlexNet()
-    model1.load_graphdef()
     layer1 = model1.layers[1]
 
     model2 = InceptionV1()
-    model2.load_graphdef()
     layer2 = model2.layers[8]  # mixed4d
 
     atlasses = aligned_activation_atlas(

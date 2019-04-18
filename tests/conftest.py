@@ -1,14 +1,18 @@
 import pytest
-
-from lucid.modelzoo.vision_models import InceptionV1
+import tensorflow as tf
 
 
 @pytest.fixture
-def inceptionv1():
-    model = InceptionV1()
-    model.load_graphdef()
-    return model
-
+def minimodel():
+  def inner(input=None, shape=(16,16,3)):
+    """Constructs a tiny graph containing one each of a typical input
+    (tf.placegholder), variable and typical output (softmax) nodes."""
+    if input is None:
+      input = tf.placeholder(tf.float32, shape=shape, name="input")
+    w = tf.Variable(0.1, name="variable")
+    logits = tf.reduce_mean(w*input, name="output", axis=(0,1))
+    return tf.nn.softmax(logits)
+  return inner
 
 # Add support for a slow tests marker:
 

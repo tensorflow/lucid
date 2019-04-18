@@ -54,7 +54,7 @@ class InceptionV1(Model):
   dataset = 'ImageNet'
   image_shape = [224, 224, 3]
   image_value_range = (-117, 255-117)
-  input_name = 'input:0'
+  input_name = 'input'
 
   def post_import(self, scope):
     _populate_inception_bottlenecks(scope)

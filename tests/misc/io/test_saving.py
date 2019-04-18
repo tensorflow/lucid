@@ -6,6 +6,7 @@ import numpy as np
 from lucid.misc.io.saving import save
 import os.path
 import io
+import tensorflow as tf
 
 
 dictionary = {"key": "value"}
@@ -104,3 +105,13 @@ def test_save_named_handle():
 def test_unknown_extension():
     with pytest.raises(ValueError):
         save({}, "test.unknown")
+
+
+def test_save_protobuf():
+    path = "./tests/fixtures/graphdef.pb"
+    _remove(path)
+    with tf.Graph().as_default() as graph:
+        a = tf.Variable(42)
+        graphdef = a.graph.as_graph_def()
+    save(graphdef, path)
+    assert os.path.isfile(path)

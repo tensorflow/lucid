@@ -5,10 +5,18 @@ import pytest
 import tensorflow as tf
 import numpy as np
 from lucid.optvis import objectives, param, render, transform
+from lucid.modelzoo.vision_models import InceptionV1
 
 np.random.seed(42)
 
 NUM_STEPS = 3
+
+
+
+@pytest.fixture
+def inceptionv1():
+    return InceptionV1()
+
 
 
 def assert_gradient_ascent(objective, model, batch=None, alpha=False, shape=None):
