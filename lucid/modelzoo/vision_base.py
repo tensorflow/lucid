@@ -18,6 +18,7 @@ from future.utils import with_metaclass
 from os import path
 import warnings
 import logging
+from itertools import chain
 
 import tensorflow as tf
 import numpy as np
@@ -204,30 +205,44 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   @staticmethod
   def suggest_save_args(graph_def=None):
-    # TODO: Check with uint8 placeholders
     if graph_def is None:
       graph_def = tf.get_default_graph().as_graph_def()
-
+    gdhelper = model_util.GraphDefHelper(graph_def)
     inferred_info = dict.fromkeys(("input_name", "image_shape", "output_names", "image_value_range"))
-
-    nodes_of_op = lambda s: [n.name for n in graph_def.node if n.op == s]
-    node_by_name = lambda s: [n for n in graph_def.node if n.name == s][0]
-    node_shape = lambda n:  [dim.size for dim in n.attr['shape'].shape.dim]
-
-    potential_input_nodes = nodes_of_op("Placeholder")
-    output_nodes = nodes_of_op("Softmax")
+    node_shape = lambda n: [dim.size for dim in n.attr['shape'].shape.dim]
+    potential_input_nodes = gdhelper.by_op["Placeholder"]
+    output_nodes = [node.name for node in gdhelper.by_op["Softmax"]]
 
     if len(potential_input_nodes) == 1:
-      input_name = potential_input_nodes[0]
-      print("Inferred: input_name = {} (because it was the only Placeholder in the graph_def)".format(input_name))
-      inferred_info["input_name"] = input_name
+      input_node = potential_input_nodes[0]
+      input_dtype = tf.dtypes.as_dtype(input_node.attr['dtype'].type)
+      if input_dtype.is_floating:
+        input_name = input_node.name
+        print("Inferred: input_name = {} (because it was the only Placeholder in the graph_def)".format(input_name))
+        inferred_info["input_name"] = input_name
+      else:
+        print("Warning: found a single Placeholder, but its dtype is {}. Lucid's parameterizations can only replace float dtypes. We're now scanning to see if you maybe divide this placeholder by 255 to get a float later in the graph...".format(str(input_node.attr['dtype']).strip()))
+        neighborhood = gdhelper.neighborhood(input_node, degree=5)
+        divs = [n for n in neighborhood if n.op == "RealDiv"]
+        consts = [n for n in neighborhood if n.op == "Const"]
+        magic_number_present = any(255 in c.attr['value'].tensor.int_val for c in consts)
+        if divs and magic_number_present:
+          if len(divs) == 1:
+            input_name = divs[0].name
+            print("Guessed: input_name = {} (because it's the only division by 255 near the only placeholder)".format(input_name))
+            inferred_info["input_name"] = input_name
+            image_value_range = (0,1)
+            print("Guessed: image_value_range = {} (because you're dividing by 255 near the only placeholder)".format(image_value_range))
+            inferred_info["image_value_range"] = (0,1)
+          else:
+            warnings.warn("Could not infer input_name because there were multiple division ops near your the only placeholder. Candidates include: {}".format([n.name for n in divs]))
     else:
-      warnings.warn("Could not infer input_name.")
+      warnings.warn("Could not infer input_name because there were multiple or no Placeholders.")
 
     if inferred_info["input_name"] is not None:
-      input_node = node_by_name(inferred_info["input_name"])
+      input_node = gdhelper.by_name[inferred_info["input_name"]]
       shape = node_shape(input_node)
-      if len(shape) in [3,4]:
+      if len(shape) in (3,4):
         if len(shape) == 4:
           shape = shape[1:]
         if -1 not in shape:
@@ -279,7 +294,10 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   def load(graphdef_url):
     graph_def = load(graphdef_url)
     metadata = model_util.extract_metadata(graph_def)
-    return Model.load_from_metadata(graphdef_url, metadata)
+    if metadata:
+      return Model.load_from_metadata(graphdef_url, metadata)
+    else:
+      raise ValueError("Model.load was called on a GraphDef ({}) that does not contain Lucid's metadata node. Model.load only works for models saved via Model.save. For the graphdef you're trying to load, you will need to provide custom metadata; see Model.load_from_metadata()".format(graphdef_url))
 
   @staticmethod
   def load_from_metadata(model_url, metadata):

@@ -21,9 +21,14 @@ CRITICAL	The program itself may be unable to continue running.
 """
 
 import logging
+import warnings
 
 logging.basicConfig(level=logging.WARN)
 del logging
+
+# silence unnecessarily loud TF warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="tensorflow")
+warnings.filterwarnings("ignore", module="tensorflow.core.platform.cpu_feature_guard")
 
 # Lucid uses a fixed random seed for reproducability. Use to seed sources of randomness.
 seed = 0

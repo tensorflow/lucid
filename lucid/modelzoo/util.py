@@ -22,6 +22,8 @@ import json
 from google.protobuf.message import DecodeError
 import logging
 import warnings
+from collections import defaultdict
+from itertools import chain
 
 # create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
@@ -111,3 +113,35 @@ def extract_metadata(graph_def):
     return json.loads(meta_tensor.string_val[0])
   else:
     return None
+
+
+# TODO: merge with pretty_graph's Graph class. Until then, only use this internally
+class GraphDefHelper(object):
+  """Allows constant time lookups of graphdef nodes by common properties."""
+
+  def __init__(self, graph_def):
+    self.graph_def = graph_def
+    self.by_op = defaultdict(list)
+    self.by_name = dict()
+    self.by_input = defaultdict(list)
+    for node in graph_def.node:
+      self.by_op[node.op].append(node)
+      assert node.name not in self.by_name  # names should be unique I guess?
+      self.by_name[node.name] = node
+      for input_name in node.input:
+        self.by_input[input_name].append(node)
+
+
+  def neighborhood(self, node, degree=4):
+    """Am I really handcoding graph traversal please no"""
+    assert self.by_name[node.name] == node
+    already_visited = frontier = set([node.name])
+    for _ in range(degree):
+      neighbor_names = set()
+      for node_name in frontier:
+        outgoing = set(n.name for n in self.by_input[node_name])
+        incoming = set(self.by_name[node_name].input)
+        neighbor_names |= incoming | outgoing
+      frontier = neighbor_names - already_visited
+      already_visited |= neighbor_names
+    return [self.by_name[name] for name in already_visited]
