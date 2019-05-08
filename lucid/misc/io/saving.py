@@ -29,6 +29,7 @@ Possible extension: if not given a URL this could create one and return it?
 from __future__ import absolute_import, division, print_function
 
 import logging
+import subprocess
 import warnings
 import os.path
 import json
@@ -128,6 +129,7 @@ savers = {
     ".npz": save_npz,
     ".json": save_json,
     ".txt": save_txt,
+    ".html": save_txt,
     ".pb": save_pb,
 }
 
@@ -147,11 +149,15 @@ def save(thing, url_or_handle, **kwargs):
     """
     is_handle = hasattr(url_or_handle, "write") and hasattr(url_or_handle, "name")
     if is_handle:
-        _, ext = os.path.splitext(url_or_handle.name)
+      path = url_or_handle.name
     else:
-        _, ext = os.path.splitext(url_or_handle)
+      path = url_or_handle
+
+    _, ext = os.path.splitext(path)
+    is_gcs = path.startswith("gs://")
+
     if not ext:
-        raise RuntimeError("No extension in URL: " + url_or_handle)
+        raise RuntimeError("No extension in URL: " + path)
 
     if ext in savers:
         saver = savers[ext]
@@ -164,3 +170,7 @@ def save(thing, url_or_handle, **kwargs):
         saver_names = [(key, fn.__name__) for (key, fn) in savers.items()]
         message = "Unknown extension '{}', supports {}."
         raise ValueError(message.format(ext, saver_names))
+
+    # Usually, when one saves an html to GCS, they want it to be viewsable as a website:
+    if is_gcs and ext == ".html":
+      subprocess.run(["gsutil", "setmeta", "-h", "Content-Type:text/html", path])
