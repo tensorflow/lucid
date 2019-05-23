@@ -29,6 +29,7 @@ Possible extension: if not given a URL this could create one and return it?
 from __future__ import absolute_import, division, print_function
 
 import logging
+import subprocess
 import warnings
 import os.path
 import json
@@ -112,6 +113,11 @@ def save_txt(object, handle, **kwargs):
             handle.write(line)
 
 
+def save_str(object, handle, **kwargs):
+    assert isinstance(object, str)
+    handle.write(object)
+
+
 def save_pb(object, handle, **kwargs):
   try:
     handle.write(object.SerializeToString())
@@ -145,22 +151,37 @@ def save(thing, url_or_handle, **kwargs):
     Raises:
       RuntimeError: If file extension not supported.
     """
+    # Determine context
+    # Is this a handle? What is the extension? Are we saving to GCS?
     is_handle = hasattr(url_or_handle, "write") and hasattr(url_or_handle, "name")
     if is_handle:
-        _, ext = os.path.splitext(url_or_handle.name)
+      path = url_or_handle.name
     else:
-        _, ext = os.path.splitext(url_or_handle)
-    if not ext:
-        raise RuntimeError("No extension in URL: " + url_or_handle)
+      path = url_or_handle
 
+    _, ext = os.path.splitext(path)
+    is_gcs = path.startswith("gs://")
+
+    if not ext:
+        raise RuntimeError("No extension in URL: " + path)
+
+    # Determine which saver should be used
     if ext in savers:
         saver = savers[ext]
-        if is_handle:
-            saver(thing, url_or_handle, **kwargs)
-        else:
-            with write_handle(url_or_handle) as handle:
-                saver(thing, handle, **kwargs)
+    elif isinstance(thing, str):
+        saver = save_str
     else:
-        saver_names = [(key, fn.__name__) for (key, fn) in savers.items()]
-        message = "Unknown extension '{}', supports {}."
-        raise ValueError(message.format(ext, saver_names))
+        message = "Unknown extension '{}'. As a result, only strings can be saved, not {}. Supported extensions: {}"
+        raise ValueError(message.format(ext, type(thing).__name__, list(savers.keys()) ))
+
+    # Actually save
+    if is_handle:
+        saver(thing, url_or_handle, **kwargs)
+    else:
+        with write_handle(url_or_handle) as handle:
+            saver(thing, handle, **kwargs)
+
+    # Set mime type on gcs if html -- usually, when one saves an html to GCS,
+    # they want it to be viewsable as a website.
+    if is_gcs and ext == ".html":
+        subprocess.run(["gsutil", "setmeta", "-h", "Content-Type:text/html", path])
