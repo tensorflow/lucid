@@ -26,6 +26,7 @@ from string import Template
 import tensorflow as tf
 
 from lucid.misc.io.serialize_array import serialize_array, array_to_jsbuffer
+from lucid.misc.io.collapse_channels import collapse_channels
 
 
 # create logger with module name, e.g. lucid.misc.io.showing
@@ -51,7 +52,7 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
     message = "Unsupported mode '%s', should be one of '%s'."
     raise ValueError(message, mode, supported_modes)
 
-  image_data = serialize_array(array, fmt=fmt, quality=quality)
+  image_data = serialize_array(array, fmt=fmt, quality=quality, domain=domain)
   base64_byte_string = base64.b64encode(image_data).decode('ascii')
   return "data:image/" + fmt.upper() + ";base64," + base64_byte_string
 
@@ -59,7 +60,7 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
 # public functions
 
 
-def image(array, domain=None, width=None, format='png', **kwargs):
+def image(array, domain=None, w=None, format='png', **kwargs):
   """Display an image.
 
   Args:
@@ -71,7 +72,7 @@ def image(array, domain=None, width=None, format='png', **kwargs):
   """
 
   image_data = serialize_array(array, fmt=format, domain=domain)
-  image = IPython.display.Image(data=image_data, format=format, width=width)
+  image = IPython.display.Image(data=image_data, format=format, width=w)
   IPython.display.display(image)
 
 
@@ -89,12 +90,15 @@ def images(arrays, labels=None, domain=None, w=None):
 
   s = '<div style="display: flex; flex-direction: row;">'
   for i, array in enumerate(arrays):
-    url = _image_url(array)
+    url = _image_url(array, domain=domain)
     label = labels[i] if labels is not None else i
+    style="margin-top:4px;"
+    if w is not None:
+      style += "width: {w}px; image-rendering: pixelated;".format(w=w)
     s += """<div style="margin-right:10px;">
               {label}<br/>
-              <img src="{url}" style="margin-top:4px;">
-            </div>""".format(label=label, url=url)
+              <img src="{url}" style="{style}">
+            </div>""".format(label=label, url=url, style=style)
   s += "</div>"
   _display_html(s)
 
@@ -105,9 +109,46 @@ def show(thing, domain=(0, 1), **kwargs):
   This module will attempt to infer how to display your tensor based on its
   rank, shape and dtype. rank 4 tensors will be displayed as image grids, rank
   2 and 3 tensors as images.
+
+  For tensors of rank 3 or 4, the innermost dimension is interpreted as channel.
+  Depending on the size of that dimenion, different types of images will be
+  generated:
+
+    shp[-1]
+      = 1  --  Black and white image.
+      = 2  --  See >4
+      = 3  --  RGB image.
+      = 4  --  RGBA image.
+      > 4  --  Collapse into an RGB image.
+               If all positive: each dimension gets an evenly spaced hue.
+               If pos and neg: each dimension gets two hues
+                  (180 degrees apart) for positive and negative.
+
+  Common optional arguments:
+
+    domain: range values can be between, for displaying normal images
+      None  = infer domain with heuristics
+      (a,b) = clip values to be between a (min) and b (max).
+
+    w: width of displayed images
+      None  = display 1 pixel per value
+      int   = display n pixels per value (often used for small images)
+
+    labels: if displaying multiple objects, label for each object.
+      None  = label with index
+      []    = no labels
+      [...] = label with corresponding list item
+
   """
   if isinstance(thing, np.ndarray):
     rank = len(thing.shape)
+
+    if rank in [3,4]:
+      K = thing.shape[-1]
+      if K not in [1,3,4]:
+        log.debug("Collapsing %s channels into 3 RGB channels." % K)
+        thing = collapse_channels(thing)
+
     if rank == 4:
       log.debug("Show is assuming rank 4 tensor to be a list of images.")
       images(thing, domain=domain, **kwargs)
@@ -119,6 +160,13 @@ def show(thing, domain=(0, 1), **kwargs):
       print(repr(thing))
   elif isinstance(thing, (list, tuple)):
     log.debug("Show is assuming list or tuple to be a collection of images.")
+
+    if isinstance(thing[0], np.ndarray) and len(thing.shape) == 3:
+      K = thing[0].shape[-1]
+      if K not in [1,3,4]:
+        log.debug("Collapsing %s channels into 3 RGB channels." % K)
+        thing = [collapse_channels(t) for t in thing]
+
     images(thing, domain=domain, **kwargs)
   else:
     log.warning("Show only supports numpy arrays so far. Using repr().")
