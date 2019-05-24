@@ -4,8 +4,11 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 from lucid.misc.io.writing import write, write_handle
+from lucid.misc.io.scoping import io_scope
+import lucid.misc.io.scoping as scoping
 import os
 import io
+from pathlib import Path
 
 
 random_bytes = b'\x7f\x45\x4c\x46\x01\x01\x01\x00'
@@ -53,3 +56,39 @@ def test_write_handle_binary():
 
     assert os.path.isfile(path)
     assert content == random_bytes
+
+
+def test_write_scope():
+    target_path = Path("./tests/fixtures/write_scope.txt")
+    if target_path.is_file():
+        target_path.unlink()
+
+    with io_scope("./tests/fixtures"):
+        write("test", "write_scope.txt", mode='w')
+
+    assert target_path.is_file()
+
+
+def test_write_scope_nested():
+    target_path = Path("./tests/fixtures/write_scope4.txt")
+    if target_path.is_file():
+        target_path.unlink()
+
+    with io_scope("./tests"):
+        with io_scope("fixtures"):
+            write("test", "write_scope4.txt", mode='w')
+
+    assert target_path.is_file()
+
+
+def test_set_write_scopes():
+    target_path = Path("./tests/fixtures/write_scope5.txt")
+    if target_path.is_file():
+        target_path.unlink()
+
+    # fake write scopes, such as when called on a remote worker:
+    scoping.io_scopes = ["./tests", "fixtures"]
+
+    write("test", "write_scope5.txt", mode='w')
+
+    assert target_path.is_file()
