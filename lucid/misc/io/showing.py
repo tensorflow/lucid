@@ -59,6 +59,12 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
 
 # public functions
 
+def _image_html(array, w=None, domain=None, fmt='png'):
+  url = _image_url(array, domain=domain, fmt=fmt)
+  style = "image-rendering: pixelated;"
+  if w is not None:
+    style += "width: {w}px;".format(w=w)
+  return """<img src="{url}" style="{style}">""".format(**locals())
 
 def image(array, domain=None, w=None, format='png', **kwargs):
   """Display an image.
@@ -71,9 +77,9 @@ def image(array, domain=None, w=None, format='png', **kwargs):
       size unchanged if None
   """
 
-  image_data = serialize_array(array, fmt=format, domain=domain)
-  image = IPython.display.Image(data=image_data, format=format, width=w)
-  IPython.display.display(image)
+  _display_html(
+    _image_html(array, w=w, domain=domain, fmt=format)
+  )
 
 
 def images(arrays, labels=None, domain=None, w=None):
@@ -90,15 +96,12 @@ def images(arrays, labels=None, domain=None, w=None):
 
   s = '<div style="display: flex; flex-direction: row;">'
   for i, array in enumerate(arrays):
-    url = _image_url(array, domain=domain)
     label = labels[i] if labels is not None else i
-    style="margin-top:4px;"
-    if w is not None:
-      style += "width: {w}px; image-rendering: pixelated;".format(w=w)
-    s += """<div style="margin-right:10px;">
-              {label}<br/>
-              <img src="{url}" style="{style}">
-            </div>""".format(label=label, url=url, style=style)
+    img_html = _image_html(array, w=w, domain=domain)
+    s += """<div style="margin-right:10px; margin-top: 4px;">
+              {label} <br/>
+              {img_html}
+            </div>""".format(**locals())
   s += "</div>"
   _display_html(s)
 
@@ -140,14 +143,20 @@ def show(thing, domain=(0, 1), **kwargs):
       [...] = label with corresponding list item
 
   """
+  def collapse_if_needed(arr):
+    K = arr.shape[-1]
+    if K not in [1,3,4]:
+      log.debug("Collapsing %s channels into 3 RGB channels." % K)
+      return collapse_channels(arr)
+    else:
+      return arr
+
+
   if isinstance(thing, np.ndarray):
     rank = len(thing.shape)
 
     if rank in [3,4]:
-      K = thing.shape[-1]
-      if K not in [1,3,4]:
-        log.debug("Collapsing %s channels into 3 RGB channels." % K)
-        thing = collapse_channels(thing)
+      thing = collapse_if_needed(thing)
 
     if rank == 4:
       log.debug("Show is assuming rank 4 tensor to be a list of images.")
@@ -161,11 +170,8 @@ def show(thing, domain=(0, 1), **kwargs):
   elif isinstance(thing, (list, tuple)):
     log.debug("Show is assuming list or tuple to be a collection of images.")
 
-    if isinstance(thing[0], np.ndarray) and len(thing.shape) == 3:
-      K = thing[0].shape[-1]
-      if K not in [1,3,4]:
-        log.debug("Collapsing %s channels into 3 RGB channels." % K)
-        thing = [collapse_channels(t) for t in thing]
+    if isinstance(thing[0], np.ndarray) and len(thing[0].shape) == 3:
+      thing = [collapse_if_needed(t) for t in thing]
 
     images(thing, domain=domain, **kwargs)
   else:
