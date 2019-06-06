@@ -22,15 +22,18 @@ from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import pixel_image, fft_image
 
 
-def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=False):
+def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=False, channels=None):
     h = h or w
     batch = batch or 1
-    channels = 4 if alpha else 3
-    shape = [batch, h, w, channels]
+    ch = channels or (4 if alpha else 3)
+    shape = [batch, h, w, ch]
     param_f = fft_image if fft else pixel_image
     t = param_f(shape, sd=sd)
-    rgb = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
-    if alpha:
-        a = tf.nn.sigmoid(t[..., 3:])
-        return tf.concat([rgb, a], -1)
-    return rgb
+    if channels:
+        output = to_valid_rgb(t, decorrelate=False, sigmoid=True)
+    else:
+        output = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
+        if alpha:
+            a = tf.nn.sigmoid(t[..., 3:])
+            return tf.concat([rgb, a], -1)
+    return output
