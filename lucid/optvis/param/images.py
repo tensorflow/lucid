@@ -26,7 +26,7 @@ def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=Fals
     h = h or w
     batch = batch or 1
     channels = 4 if alpha else 3
-    shape = [batch, w, h, channels]
+    shape = [batch, h, w, channels]
     param_f = fft_image if fft else pixel_image
     t = param_f(shape, sd=sd)
     rgb = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
