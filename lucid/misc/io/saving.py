@@ -28,6 +28,7 @@ Possible extension: if not given a URL this could create one and return it?
 
 from __future__ import absolute_import, division, print_function
 
+import sys
 import logging
 import subprocess
 import warnings
@@ -43,28 +44,65 @@ from lucid.misc.io.serialize_array import _normalize_array
 # create logger with module name, e.g. lucid.misc.io.saving
 log = logging.getLogger(__name__)
 
+this = sys.modules[__name__]
+this.save_contexts = []
 
-class NumpyJSONEncoder(json.JSONEncoder):
+class CaptureSaveContext():
+    """Keeps captured save results.
+    Usage:
+    save_context = CaptureSaveContext()
+    with save_context:
+        ...
+    captured_results = save_context.captured_saves
+    """
+    def __init__(self):
+        self.captured_saves = []
+
+    def __enter__(self):
+        this.save_contexts.append(self.captured_saves)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        assert self.captured_saves in this.save_contexts
+        assert this.save_contexts[-1] == self.captured_saves
+        this.save_contexts.pop()
+
+
+class ClarityJSONEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, np.integer):
+        if isinstance(obj, tuple):
+            return list(obj)
+        elif isinstance(obj, np.integer):
             return int(obj)
         elif isinstance(obj, np.floating):
             return float(obj)
         elif isinstance(obj, np.ndarray):
             return obj.tolist()
+        elif hasattr(obj, "to_json"):
+            return obj.to_json()
         else:
-            return super(NumpyJSONEncoder, self).default(obj)
+            return super(ClarityJSONEncoder, self).default(obj)
 
 
 def save_json(object, handle, indent=2):
     """Save object as json on CNS."""
-    obj_json = json.dumps(object, indent=indent, cls=NumpyJSONEncoder)
+    obj_json = json.dumps(object, indent=indent, cls=ClarityJSONEncoder)
     handle.write(obj_json)
+
+    return {
+      'type': 'json',
+      'url': handle.name
+    }
 
 
 def save_npy(object, handle):
     """Save numpy array as npy file."""
     np.save(handle, object)
+
+    return {
+      'type': 'npy',
+      'shape': object.shape,
+      'url': handle.name
+    }
 
 
 def save_npz(object, handle):
@@ -94,6 +132,12 @@ def save_img(object, handle, **kwargs):
     else:
         raise ValueError("Can only save_img for numpy arrays or PIL.Images!")
 
+    return {
+      'type': 'image',
+      'shape': object.size + (len(object.getbands()),),
+      'url': handle.name
+    }
+
 
 def save_txt(object, handle, **kwargs):
     if isinstance(object, str):
@@ -111,6 +155,11 @@ def save_txt(object, handle, **kwargs):
             if not line.endswith(b"\n"):
                 line += b"\n"
             handle.write(line)
+
+    return {
+      'type': 'txt',
+      'url': handle.name
+    }
 
 
 def save_str(object, handle, **kwargs):

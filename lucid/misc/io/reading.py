@@ -31,11 +31,13 @@ import logging
 from urllib.parse import urlparse
 from future.moves.urllib import request
 from tensorflow import gfile
+import tensorflow as tf
 from tempfile import gettempdir
 import gc
 from filelock import FileLock
 
 from lucid.misc.io.writing import write_handle
+from lucid.misc.io.scoping import scope_url
 
 
 # create logger with module name, e.g. lucid.misc.io.reading
@@ -94,6 +96,8 @@ def read_handle(url, cache=None, mode="rb"):
         A file handle to the specified resource if it could be reached.
         The handle will be closed automatically once execution leaves this context.
     """
+    url = scope_url(url)
+
     scheme = urlparse(url).scheme
 
     if cache == 'purge':
@@ -156,6 +160,7 @@ def _purge_cached(url):
         except OSError:
             pass
 
+
 def _read_and_cache(url, mode="rb"):
     local_path = local_cache_path(url)
     lock = FileLock(local_path + ".lockfile")
@@ -172,8 +177,10 @@ def _read_and_cache(url, mode="rb"):
                     output_handle.write(chunk)
             gc.collect()
             return _handle_gfile(local_path, mode=mode)
-        except:  # bare except to catch things like SystemExit or KeyboardInterrupt
-            log.warning("An Exception occured while caching a file, cleaning up.")
+        except tf.errors.NotFoundError:
+            raise
+        except Exception as e:  # bare except to catch things like SystemExit or KeyboardInterrupt
+            log.warning("Caching (%s -> %s) failed: %s", url, local_path, e)
             try:
                 os.remove(local_path)
             except OSError:

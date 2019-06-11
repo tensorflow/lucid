@@ -21,53 +21,59 @@ This module takes data and a URL, and attempts to save that data at that URL.
 
 from __future__ import absolute_import, division, print_function
 
+import os
+import logging
 from contextlib import contextmanager
 from urllib.parse import urlparse
 from tensorflow import gfile
-import os
+
+from lucid.misc.io.scoping import scope_url
+
+log = logging.getLogger(__name__)
 
 
 def _supports_make_dirs(path):
-  """Whether this path implies a storage system that supports and requires
-  intermediate directories to be created explicitly."""
-  prefixes = ["/bigstore", "gs://"]
-  return not any(path.startswith(prefix) for prefix in prefixes)
+    """Whether this path implies a storage system that supports and requires
+    intermediate directories to be created explicitly."""
+    prefixes = ["/bigstore", "gs://"]
+    return not any(path.startswith(prefix) for prefix in prefixes)
 
 
 def _supports_binary_writing(path):
-  """Whether this path implies a storage system that supports and requires
-  intermediate directories to be created explicitly."""
-  return not path.startswith("/bigstore")
+    """Whether this path implies a storage system that supports and requires
+    intermediate directories to be created explicitly."""
+    return not path.startswith("/bigstore")
 
 
-def _write_to_path(data, path, mode='wb'):
-  with write_handle(path, mode) as handle:
-    handle.write(data)
+def _write_to_path(data, path, mode="wb"):
+    with write_handle(path, mode) as handle:
+        handle.write(data)
 
 
 # Public functions
 
 
-def write(data, url, mode='wb'):
-  if urlparse(url).scheme in ('http', 'https'):
-    message = "Writing to remote URL (%s) is not yet supported."
-    raise ValueError(message, url)
+def write(data, url, mode="wb"):
+    if urlparse(url).scheme in ("http", "https"):
+        message = "Writing to remote URL (%s) is not yet supported."
+        raise ValueError(message, url)
 
-  _write_to_path(data, url, mode=mode)
+    _write_to_path(data, url, mode=mode)
 
 
 @contextmanager
 def write_handle(path, mode=None):
+    path = scope_url(path)
 
-  if _supports_make_dirs(path):
-    gfile.MakeDirs(os.path.dirname(path))
+    if _supports_make_dirs(path):
+        gfile.MakeDirs(os.path.dirname(path))
 
-  if mode is None:
-    if _supports_binary_writing(path):
-      mode = 'wb'
-    else:
-      mode = 'w'
+    if mode is None:
+        if _supports_binary_writing(path):
+            mode = "wb"
+        else:
+            mode = "w"
 
-  handle = gfile.Open(path, mode)
-  yield handle
-  handle.close()
+    handle = gfile.Open(path, mode)
+    yield handle
+    handle.close()

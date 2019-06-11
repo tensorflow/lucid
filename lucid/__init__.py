@@ -26,8 +26,9 @@ import warnings
 logging.basicConfig(level=logging.WARN)
 del logging
 
-# silence unnecessarily loud TF warnings
+# silence unnecessarily loud TF warnings that we can't do anything about
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="tensorflow")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="google")
 warnings.filterwarnings("ignore", module="tensorflow.core.platform.cpu_feature_guard")
 
 # Lucid uses a fixed random seed for reproducability. Use to seed sources of randomness.

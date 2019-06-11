@@ -17,35 +17,47 @@ import numpy as np
 from scipy import ndimage
 
 
-def resize(image, target_size, **kwargs):
+def resize(image, target_size=None, ratios=None, **kwargs):
     """Resize an ndarray image of rank 3 or 4.
-    target_size can be a tuple `(width, height)` or scalar `width`."""
+    target_size can be a tuple `(width, height)` or scalar `width`.
+    Alternatively you can directly specify the ratios by which each
+    dimension should be scaled, or a single ratio"""
 
-    if isinstance(target_size, int):
-        target_size = (target_size, target_size)
+    # input validation
+    if target_size is None:
+      assert ratios is not None
+    else:
+      if isinstance(target_size, int):
+          target_size = (target_size, target_size)
 
-    if not isinstance(target_size, (list, tuple, np.ndarray)):
-        message = (
-            "`target_size` should be a single number (width) or a list"
-            "/tuple/ndarray (width, height), not {}.".format(type(target_size))
-        )
-        raise ValueError(message)
+      if not isinstance(target_size, (list, tuple, np.ndarray)):
+          message = (
+              "`target_size` should be a single number (width) or a list"
+              "/tuple/ndarray (width, height), not {}.".format(type(target_size))
+          )
+          raise ValueError(message)
 
     rank = len(image.shape)
     assert 3 <= rank <= 4
 
     original_size = image.shape[-3:-1]
 
-    if original_size == target_size:
+
+    ratios_are_noop = all(ratio == 1 for ratio in ratios) if ratios is not None else False
+    target_size_is_noop = target_size == original_size if target_size is not None else False
+    if ratios_are_noop or target_size_is_noop:
         return image  # noop return because ndimage.zoom doesn't check itself
 
     # TODO: maybe allow -1 in target_size to signify aspect-ratio preserving resize?
-    ratios = [t / o for t, o in zip(target_size, original_size)]
+    ratios = ratios or [t / o for t, o in zip(target_size, original_size)]
     zoom = [1] * rank
     zoom[-3:-1] = ratios
 
     roughly_resized = ndimage.zoom(image, zoom, **kwargs)
-    return roughly_resized[..., : target_size[0], : target_size[1], :]
+    if target_size is not None:
+      return roughly_resized[..., : target_size[0], : target_size[1], :]
+    else:
+      return roughly_resized
 
 
 def composite(
