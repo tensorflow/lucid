@@ -59,6 +59,21 @@ class OverlayNode():
   def consumers(self):
     return self.overlay_graph.node_to_consumers[self]
 
+  @property
+  def extended_inputs(self):
+    return self.overlay_graph.node_to_extended_inputs[self]
+
+  @property
+  def extended_consumers(self):
+    return self.overlay_graph.node_to_extended_consumers[self]
+
+  @property
+  def gcd(self):
+    return self.overlay_graph.gcd(self.inputs)
+
+  @property
+  def lcm(self):
+    return self.overlay_graph.lcm(self.consumers)
 
 class OverlayGraph():
   """A subgraph of a TensorFlow computational graph.
@@ -80,19 +95,28 @@ class OverlayGraph():
         nodes.extend([out.name for out in op.outputs])
 
     self.name_map = {name: OverlayNode(name, self) for name in nodes}
+    self.nodes = [self.name_map[name] for name in nodes]
     self.no_pass_through = [] if no_pass_through is None else no_pass_through
     self.node_to_consumers = defaultdict(lambda: set())
     self.node_to_inputs = defaultdict(lambda: set())
 
-    for node in nodes:
-      node = self[node]
+    for node in self.nodes:
       for inp in self._get_overlay_inputs(node):
         self.node_to_inputs[node].add(inp)
         self.node_to_consumers[inp].add(node)
 
-  @property
-  def nodes(self):
-    return [self[name] for name in self.name_map]
+    self.node_to_extended_consumers = defaultdict(lambda: set())
+    self.node_to_extended_inputs = defaultdict(lambda: set())
+
+    for node in self.nodes:
+      for inp in self.node_to_inputs[node]:
+        self.node_to_extended_inputs[node].add(inp)
+        self.node_to_extended_inputs[node].update(self.node_to_extended_inputs[inp])
+
+    for node in self.nodes[::-1]:
+      for out in self.node_to_consumers[node]:
+        self.node_to_extended_consumers[node].add(out)
+        self.node_to_extended_consumers[node].update(self.node_to_extended_consumers[out])
 
   def __getitem__(self, index):
     return self.name_map[OverlayNode.as_name(index)]
@@ -143,3 +167,17 @@ class OverlayGraph():
 
     keep_nodes = [node for node in self.name_map if node in keep_nodes]
     return OverlayGraph(self.tf_graph, keep_nodes, no_pass_through)
+
+  def gcd(self, branches):
+    """Greatest common divisor (ie. input) of several nodes."""
+    branches = [self[node] for node in branches]
+    branch_nodes  = [set([node]) | node.extended_inputs for node in branches]
+    branch_shared =  set.intersection(*branch_nodes)
+    return max(branch_shared, key=lambda n: self.nodes.index(n))
+
+  def lcm(self, branches):
+    """Lowest common multiplie (ie. consumer) of several nodes."""
+    branches = [self[node] for node in branches]
+    branch_nodes  = [set([node]) | node.extended_consumers for node in branches]
+    branch_shared =  set.intersection(*branch_nodes)
+    return min(branch_shared, key=lambda n: self.nodes.index(n))
