@@ -33,7 +33,11 @@ class OverlayNode():
     self.name = name
     self.overlay_graph = overlay_graph
     self.tf_graph = overlay_graph.tf_graph
-    self.tf_node = self.tf_graph.get_tensor_by_name(name)
+    try:
+      self.tf_node = self.tf_graph.get_tensor_by_name(name)
+    except:
+      self.tf_node = None
+    self.sub_structure = None
 
   @staticmethod
   def as_name(node):
@@ -75,6 +79,27 @@ class OverlayNode():
   def lcm(self):
     return self.overlay_graph.lcm(self.consumers)
 
+
+class OverlayStructure():
+  """Represents a sub-structure of a OverlayGraph.
+
+  Often, we want to find structures within a graph, such as branches and
+  sequences, to assist with graph layout for users.
+
+  An OverlayStructure represents such a structure. It is typically used
+  in conjunction with OverlayGraph.collapse_structures() to parse a graph.
+  """
+
+  def __init__(self, structure_type, structure):
+    self.structure_type = structure_type
+    self.structure = structure # A dictionary
+    self.children = sum([component if isinstance(component, (list, tuple)) else [component]
+                       for component in structure.values()], [])
+
+  def __contains__(self, item):
+    return OverlayNode.as_name(item) in [n.name for n in self.children]
+
+
 class OverlayGraph():
   """A subgraph of a TensorFlow computational graph.
 
@@ -86,7 +111,7 @@ class OverlayGraph():
   edges correspond to paths through the original graph.
   """
 
-  def __init__(self, tf_graph, nodes=None, no_pass_through=None):
+  def __init__(self, tf_graph, nodes=None, no_pass_through=None, prev_overlay=None):
     self.tf_graph = tf_graph
 
     if nodes is None:
@@ -99,6 +124,7 @@ class OverlayGraph():
     self.no_pass_through = [] if no_pass_through is None else no_pass_through
     self.node_to_consumers = defaultdict(lambda: set())
     self.node_to_inputs = defaultdict(lambda: set())
+    self.prev_overlay = prev_overlay
 
     for node in self.nodes:
       for inp in self._get_overlay_inputs(node):
@@ -129,9 +155,13 @@ class OverlayGraph():
     return self.tf_graph.get_tensor_by_name(name)
 
   def _get_overlay_inputs(self, node):
-    node = self.get_tf_node(node)
+    if self.prev_overlay:
+      raw_inps = self.prev_overlay[node].inputs
+    else:
+      raw_inps = self.get_tf_node(node).op.inputs
+
     overlay_inps = []
-    for inp in node.op.inputs:
+    for inp in raw_inps:
       if inp in self:
         overlay_inps.append(self[inp])
       elif not node.name in self.no_pass_through:
@@ -156,8 +186,8 @@ class OverlayGraph():
         print("  ", '"' + inp.name + '"', " -> ", '"' + (node.name) + '"')
     print("}")
 
-
   def filter(self, keep_nodes, pass_through=True):
+    keep_nodes = [self[n].name for n in keep_nodes]
     old_nodes = set(self.name_map.keys())
     new_nodes = set(keep_nodes)
     no_pass_through = set(self.no_pass_through)
@@ -166,7 +196,10 @@ class OverlayGraph():
       no_pass_through += old_nodes - new_nodes
 
     keep_nodes = [node for node in self.name_map if node in keep_nodes]
-    return OverlayGraph(self.tf_graph, keep_nodes, no_pass_through)
+    new_overlay = OverlayGraph(self.tf_graph, keep_nodes, no_pass_through, prev_overlay=self)
+    for node in new_overlay.nodes:
+      node.sub_structure = self[node].sub_structure
+    return new_overlay
 
   def gcd(self, branches):
     """Greatest common divisor (ie. input) of several nodes."""
@@ -181,3 +214,19 @@ class OverlayGraph():
     branch_nodes  = [set([node]) | node.extended_consumers for node in branches]
     branch_shared =  set.intersection(*branch_nodes)
     return min(branch_shared, key=lambda n: self.nodes.index(n))
+
+  def sorted(self, items):
+    return sorted(items, key=lambda n: self.nodes.index(self[n]))
+
+  def collapse_structures(self, structure_map):
+
+    keep_nodes = [node.name for node in self.nodes
+                  if not any(node in structure.children for structure in structure_map.values())
+                    or node in structure_map]
+
+    new_overlay = self.filter(keep_nodes)
+
+    for node in structure_map:
+      new_overlay[node].sub_structure = structure_map[node]
+
+    return new_overlay
