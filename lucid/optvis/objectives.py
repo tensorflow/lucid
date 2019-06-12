@@ -183,6 +183,7 @@ def direction(layer, vec, cossim_pow=0):
   vec = vec.astype("float32")
   return lambda T: _dot_cossim(T(layer), vec, cossim_pow=cossim_pow)
 
+direction_cossim = direction
 
 @wrap_objective(require_format='NHWC', handle_batch=True)
 def direction_neuron(layer_name, vec, x=None, y=None, cossim_pow=0):

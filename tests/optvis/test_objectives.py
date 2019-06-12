@@ -78,6 +78,12 @@ def test_direction_cossim(inceptionv1):
     objective = objectives.direction_cossim("mixed4a_pre_relu", random_direction)
     assert_gradient_ascent(objective, inceptionv1)
 
+def test_tensor_neuron(inceptionv1):
+    mixed_4a_depth = 508
+    random_direction = np.random.random([1,3,3,mixed_4a_depth])
+    objective = objectives.tensor_direction("mixed4a_pre_relu", random_direction)
+    assert_gradient_ascent(objective, inceptionv1)
+
 
 def test_deepdream(inceptionv1):
     objective = objectives.deepdream("mixed4a_pre_relu")
