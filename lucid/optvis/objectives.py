@@ -112,7 +112,7 @@ class Objective(object):
 
 
 
-def wrap_objective(*, require_format=None, handle_batch=False):
+def wrap_objective(require_format=None, handle_batch=False):
   """Decorator for creating Objective factories.
 
   Changes f from the closure: (args) => () => TF Tensor
