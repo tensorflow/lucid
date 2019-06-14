@@ -161,11 +161,14 @@ def save_txt(object, handle, **kwargs):
       'url': handle.name
     }
 
+<<<<<<< ours
 
 def save_str(object, handle, **kwargs):
     assert isinstance(object, str)
     handle.write(object)
 
+=======
+>>>>>>> theirs
 
 def save_pb(object, handle, **kwargs):
   try:
