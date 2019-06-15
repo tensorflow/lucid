@@ -47,7 +47,8 @@ log = logging.getLogger(__name__)
 this = sys.modules[__name__]
 this.save_contexts = []
 
-class CaptureSaveContext():
+
+class CaptureSaveContext:
     """Keeps captured save results.
     Usage:
     save_context = CaptureSaveContext()
@@ -55,6 +56,7 @@ class CaptureSaveContext():
         ...
     captured_results = save_context.captured_saves
     """
+
     def __init__(self):
         self.captured_saves = []
 
@@ -88,21 +90,14 @@ def save_json(object, handle, indent=2):
     obj_json = json.dumps(object, indent=indent, cls=ClarityJSONEncoder)
     handle.write(obj_json)
 
-    return {
-      'type': 'json',
-      'url': handle.name
-    }
+    return {"type": "json", "url": handle.name}
 
 
 def save_npy(object, handle):
     """Save numpy array as npy file."""
     np.save(handle, object)
 
-    return {
-      'type': 'npy',
-      'shape': object.shape,
-      'url': handle.name
-    }
+    return {"type": "npy", "shape": object.shape, "url": handle.name}
 
 
 def save_npz(object, handle):
@@ -133,9 +128,9 @@ def save_img(object, handle, **kwargs):
         raise ValueError("Can only save_img for numpy arrays or PIL.Images!")
 
     return {
-      'type': 'image',
-      'shape': object.size + (len(object.getbands()),),
-      'url': handle.name
+        "type": "image",
+        "shape": object.size + (len(object.getbands()),),
+        "url": handle.name,
     }
 
 
@@ -150,32 +145,32 @@ def save_txt(object, handle, **kwargs):
                 line_type = type(line)
                 line = repr(line).encode()
                 warnings.warn(
-                    "`save_txt` found an object of type {}; using `repr` to convert it to string.".format(line_type)
+                    "`save_txt` found an object of type {}; using `repr` to convert it to string.".format(
+                        line_type
+                    )
                 )
             if not line.endswith(b"\n"):
                 line += b"\n"
             handle.write(line)
 
-    return {
-      'type': 'txt',
-      'url': handle.name
-    }
+    return {"type": "txt", "url": handle.name}
 
-<<<<<<< ours
 
 def save_str(object, handle, **kwargs):
     assert isinstance(object, str)
     handle.write(object)
 
-=======
->>>>>>> theirs
 
 def save_pb(object, handle, **kwargs):
-  try:
-    handle.write(object.SerializeToString())
-  except AttributeError as e:
-    warnings.warn("`save_protobuf` failed for object {}. Re-raising original exception.".format(object))
-    raise e
+    try:
+        handle.write(object.SerializeToString())
+    except AttributeError:
+        warnings.warn(
+            "`save_protobuf` failed for object {}. Re-raising original exception.".format(
+                object
+            )
+        )
+        raise
 
 
 savers = {
@@ -207,9 +202,9 @@ def save(thing, url_or_handle, **kwargs):
     # Is this a handle? What is the extension? Are we saving to GCS?
     is_handle = hasattr(url_or_handle, "write") and hasattr(url_or_handle, "name")
     if is_handle:
-      path = url_or_handle.name
+        path = url_or_handle.name
     else:
-      path = url_or_handle
+        path = url_or_handle
 
     _, ext = os.path.splitext(path)
     is_gcs = path.startswith("gs://")
@@ -224,16 +219,22 @@ def save(thing, url_or_handle, **kwargs):
         saver = save_str
     else:
         message = "Unknown extension '{}'. As a result, only strings can be saved, not {}. Supported extensions: {}"
-        raise ValueError(message.format(ext, type(thing).__name__, list(savers.keys()) ))
+        raise ValueError(message.format(ext, type(thing).__name__, list(savers.keys())))
 
     # Actually save
     if is_handle:
-        saver(thing, url_or_handle, **kwargs)
+        result = saver(thing, url_or_handle, **kwargs)
     else:
         with write_handle(url_or_handle) as handle:
-            saver(thing, handle, **kwargs)
+            result = saver(thing, handle, **kwargs)
 
     # Set mime type on gcs if html -- usually, when one saves an html to GCS,
     # they want it to be viewsable as a website.
     if is_gcs and ext == ".html":
-        subprocess.run(["gsutil", "setmeta", "-h", "Content-Type:text/html", path])
+        subprocess.run(["gsutil", "setmeta", "-h", "Content-Type: text/html", path])
+    if is_gcs and ext == ".json":
+        subprocess.run(
+            ["gsutil", "setmeta", "-h", "Content-Type: application/json", path]
+        )
+
+    return result

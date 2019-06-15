@@ -29,7 +29,7 @@ from itertools import chain
 log = logging.getLogger(__name__)
 
 from lucid.misc.io import load
-from lucid.misc.io.saving import NumpyJSONEncoder
+from lucid.misc.io.saving import ClarityJSONEncoder
 
 
 def load_text_labels(labels_path):

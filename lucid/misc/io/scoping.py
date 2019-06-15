@@ -13,7 +13,7 @@ def io_scope(path):
     finally:
         this.io_scopes.pop()
 
-def scope_url(url):
+def scope_url(url, io_scopes):
     if "//" in url:
         return url
     return os.path.join(*this.io_scopes, url)
