@@ -20,6 +20,7 @@ import tensorflow as tf
 
 from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import pixel_image, fft_image
+from lucid.optvis.param.unit_balls import constrain_L_inf
 
 
 def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=False, channels=None):
@@ -30,7 +31,7 @@ def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=Fals
     param_f = fft_image if fft else pixel_image
     t = param_f(shape, sd=sd)
     if channels:
-        output = to_valid_rgb(t, decorrelate=False, sigmoid=True)
+        output = tf.nn.sigmoid(t)
     else:
         output = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
         if alpha:
