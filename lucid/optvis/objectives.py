@@ -131,9 +131,6 @@ def wrap_objective(require_format=None, handle_batch=False):
     def process_T(T):
       if require_format == "NHWC":
         T = _T_force_NHWC(T)
-      if handle_batch and "batch" in kwds:
-        T = _T_handle_batch(T, batch=kwds["batch"])
-        del kwds["batch"]
       return T
 
     return Objective(lambda T: objective_func(process_T(T)),
@@ -141,11 +138,12 @@ def wrap_objective(require_format=None, handle_batch=False):
   return inner
 
 
+def handle_batch(batch=None):
+  return lambda f: lambda T: f(_T_handle_batch(T, batch=batch))
 
 
-
-@wrap_objective(require_format='NHWC', handle_batch=True)
-def neuron(layer_name, channel_n, x=None, y=None):
+@wrap_objective(require_format='NHWC')
+def neuron(layer_name, channel_n, x=None, y=None, batch=None):
   """Visualize a single neuron of a single channel.
 
   Defaults to the center neuron. When width and height are even numbers, we
@@ -163,6 +161,8 @@ def neuron(layer_name, channel_n, x=None, y=None):
                                     |   |   |   |   |
                                     +---+---+---+---+
   """
+
+  @handle_batch(batch)
   def inner(T):
     layer = T(layer_name)
     layer = _extract_act_pos(layer, x, y)
@@ -170,25 +170,34 @@ def neuron(layer_name, channel_n, x=None, y=None):
   return inner
 
 
-@wrap_objective(require_format='NHWC', handle_batch=True)
-def channel(layer, n_channel):
+@wrap_objective(require_format='NHWC')
+def channel(layer, n_channel, batch=None):
   """Visualize a single channel"""
-  return lambda T: tf.reduce_mean(T(layer)[..., n_channel])
+
+  @handle_batch(batch)
+  def inner(T):
+    return tf.reduce_mean(T(layer)[..., n_channel])
+  return inner
 
 
-@wrap_objective(require_format='NHWC', handle_batch=True)
-def direction(layer, vec, cossim_pow=0):
+@wrap_objective(require_format='NHWC')
+def direction(layer, vec, cossim_pow=0, batch=None):
   """Visualize a direction"""
   vec = vec[None, None, None]
   vec = vec.astype("float32")
-  return lambda T: _dot_cossim(T(layer), vec, cossim_pow=cossim_pow)
+
+  @handle_batch(batch)
+  def inner(T):
+    return _dot_cossim(T(layer), vec, cossim_pow=cossim_pow)
+  return inner
 
 direction_cossim = direction
 
-@wrap_objective(require_format='NHWC', handle_batch=True)
-def direction_neuron(layer_name, vec, x=None, y=None, cossim_pow=0):
+@wrap_objective(require_format='NHWC')
+def direction_neuron(layer_name, vec, x=None, y=None, cossim_pow=0, batch=None):
   """Visualize a single (x, y) position along the given direction"""
   vec = vec.astype("float32")
+  @handle_batch(batch)
   def inner(T):
     layer = T(layer_name)
     layer = _extract_act_pos(layer, x, y)
@@ -196,13 +205,14 @@ def direction_neuron(layer_name, vec, x=None, y=None, cossim_pow=0):
   return inner
 
 
-@wrap_objective(require_format='NHWC', handle_batch=True)
-def tensor_direction(layer, vec, cossim_pow=0):
+@wrap_objective(require_format='NHWC')
+def tensor_direction(layer, vec, cossim_pow=0, batch=None):
   """Visualize a tensor."""
   assert len(vec.shape) in [3,4]
   vec = vec.astype("float32")
   if len(vec.shape) == 3:
     vec = vec[None]
+  @handle_batch(batch)
   def inner(T):
     t_acts = T(layer)
     t_shp = tf.shape(t_acts)
