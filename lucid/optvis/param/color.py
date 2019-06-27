@@ -74,15 +74,7 @@ def to_valid_rgb(t, decorrelate=False, sigmoid=True):
   else:
     return constrain_L_inf(2*t-1)/2 + 0.5
 
-def arbitrary_channels_to_rgb(*args, channels=None, **kwargs):
-    channels = channels or 10
-    full_im = param.image(*args, channels=channels, **kwargs)
-    r = tf.reduce_mean(full_im[...,:channels//3]**2, axis=-1)
-    g = tf.reduce_mean(full_im[...,channels//3:2*channels//3]**2, axis=-1)
-    b = tf.reduce_mean(full_im[...,2*channels//3:]**2, axis=-1)
-    return tf.stack([r,g,b], axis=-1)
-
 def grayscale_image_to_rgb(*args, **kwargs):
-    """Takes same arguments as image"""
-    output = param.image(*args, channels=1, **kwargs)
-    return tf.tile(output, (1,1,1,3))
+  """Takes same arguments as image"""
+  output = param.image(*args, channels=1, **kwargs)
+  return tf.tile(output, (1,1,1,3))
