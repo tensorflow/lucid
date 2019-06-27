@@ -73,3 +73,4 @@ def to_valid_rgb(t, decorrelate=False, sigmoid=True):
     return tf.nn.sigmoid(t)
   else:
     return constrain_L_inf(2*t-1)/2 + 0.5
+    

@@ -20,7 +20,6 @@ import tensorflow as tf
 
 from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import pixel_image, fft_image
-from lucid.optvis.param.unit_balls import constrain_L_inf
 
 
 def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=False, channels=None):
