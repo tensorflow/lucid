@@ -10,7 +10,7 @@ import io
 
 path = "./tests/fixtures/string.txt"
 string = u"The quick brown fox jumps over the lazy 🐕"
-io.open(path, 'w').write(string)
+io.open(path, 'w', encoding="utf-8").write(string)
 
 
 def test_read_txt_file():

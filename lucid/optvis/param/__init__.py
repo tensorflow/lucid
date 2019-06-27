@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-from lucid.optvis.param.images import image
+from lucid.optvis.param.images import image, grayscale_image_rgb
 from lucid.optvis.param.lowres import lowres_tensor
 from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import naive, fft_image, laplacian_pyramid
