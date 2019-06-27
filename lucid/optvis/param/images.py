@@ -38,3 +38,8 @@ def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=Fals
             a = tf.nn.sigmoid(t[..., 3:])
             return tf.concat([rgb, a], -1)
     return output
+
+def grayscale_image_rgb(*args, **kwargs):
+  """Takes same arguments as image"""
+  output = image(*args, channels=1, **kwargs)
+  return tf.tile(output, (1,1,1,3))

@@ -20,7 +20,6 @@ import numpy as np
 import tensorflow as tf
 
 from lucid.optvis.param.unit_balls import constrain_L_inf
-from lucid.optvis import param
 
 color_correlation_svd_sqrt = np.asarray([[0.26, 0.09, 0.02],
                                          [0.27, 0.00, -0.05],
@@ -74,8 +73,3 @@ def to_valid_rgb(t, decorrelate=False, sigmoid=True):
     return tf.nn.sigmoid(t)
   else:
     return constrain_L_inf(2*t-1)/2 + 0.5
-
-def grayscale_image_to_rgb(*args, **kwargs):
-  """Takes same arguments as image"""
-  output = param.image(*args, channels=1, **kwargs)
-  return tf.tile(output, (1,1,1,3))

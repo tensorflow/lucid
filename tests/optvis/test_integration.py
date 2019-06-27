@@ -53,7 +53,7 @@ def test_integration_any_channels():
     objectives_f = [objectives.deepdream("mixed4a_pre_relu"), 
                 objectives.channel("mixed4a_pre_relu", 360), 
                 objectives.neuron("mixed3a", 177)]
-    params_f = [lambda: param.color.grayscale_image_to_rgb(128),
+    params_f = [lambda: param.grayscale_image_rgb(128),
                 lambda: arbitrary_channels_to_rgb(128, channels=10)]
     for objective_f in objectives_f:
         for param_f in params_f:
