@@ -39,7 +39,7 @@ def activation_atlas(
     """Renders an Activation Atlas of the given model's layer."""
 
     activations = layer.activations[:number_activations, ...]
-    layout, = aligned_umap(activations, verbose=verbose)
+    layout = aligned_umap(activations, verbose=verbose)
     directions, coordinates, _ = bin_laid_out_activations(
         layout, activations, grid_size
     )
