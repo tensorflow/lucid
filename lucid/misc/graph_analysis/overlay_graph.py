@@ -122,7 +122,7 @@ class OverlayGraph():
     self.name_map = {name: OverlayNode(name, self) for name in nodes}
     self.nodes = [self.name_map[name] for name in nodes]
     self.no_pass_through = [] if no_pass_through is None else no_pass_through
-    self.node_to_consumers = defaultdict(set()
+    self.node_to_consumers = defaultdict(set)
     self.node_to_inputs = defaultdict(set)
     self.prev_overlay = prev_overlay
 
