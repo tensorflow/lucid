@@ -11,7 +11,7 @@ def test_channel_reducer_trivial():
     for d in range(array.shape[-1]):
         array[:, :, d] = np.eye(10, 10)
 
-    channel_reducer = ChannelReducer(n_features=2)
+    channel_reducer = ChannelReducer(n_components=2)
     channel_reducer.fit(array)
     reduced = channel_reducer.transform(array)
 

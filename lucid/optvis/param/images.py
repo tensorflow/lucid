@@ -22,20 +22,33 @@ from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import pixel_image, fft_image
 
 
-def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=False):
+def image(
+    w,
+    h=None,
+    batch=None,
+    sd=None,
+    decorrelate=True,
+    fft=True,
+    alpha=False,
+    channels=None,
+):
     h = h or w
     batch = batch or 1
-    channels = 4 if alpha else 3
-    shape = [batch, w, h, channels]
+    ch = channels or (4 if alpha else 3)
+    shape = [batch, h, w, ch]
     param_f = fft_image if fft else pixel_image
     t = param_f(shape, sd=sd)
-    param = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
+    if channels:
+        output = tf.nn.sigmoid(t)
+    else:
+        output = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
+        if alpha:
+            a = tf.nn.sigmoid(t[..., 3:])
+            output = tf.concat([output, a], -1)
+    return output
 
-    if alpha:
-        a = tf.nn.sigmoid(t[..., 3:])
-        param = tf.concat([param, a], -1)
 
-    # if data_format == 'NCHW':
-        # param = tf.transpose(param, (0,3,1,2))  # NHWC -> NCHW
-
-    return param
+def grayscale_image_rgb(*args, **kwargs):
+    """Takes same arguments as image"""
+    output = image(*args, channels=1, **kwargs)
+    return tf.tile(output, (1, 1, 1, 3))

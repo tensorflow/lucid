@@ -35,6 +35,9 @@ from decorator import decorator
 import numpy as np
 import tensorflow as tf
 
+
+from lucid.optvis.objectives_util import _dot, _dot_cossim, _extract_act_pos, _make_arg_str, _T_force_NHWC, _T_handle_batch
+
 # We use T as a variable name to access all kinds of tensors
 # pylint: disable=invalid-name
 
@@ -107,14 +110,9 @@ class Objective(object):
     return self.objective_func(T)
 
 
-def _make_arg_str(arg):
-  arg = str(arg)
-  too_big = len(arg) > 15 or "\n" in arg
-  return "..." if too_big else arg
 
 
-@decorator
-def wrap_objective(f, *args, **kwds):
+def wrap_objective(require_format=None, handle_batch=False):
   """Decorator for creating Objective factories.
 
   Changes f from the closure: (args) => () => TF Tensor
@@ -122,14 +120,29 @@ def wrap_objective(f, *args, **kwds):
 
   while perserving function name, arg info, docs... for interactive python.
   """
-  objective_func = f(*args, **kwds)
-  objective_name = f.__name__
-  args_str = " [" + ", ".join([_make_arg_str(arg) for arg in args]) + "]"
-  description = objective_name.title() + args_str
-  return Objective(objective_func, objective_name, description)
+
+  @decorator
+  def inner(f, *args, **kwds):
+    objective_func = f(*args, **kwds)
+    objective_name = f.__name__
+    args_str = " [" + ", ".join([_make_arg_str(arg) for arg in args]) + "]"
+    description = objective_name.title() + args_str
+
+    def process_T(T):
+      if require_format == "NHWC":
+        T = _T_force_NHWC(T)
+      return T
+
+    return Objective(lambda T: objective_func(process_T(T)),
+                     objective_name, description)
+  return inner
 
 
-@wrap_objective
+def handle_batch(batch=None):
+  return lambda f: lambda T: f(_T_handle_batch(T, batch=batch))
+
+
+@wrap_objective(require_format='NHWC')
 def neuron(layer_name, channel_n, x=None, y=None, batch=None):
   """Visualize a single neuron of a single channel.
 
@@ -148,83 +161,73 @@ def neuron(layer_name, channel_n, x=None, y=None, batch=None):
                                     |   |   |   |   |
                                     +---+---+---+---+
   """
+
+  @handle_batch(batch)
   def inner(T):
     layer = T(layer_name)
-    shape = tf.shape(layer)
-    x_ = shape[1] // 2 if x is None else x
-    y_ = shape[2] // 2 if y is None else y
-
-    if batch is None:
-      return layer[:, x_, y_, channel_n]
-    else:
-      return layer[batch, x_, y_, channel_n]
+    layer = _extract_act_pos(layer, x, y)
+    return tf.reduce_mean(layer[..., channel_n])
   return inner
 
 
-@wrap_objective
+@wrap_objective(require_format='NHWC')
 def channel(layer, n_channel, batch=None):
   """Visualize a single channel"""
-  if batch is None:
-    return lambda T: tf.reduce_mean(T(layer)[..., n_channel])
-  else:
-    return lambda T: tf.reduce_mean(T(layer)[batch, ..., n_channel])
+
+  @handle_batch(batch)
+  def inner(T):
+    return tf.reduce_mean(T(layer)[..., n_channel])
+  return inner
 
 
-def _dot(x, y):
-  return tf.reduce_sum(x * y, -1)
-
-
-def _dot_cossim(x, y, cossim_pow=0):
-  eps = 1e-4
-  xy_dot = _dot(x, y)
-  if cossim_pow == 0: return tf.reduce_mean(xy_dot)
-  x_mags = tf.sqrt(_dot(x,x))
-  y_mags = tf.sqrt(_dot(y,y))
-  cossims = xy_dot / (eps + x_mags ) / (eps + y_mags)
-  floored_cossims = tf.maximum(0.1, cossims)
-  return tf.reduce_mean(xy_dot * floored_cossims**cossim_pow)
-
-
-@wrap_objective
-def direction(layer, vec, batch=None, cossim_pow=0):
+@wrap_objective(require_format='NHWC')
+def direction(layer, vec, cossim_pow=0, batch=None):
   """Visualize a direction"""
-  if batch is None:
-    vec = vec[None, None, None]
-    return lambda T: _dot_cossim(T(layer), vec)
-  else:
-    vec = vec[None, None]
-    return lambda T: _dot_cossim(T(layer)[batch], vec)
+  vec = vec[None, None, None]
+  vec = vec.astype("float32")
 
+  @handle_batch(batch)
+  def inner(T):
+    return _dot_cossim(T(layer), vec, cossim_pow=cossim_pow)
+  return inner
 
-@wrap_objective
-def direction_neuron(layer_name, vec, batch=None, x=None, y=None, cossim_pow=0):
+direction_cossim = direction
+
+@wrap_objective(require_format='NHWC')
+def direction_neuron(layer_name, vec, x=None, y=None, cossim_pow=0, batch=None):
   """Visualize a single (x, y) position along the given direction"""
+  vec = vec.astype("float32")
+  @handle_batch(batch)
   def inner(T):
     layer = T(layer_name)
-    shape = tf.shape(layer)
-    x_ = shape[1] // 2 if x is None else x
-    y_ = shape[2] // 2 if y is None else y
-    if batch is None:
-      return _dot_cossim(layer[:, x_, y_], vec[None], cossim_pow=cossim_pow)
-    else:
-      return _dot_cossim(layer[batch, x_, y_], vec, cossim_pow=cossim_pow)
+    layer = _extract_act_pos(layer, x, y)
+    return _dot_cossim(layer, vec[None, None, None], cossim_pow=cossim_pow)
   return inner
 
-@wrap_objective
-def direction_cossim(layer, vec, batch=None):
-  """Visualize a direction (cossine similarity)"""
+
+@wrap_objective(require_format='NHWC')
+def tensor_direction(layer, vec, cossim_pow=0, batch=None):
+  """Visualize a tensor."""
+  assert len(vec.shape) in [3,4]
+  vec = vec.astype("float32")
+  if len(vec.shape) == 3:
+    vec = vec[None]
+  @handle_batch(batch)
   def inner(T):
-    act_mags = tf.sqrt(tf.reduce_sum(T(layer)**2, -1, keepdims=True))
-    vec_mag = tf.sqrt(tf.reduce_sum(vec**2))
-    mags = act_mags * vec_mag
-    if batch is None:
-      return tf.reduce_mean(T(layer) * vec.reshape([1, 1, 1, -1]) / mags)
-    else:
-      return tf.reduce_mean(T(layer)[batch] * vec.reshape([1, 1, -1]) / mags)
+    t_acts = T(layer)
+    t_shp = tf.shape(t_acts)
+    v_shp = vec.shape
+    M1 = (t_shp[1] - v_shp[1]) // 2
+    M2 = (t_shp[2] - v_shp[2]) // 2
+    t_acts_ = t_acts[:,
+                     M1 : M1+v_shp[1],
+                     M2 : M2+v_shp[2],
+                     :]
+    return _dot_cossim(t_acts_, vec, cossim_pow=cossim_pow)
   return inner
 
 
-@wrap_objective
+@wrap_objective(handle_batch=True)
 def deepdream(layer):
   """Maximize 'interestingness' at some layer.
 
@@ -233,7 +236,7 @@ def deepdream(layer):
   return lambda T: tf.reduce_mean(T(layer)**2)
 
 
-@wrap_objective
+@wrap_objective(handle_batch=True)
 def total_variation(layer="input"):
   """Total variation of image (or activations at some layer).
 
@@ -243,22 +246,16 @@ def total_variation(layer="input"):
   return lambda T: tf.image.total_variation(T(layer))
 
 
-@wrap_objective
-def L1(layer="input", constant=0, batch=None):
+@wrap_objective(handle_batch=True)
+def L1(layer="input", constant=0):
   """L1 norm of layer. Generally used as penalty."""
-  if batch is None:
-    return lambda T: tf.reduce_sum(tf.abs(T(layer) - constant))
-  else:
-    return lambda T: tf.reduce_sum(tf.abs(T(layer)[batch] - constant))
+  return lambda T: tf.reduce_sum(tf.abs(T(layer) - constant))
 
 
-@wrap_objective
-def L2(layer="input", constant=0, epsilon=1e-6, batch=None):
+@wrap_objective(handle_batch=True)
+def L2(layer="input", constant=0, epsilon=1e-6):
   """L2 norm of layer. Generally used as penalty."""
-  if batch is None:
-    return lambda T: tf.sqrt(epsilon + tf.reduce_sum((T(layer) - constant) ** 2))
-  else:
-    return lambda T: tf.sqrt(epsilon + tf.reduce_sum((T(layer)[batch] - constant) ** 2))
+  return lambda T: tf.sqrt(epsilon + tf.reduce_sum((T(layer) - constant) ** 2))
 
 
 def _tf_blur(x, w=3):
@@ -273,7 +270,7 @@ def _tf_blur(x, w=3):
   return conv_k(x) / conv_k(tf.ones_like(x))
 
 
-@wrap_objective
+@wrap_objective()
 def blur_input_each_step():
   """Minimizing this objective is equivelant to blurring input each step.
 
@@ -290,7 +287,7 @@ def blur_input_each_step():
     return 0.5*tf.reduce_sum((t_input - t_input_blurred)**2)
   return inner
 
-@wrap_objective
+@wrap_objective()
 def blur_alpha_each_step():
   def inner(T):
     t_input = T("input")[..., 3:4]
@@ -299,7 +296,7 @@ def blur_alpha_each_step():
   return inner
 
 
-@wrap_objective
+@wrap_objective()
 def channel_interpolate(layer1, n_channel1, layer2, n_channel2):
   """Interpolate between layer1, n_channel1 and layer2, n_channel2.
 
@@ -328,7 +325,7 @@ def channel_interpolate(layer1, n_channel1, layer2, n_channel2):
   return inner
 
 
-@wrap_objective
+@wrap_objective()
 def penalize_boundary_complexity(shp, w=20, mask=None, C=0.5):
   """Encourage the boundaries of an image to have less variation and of color C.
 
@@ -358,7 +355,7 @@ def penalize_boundary_complexity(shp, w=20, mask=None, C=0.5):
   return inner
 
 
-@wrap_objective
+@wrap_objective()
 def alignment(layer, decay_ratio=2):
   """Encourage neighboring images to be similar.
 
@@ -392,7 +389,7 @@ def alignment(layer, decay_ratio=2):
     return -accum
   return inner
 
-@wrap_objective
+@wrap_objective()
 def diversity(layer):
   """Encourage diversity between each batch element.
 
@@ -425,7 +422,7 @@ def diversity(layer):
   return inner
 
 
-@wrap_objective
+@wrap_objective()
 def input_diff(orig_img):
   """Average L2 difference between optimized image and orig_img.
 
@@ -438,7 +435,7 @@ def input_diff(orig_img):
   return inner
 
 
-@wrap_objective
+@wrap_objective()
 def class_logit(layer, label):
   """Like channel, but for softmax layers.
 
