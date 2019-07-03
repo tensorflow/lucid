@@ -28,19 +28,18 @@ import lucid.optvis.render as render
 import lucid.optvis.transform as transform
 
 
-@objectives.wrap_objective
+@objectives.wrap_objective()
 def direction_neuron_S(layer_name, vec, batch=None, x=None, y=None, S=None):
-    if batch is None:
-            raise RuntimeError("requires batch")
-    @objectives.handle_batch(batch)
+
     def inner(T):
         layer = T(layer_name)
         shape = tf.shape(layer)
         x_ = shape[1] // 2 if x is None else x
         y_ = shape[2] // 2 if y is None else y
-        
+        if batch is None:
+            raise RuntimeError("requires batch")
 
-        acts = layer[x_, y_]
+        acts = layer[batch, x_, y_]
         vec_ = vec
         if S is not None:
             vec_ = tf.matmul(vec_[None], S)[0]
@@ -52,20 +51,20 @@ def direction_neuron_S(layer_name, vec, batch=None, x=None, y=None, S=None):
     return inner
 
 
-@objectives.wrap_objective
+@objectives.wrap_objective()
 def direction_neuron_cossim_S(
     layer_name, vec, batch=None, x=None, y=None, cossim_pow=2, S=None
 ):
-    if batch is None:
-            raise RuntimeError("requires batch")
-    @objectives.handle_batch(batch)
+
     def inner(T):
         layer = T(layer_name)
         shape = tf.shape(layer)
         x_ = shape[1] // 2 if x is None else x
         y_ = shape[2] // 2 if y is None else y
-
-        acts = layer[x_, y_]
+        if batch is None:
+            raise RuntimeError("requires batch")
+            
+        acts = layer[batch, x_, y_]
         vec_ = vec
         if S is not None:
             vec_ = tf.matmul(vec_[None], S)[0]
