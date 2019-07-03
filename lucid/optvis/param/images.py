@@ -29,8 +29,13 @@ def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=Fals
     shape = [batch, w, h, channels]
     param_f = fft_image if fft else pixel_image
     t = param_f(shape, sd=sd)
-    rgb = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
+    param = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
+
     if alpha:
         a = tf.nn.sigmoid(t[..., 3:])
-        return tf.concat([rgb, a], -1)
-    return rgb
+        param = tf.concat([param, a], -1)
+
+    # if data_format == 'NCHW':
+        # param = tf.transpose(param, (0,3,1,2))  # NHWC -> NCHW
+
+    return param

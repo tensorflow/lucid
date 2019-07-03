@@ -39,10 +39,10 @@ class OverlayNode():
   def as_name(node):
     if isinstance(node, str):
       return node
-    elif isinstance(node, OverlayNode):
+    elif isinstance(node, (OverlayNode, tf.Tensor)):
       return node.name
-    elif isinstance(node, tf.Tensor):
-      return node.name
+    else:
+        raise NotImplementedError
 
   def __repr__(self):
     return "<%s: %s>" % (self.name, self.op)
@@ -97,16 +97,16 @@ class OverlayGraph():
     self.name_map = {name: OverlayNode(name, self) for name in nodes}
     self.nodes = [self.name_map[name] for name in nodes]
     self.no_pass_through = [] if no_pass_through is None else no_pass_through
-    self.node_to_consumers = defaultdict(lambda: set())
-    self.node_to_inputs = defaultdict(lambda: set())
+    self.node_to_consumers = defaultdict(set)
+    self.node_to_inputs = defaultdict(set)
 
     for node in self.nodes:
       for inp in self._get_overlay_inputs(node):
         self.node_to_inputs[node].add(inp)
         self.node_to_consumers[inp].add(node)
 
-    self.node_to_extended_consumers = defaultdict(lambda: set())
-    self.node_to_extended_inputs = defaultdict(lambda: set())
+    self.node_to_extended_consumers = defaultdict(set)
+    self.node_to_extended_inputs = defaultdict(set)
 
     for node in self.nodes:
       for inp in self.node_to_inputs[node]:
@@ -134,7 +134,7 @@ class OverlayGraph():
     for inp in node.op.inputs:
       if inp in self:
         overlay_inps.append(self[inp])
-      elif not node.name in self.no_pass_through:
+      elif node.name not in self.no_pass_through:
         overlay_inps.extend(self._get_overlay_inputs(inp))
     return overlay_inps
 

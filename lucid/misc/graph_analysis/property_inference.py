@@ -13,7 +13,7 @@ def as_tensor(t):
     return t
 
 
-def infer_data_format(t):
+def infer_data_format(t, max_depth=5):
   """Infer data_format of a conv net activation.
 
   Inputs:
@@ -26,7 +26,7 @@ def infer_data_format(t):
 
   next_candidates = [as_tensor(t)]
 
-  for n in range(5): # 5 is random sanity limit on recursion
+  for n in range(max_depth): # 5 is random sanity limit on recursion
     inps = []
     for t in next_candidates:
       # Easiest way to find out if a tensor has an attribute seems to be trying

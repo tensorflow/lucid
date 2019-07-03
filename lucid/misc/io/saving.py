@@ -32,6 +32,9 @@ import sys
 import logging
 import subprocess
 import warnings
+from copy import copy
+
+# from concurrent.futures import ThreadPoolExecutor
 import os.path
 import json
 import numpy as np
@@ -61,17 +64,22 @@ class CaptureSaveContext:
         self.captured_saves = []
 
     def __enter__(self):
-        this.save_contexts.append(self.captured_saves)
+        self.previous_save_contexts = copy(this.save_contexts)
+        this.save_contexts.append(self)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        assert self.captured_saves in this.save_contexts
-        assert this.save_contexts[-1] == self.captured_saves
-        this.save_contexts.pop()
+        # assert self in this.save_contexts and this.save_contexts[-1] == self
+        # this.save_contexts.pop()
+        this.save_contexts = self.previous_save_contexts
+
+    def capture(self, save_result):
+        if save_result is not None:
+            self.captured_saves.append(save_result)
 
 
 class ClarityJSONEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, tuple):
+        if isinstance(obj, (tuple, set)):
             return list(obj)
         elif isinstance(obj, np.integer):
             return int(obj)
@@ -83,6 +91,15 @@ class ClarityJSONEncoder(json.JSONEncoder):
             return obj.to_json()
         else:
             return super(ClarityJSONEncoder, self).default(obj)
+
+
+# this.threadpool = None
+
+
+# def _get_threadpool():
+#     if this.threadpool is None:
+#         this.threadpool = ThreadPoolExecutor(max_workers=8)
+#     return this.threadpool
 
 
 def save_json(object, handle, indent=2):
@@ -115,11 +132,11 @@ def save_npz(object, handle):
         np.savez(path, object)
 
 
-def save_img(object, handle, **kwargs):
+def save_img(object, handle, domain=None, **kwargs):
     """Save numpy array as image file on CNS."""
 
     if isinstance(object, np.ndarray):
-        normalized = _normalize_array(object)
+        normalized = _normalize_array(object, domain=domain)
         object = PIL.Image.fromarray(normalized)
 
     if isinstance(object, PIL.Image.Image):
@@ -177,12 +194,19 @@ savers = {
     ".png": save_img,
     ".jpg": save_img,
     ".jpeg": save_img,
+    ".webp": save_img,
     ".npy": save_npy,
     ".npz": save_npz,
     ".json": save_json,
     ".txt": save_txt,
     ".pb": save_pb,
 }
+
+
+# def _set_contexts(f, *args, context=None, **kwargs):
+#     assert context
+#     this.save_contexts = context
+#     f(*args, **kwargs)
 
 
 def save(thing, url_or_handle, **kwargs):
@@ -198,6 +222,18 @@ def save(thing, url_or_handle, **kwargs):
     Raises:
       RuntimeError: If file extension not supported.
     """
+    # send to background thread pool if requested and return promise
+    # if asynchronous:
+    #     return _get_threadpool().submit(
+    #         _set_contexts,
+    #         save,
+    #         thing,
+    #         url_or_handle,
+    #         asynchronous=False,
+    #         **kwargs,
+    #         context=this.save_contexts,
+    #     )
+
     # Determine context
     # Is this a handle? What is the extension? Are we saving to GCS?
     is_handle = hasattr(url_or_handle, "write") and hasattr(url_or_handle, "name")
@@ -231,10 +267,23 @@ def save(thing, url_or_handle, **kwargs):
     # Set mime type on gcs if html -- usually, when one saves an html to GCS,
     # they want it to be viewsable as a website.
     if is_gcs and ext == ".html":
-        subprocess.run(["gsutil", "setmeta", "-h", "Content-Type: text/html", path])
+        subprocess.run(
+            ["gsutil", "setmeta", "-h", "Content-Type: text/html; charset=utf-8", path]
+        )
     if is_gcs and ext == ".json":
         subprocess.run(
             ["gsutil", "setmeta", "-h", "Content-Type: application/json", path]
         )
+
+    # capture save if a save context is available
+    if this.save_contexts:
+        log.debug(
+            f"capturing save: resulted in {result} -> {path} in save_context {this.save_contexts[-1]}"
+        )
+        this.save_contexts[-1].capture(result)
+    # else:
+    #     log.debug(
+    #         f"NOT capturing save: resulted in {result} -> {path} (save_contexts: {this.save_contexts})"
+    #     )
 
     return result

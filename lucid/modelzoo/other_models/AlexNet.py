@@ -42,14 +42,14 @@ class AlexNet(Model):
   input_name = 'Placeholder'
 
 AlexNet.layers = _layers_from_list_of_dicts(AlexNet, [
-  {'tags': ['conv'], 'name': 'Conv2D', 'depth': 96},
-  {'tags': ['conv'], 'name': 'Conv2D_1', 'depth': 128},
-  {'tags': ['conv'], 'name': 'Conv2D_2', 'depth': 128},
-  {'tags': ['conv'], 'name': 'Conv2D_3', 'depth': 384},
-  {'tags': ['conv'], 'name': 'Conv2D_4', 'depth': 192},
-  {'tags': ['conv'], 'name': 'Conv2D_5', 'depth': 192},
-  {'tags': ['conv'], 'name': 'Conv2D_6', 'depth': 128},
-  {'tags': ['conv'], 'name': 'Conv2D_7', 'depth': 128},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D', 'depth': 96},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_1', 'depth': 128},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_2', 'depth': 128},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_3', 'depth': 384},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_4', 'depth': 192},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_5', 'depth': 192},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_6', 'depth': 128},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_7', 'depth': 128},
   {'tags': ['dense'], 'name': 'Relu', 'depth': 4096},
   {'tags': ['dense'], 'name': 'Relu_1', 'depth': 4096},
   {'tags': ['dense'], 'name': 'Softmax', 'depth': 1000},

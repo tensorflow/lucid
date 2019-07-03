@@ -77,6 +77,9 @@ class Layer(object):
   def __repr__(self):
     return "Layer (belonging to {s.model_class.name}) <{s.name}: {s.depth}> ([{s.tags}])".format(s=self)
 
+  def to_json(self):
+    return self.name  # TODO
+
 
 def _layers_from_list_of_dicts(model_class, list_of_dicts):
   layers = []
@@ -84,7 +87,7 @@ def _layers_from_list_of_dicts(model_class, list_of_dicts):
     name, depth, tags = layer_info['name'], layer_info['depth'], layer_info['tags']
     layer = Layer(model_class, name, depth, tags)
     layers.append(layer)
-  return layers
+  return tuple(layers)
 
 
 class ModelPropertiesMetaClass(type):
@@ -100,8 +103,8 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   model_path = None
   labels_path = None
   image_value_range = (-1, 1)
-  image_shape = [None, None, 3]
-  layers = []
+  image_shape = (None, None, 3)
+  layers = ()
 
   _labels = None
   _synset_ids = None
@@ -115,6 +118,14 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   def __setstate__(self, state):
       self.__dict__.update(state)
+
+  def __eq__(self, other):
+    if isinstance(other, Model):
+        return self.model_path == other.model_path
+    return False
+
+  def __hash__(self):
+    return hash(self.model_path)
 
   @property
   def labels(self):
@@ -141,6 +152,12 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   @property
   def name(self):
     return self.__class__.name
+
+  def __str__(self):
+    return self.__class__.name
+
+  def to_json(self):
+    return self.name  # TODO
 
   @property
   def graph_def(self):
@@ -259,7 +276,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
     report = []
     report.append("# Please sanity check all inferred values before using this code.")
-    report.append("Incorrect `image_value_range` is the most common cause of feature visualization bugs! Most methods will fail silently with incorrect visualizations!")
+    report.append("# Incorrect `image_value_range` is the most common cause of feature visualization bugs! Most methods will fail silently with incorrect visualizations!")
     report.append("Model.save(")
 
     suggestions = {
@@ -292,13 +309,11 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     save(graph_def, save_url)
 
   @staticmethod
-  def load(graphdef_url):
-    graph_def = load(graphdef_url)
-    metadata = model_util.extract_metadata(graph_def)
-    if metadata:
-      return Model.load_from_metadata(graphdef_url, metadata)
-    else:
-      raise ValueError("Model.load was called on a GraphDef ({}) that does not contain Lucid's metadata node. Model.load only works for models saved via Model.save. For the graphdef you're trying to load, you will need to provide custom metadata; see Model.load_from_metadata()".format(graphdef_url))
+  def load(url):
+    if url.endswith(".pb"):
+      return Model.load_from_graphdef(url)
+    elif url.endswith(".json"):
+      return Model.load_from_manifest(url)
 
   @staticmethod
   def load_from_metadata(model_url, metadata):
@@ -308,6 +323,15 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
       image_shape = metadata["image_shape"]
       image_value_range = metadata["image_value_range"]
     return DynamicModel()
+
+  @staticmethod
+  def load_from_graphdef(graphdef_url):
+    graph_def = load(graphdef_url)
+    metadata = model_util.extract_metadata(graph_def)
+    if metadata:
+      return Model.load_from_metadata(graphdef_url, metadata)
+    else:
+      raise ValueError("Model.load_from_graphdef was called on a GraphDef ({}) that does not contain Lucid's metadata node. Model.load only works for models saved via Model.save. For the graphdef you're trying to load, you will need to provide custom metadata; see Model.load_from_metadata()".format(graphdef_url))
 
   @staticmethod
   def load_from_manifest(manifest_url):

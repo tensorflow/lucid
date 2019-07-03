@@ -100,7 +100,7 @@ def read_handle(url, cache=None, mode="rb"):
 
     scheme = urlparse(url).scheme
 
-    if cache == 'purge':
+    if cache == "purge":
         _purge_cached(url)
         cache = None
 
@@ -186,8 +186,6 @@ def _read_and_cache(url, mode="rb"):
             except OSError:
                 pass
             raise
-
-
 
 
 from functools import partial
