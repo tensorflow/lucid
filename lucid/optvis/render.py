@@ -44,15 +44,15 @@ log = logging.getLogger(__name__)
 def render_vis(model, objective_f, param_f=None, optimizer=None,
                transforms=None, thresholds=(512,), print_objectives=None,
                verbose=True, relu_gradient_override=True, use_fixed_seed=False):
-  """Flexible optimization-base feature vis.
+  """Flexible optimization-based feature vis.
 
-  There's a lot of ways one might wish to customize otpimization-based
+  There's a lot of ways one might wish to customize optimization-based
   feature visualization. It's hard to create an abstraction that stands up
   to all the things one might wish to try.
 
   This function probably can't do *everything* you want, but it's much more
   flexible than a naive attempt. The basic abstraction is to split the problem
-  into several parts. Consider the rguments:
+  into several parts. Consider the arguments:
 
   Args:
     model: The model to be visualized, from Alex' modelzoo.
@@ -79,6 +79,7 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
     use_fixed_seed: Seed the RNG with a fixed value so results are reproducible.
       Off by default. As of tf 1.8 this does not work as intended, see:
       https://github.com/tensorflow/tensorflow/issues/9171
+  
   Returns:
     2D array of optimization results containing of evaluations of supplied
     param_f snapshotted at specified thresholds. Usually that will mean one or
