@@ -6,7 +6,11 @@ if you do need to import the module or some of the lower level methods.
 
 ## API
 
-### saving
+### load
+
+### show
+
+### save
 
 Used to write files. File types are inferred from the file extension given in the destination string.
 
@@ -35,17 +39,9 @@ Gracefully supports the following file extensions:
 .pb
 ```
 
-You can also scope a bunch of save calls within other functions.
+### write_handle
 
-```python
-from lucid.misc.io import save, io_scope
-
-with io_scope("gs://bucket/test/folder/"):
-    for op in ops:
-        save(op, "op.npy")
-```
-
-If you want to save a filetype that is not supported, you can alternately import a write handler from `lucid.misc.io.writing` and pass that to most other save implementations. Here's an example with saving a matplotlib plot.
+If you want to save a filetype that is not supported, you can import a write handler from `lucid.misc.io.writing` and pass that to most other save implementations. Here's an example with saving a matplotlib plot.
 
 ```python
 from lucid.misc.io.writing import write_handle
@@ -57,4 +53,16 @@ plt.show
 with write_handle("test2.png") as handle:
     plt.savefig(handle)
 
+```
+
+### io_scope
+
+You can scope a bunch of save/load calls to a destination.
+
+```python
+from lucid.misc.io import save, io_scope
+
+with io_scope("gs://bucket/test/folder/"):
+    for op in ops:
+        save(op, "op.npy")
 ```
