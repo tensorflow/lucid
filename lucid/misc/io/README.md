@@ -10,7 +10,7 @@ if you do need to import the module or some of the lower level methods.
 
 Used to write files. File types are inferred from the file extension given in the destination string.
 
-```
+```python
 from lucid.misc.io import save
 
 save(np.random.rand(100), "random.npy")
@@ -18,26 +18,26 @@ save(np.random.rand(100), "random.npy")
 
 Can save locally or to GCS.
 
-```
+```python
 save(random, "gs://bucket/test/random.npy")
 ```
 
 Gracefully supports the following file extensions: 
 
 ```
-".png": save_img,
-".jpg": save_img,
-".jpeg": save_img,
-".npy": save_npy,
-".npz": save_npz,
-".json": save_json,
-".txt": save_txt,
-".pb": save_pb,
+.png
+.jpg
+.jpeg
+.npy
+.npz
+.json
+.txt
+.pb
 ```
 
 You can also scope a bunch of save calls within other functions.
 
-```
+```python
 from lucid.misc.io import save, io_scope
 
 with io_scope("gs://bucket/test/folder/"):
@@ -47,7 +47,7 @@ with io_scope("gs://bucket/test/folder/"):
 
 If you want to save a filetype that is not supported, you can alternately import a write handler from `lucid.misc.io.writing` and pass that to most other save implementations. Here's an example with saving a matplotlib plot.
 
-```
+```python
 from lucid.misc.io.writing import write_handle
 
 r = np.random.rand(1000, 1000)
