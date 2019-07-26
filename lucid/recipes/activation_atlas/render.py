@@ -28,7 +28,7 @@ import lucid.optvis.render as render
 import lucid.optvis.transform as transform
 
 
-@objectives.wrap_objective
+@objectives.wrap_objective()
 def direction_neuron_S(layer_name, vec, batch=None, x=None, y=None, S=None):
     def inner(T):
         layer = T(layer_name)
@@ -50,7 +50,7 @@ def direction_neuron_S(layer_name, vec, batch=None, x=None, y=None, S=None):
     return inner
 
 
-@objectives.wrap_objective
+@objectives.wrap_objective()
 def direction_neuron_cossim_S(
     layer_name, vec, batch=None, x=None, y=None, cossim_pow=2, S=None
 ):

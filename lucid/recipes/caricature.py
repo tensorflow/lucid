@@ -17,7 +17,7 @@ import lucid.misc.io.showing
 from lucid.modelzoo.vision_base import SerializedModel
 
 
-@objectives.wrap_objective
+@objectives.wrap_objective()
 def dot_compare(layer, batch=1, cossim_pow=0):
   def inner(T):
     acts1 = T(layer)[0]
