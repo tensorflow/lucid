@@ -85,6 +85,8 @@ class Graph(object):
 
     for raw_node in graphdef.node:
       for raw_inp in raw_node.input:
+        if raw_inp.startswith('^'):  # skip control inputs
+          continue
         raw_inp_name = raw_inp.split(":")[0]
         graph.add_edge(raw_inp_name, raw_node.name)
 

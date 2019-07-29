@@ -162,6 +162,8 @@ class OverlayGraph():
 
     overlay_inps = []
     for inp in raw_inps:
+      if inp.startswith('^'):  # skip control inputs
+        continue
       if inp in self:
         overlay_inps.append(self[inp])
       elif not node.name in self.no_pass_through:
