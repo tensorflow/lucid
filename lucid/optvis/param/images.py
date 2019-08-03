@@ -35,7 +35,7 @@ def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=Fals
         output = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
         if alpha:
             a = tf.nn.sigmoid(t[..., 3:])
-            return tf.concat([rgb, a], -1)
+            return tf.concat([output, a], -1)
     return output
 
 def grayscale_image_rgb(*args, **kwargs):
