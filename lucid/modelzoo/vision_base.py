@@ -28,9 +28,6 @@ from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_a
 from lucid.misc.io import load, save
 import lucid.misc.io.showing as showing
 
-# ImageNet classes correspond to WordNet Synsets.
-from lucid.modelzoo.wordnet import synset_from_id
-
 
 IMAGENET_MEAN = np.array([123.68, 116.779, 103.939])
 IMAGENET_MEAN_BGR = np.flip(IMAGENET_MEAN, 0)
@@ -145,6 +142,8 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   @property
   def synsets(self):
+    from lucid.modelzoo.wordnet import synset_from_id
+
     if not self._synsets:
       self._synsets = [synset_from_id(s_id) for s_id in self.synset_ids]
     return self._synsets
