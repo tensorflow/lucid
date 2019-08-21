@@ -29,6 +29,7 @@ import logging
 import numpy as np
 import PIL.Image
 import tensorflow as tf
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from google.protobuf.message import DecodeError
 
 from lucid.misc.io.reading import read_handle
@@ -37,6 +38,21 @@ from lucid import modelzoo
 
 # create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
+
+
+def _load_urls(urls, cache=None, **kwargs):
+    pages = {}
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        future_to_urls = {executor.submit(load, url, cache=cache, **kwargs): url for url in urls}
+        for future in as_completed(future_to_urls):
+            url = future_to_urls[future]
+            try:
+                pages[url] = future.result()
+            except Exception as exc:
+                pages[url] = exc
+                log.error(f"Loading {url} generated an exception: {exc}")
+    ordered = [pages[url] for url in urls]
+    return ordered
 
 
 def _load_npy(handle, **kwargs):
@@ -129,6 +145,10 @@ def load(url_or_handle, cache=None, **kwargs):
     Raises:
       RuntimeError: If file extension or URL is not supported.
     """
+
+    # handle lists of URLs in a performant manner
+    if isinstance(url_or_handle, (list, tuple)):
+        return _load_urls(url_or_handle, cache=cache, **kwargs)
 
     ext = get_extension(url_or_handle)
     try:
