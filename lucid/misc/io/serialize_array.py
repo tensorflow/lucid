@@ -69,10 +69,11 @@ def _normalize_array(array, domain=(0, 1)):
     if offset != 0:
       array -= offset
       log.debug("Converting inexact array by subtracting -%.2f.", offset)
-    scalar = max_value / (domain[1] - domain[0])
-    if scalar != 1:
-      array *= scalar
-      log.debug("Converting inexact array by scaling by %.2f.", scalar)
+    if domain[0] != domain[1]:
+      scalar = max_value / (domain[1] - domain[0])
+      if scalar != 1:
+        array *= scalar
+        log.debug("Converting inexact array by scaling by %.2f.", scalar)
 
   return array.clip(min_value, max_value).astype(np.uint8)
 
