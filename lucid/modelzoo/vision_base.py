@@ -87,14 +87,7 @@ def _layers_from_list_of_dicts(model_class, list_of_dicts):
   return tuple(layers)
 
 
-class ModelPropertiesMetaClass(type):
-
-  @property
-  def name(cls):
-      return cls.__name__
-
-
-class Model(with_metaclass(ModelPropertiesMetaClass, object)):
+class Model():
   """Model allows using pre-trained models."""
 
   model_path = None
@@ -102,6 +95,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   image_value_range = (-1, 1)
   image_shape = (None, None, 3)
   layers = ()
+  modelname = None
 
   _labels = None
   _synset_ids = None
@@ -150,7 +144,10 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   @property
   def name(self):
-    return self.__class__.name
+    if self.modelname == None:
+      return self.__class__.name
+    else:
+      return self.modelname
 
   def __str__(self):
     return self.__class__.name
