@@ -130,6 +130,7 @@ def save_npz(object, handle):
     else:
         log.warning("Saving non dict or list as npz file, did you maybe want npy?")
         np.savez(path, object)
+    return {"type": "npz", "url": path}
 
 
 def save_img(object, handle, domain=None, **kwargs):
@@ -176,6 +177,7 @@ def save_txt(object, handle, **kwargs):
 def save_str(object, handle, **kwargs):
     assert isinstance(object, str)
     handle.write(object)
+    return {"type": "txt", "url": handle.name}
 
 
 def save_pb(object, handle, **kwargs):
@@ -188,6 +190,8 @@ def save_pb(object, handle, **kwargs):
             )
         )
         raise
+    finally:
+        return {"type": "pb", "url": handle.name}
 
 
 savers = {
@@ -222,17 +226,6 @@ def save(thing, url_or_handle, **kwargs):
     Raises:
       RuntimeError: If file extension not supported.
     """
-    # send to background thread pool if requested and return promise
-    # if asynchronous:
-    #     return _get_threadpool().submit(
-    #         _set_contexts,
-    #         save,
-    #         thing,
-    #         url_or_handle,
-    #         asynchronous=False,
-    #         **kwargs,
-    #         context=this.save_contexts,
-    #     )
 
     # Determine context
     # Is this a handle? What is the extension? Are we saving to GCS?
@@ -278,7 +271,9 @@ def save(thing, url_or_handle, **kwargs):
     # capture save if a save context is available
     if this.save_contexts:
         log.debug(
-            f"capturing save: resulted in {result} -> {path} in save_context {this.save_contexts[-1]}"
+            "capturing save: resulted in {} -> {} in save_context {}".format(
+                result, path, this.save_contexts[-1]
+            )
         )
         this.save_contexts[-1].capture(result)
     # else:
@@ -286,7 +281,7 @@ def save(thing, url_or_handle, **kwargs):
     #         f"NOT capturing save: resulted in {result} -> {path} (save_contexts: {this.save_contexts})"
     #     )
 
-    if result['url'].startswith("gs://"):
-        result['serve'] = "https://storage.googleapis.com/{}".format(result['url'][5:])
+    if result is not None and "url" in result and result["url"].startswith("gs://"):
+        result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
 
     return result
