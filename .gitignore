@@ -12,6 +12,7 @@ lucidenv
 lucid-env
 .idea
 .vscode
+.mypy_cache
 
 pip-selfcheck.json
 

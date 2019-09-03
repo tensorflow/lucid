@@ -54,13 +54,7 @@ def caricature(img, model, layer, n_steps=512, cossim_pow=0.0, verbose=True):
     param_f = param.image(img.shape[0], decorrelate=True, fft=True, alpha=False, batch=len(layers))
     param_f = tf.concat([t_input[None], param_f], 0)
 
-    transforms = [
-      transform.pad(8, mode='constant', constant_value=.5),
-      transform.jitter(8),
-      transform.random_scale([0.9, 0.95, 1.05, 1.1] + [1]*4),
-      transform.random_rotate(list(range(-5, 5)) + [0]*5),
-      transform.jitter(2),
-    ]
+    transforms = transform.standard_transforms + [transform.crop_or_pad_to(*model.image_shape[:2])]
 
     T = render.make_vis_T(model, objective, param_f, transforms=transforms)
     loss, vis_op, t_image = T("loss"), T("vis_op"), T("input")

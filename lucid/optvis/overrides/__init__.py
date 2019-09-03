@@ -45,3 +45,8 @@ default_overrides_map = {**pooling_overrides_map, **relu_overrides_map}
 def default_overrides():
     return gradient_override_map(default_overrides_map)
 
+def relu_overrides():
+    return gradient_override_map(relu_overrides_map)
+
+def pooling_overrides():
+    return gradient_override_map(pooling_overrides_map)

@@ -41,10 +41,15 @@ class AlexNet(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'Placeholder'
 
-# TODO - Sanity check this graph and layers
 AlexNet.layers = _layers_from_list_of_dicts(AlexNet, [
-  {'tags': ['conv'], 'name': 'concat_2', 'depth': 256},
-  {'tags': ['conv'], 'name': 'conv5_1', 'depth': 256},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D', 'depth': 96},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_1', 'depth': 128},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_2', 'depth': 128},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_3', 'depth': 384},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_4', 'depth': 192},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_5', 'depth': 192},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_6', 'depth': 128},
+  {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_7', 'depth': 128},
   {'tags': ['dense'], 'name': 'Relu', 'depth': 4096},
   {'tags': ['dense'], 'name': 'Relu_1', 'depth': 4096},
   {'tags': ['dense'], 'name': 'Softmax', 'depth': 1000},

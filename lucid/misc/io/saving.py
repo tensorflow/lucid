@@ -28,9 +28,13 @@ Possible extension: if not given a URL this could create one and return it?
 
 from __future__ import absolute_import, division, print_function
 
+import sys
 import logging
 import subprocess
 import warnings
+from copy import copy
+
+# from concurrent.futures import ThreadPoolExecutor
 import os.path
 import json
 import numpy as np
@@ -43,28 +47,74 @@ from lucid.misc.io.serialize_array import _normalize_array
 # create logger with module name, e.g. lucid.misc.io.saving
 log = logging.getLogger(__name__)
 
+this = sys.modules[__name__]
+this.save_contexts = []
 
-class NumpyJSONEncoder(json.JSONEncoder):
+
+class CaptureSaveContext:
+    """Keeps captured save results.
+    Usage:
+    save_context = CaptureSaveContext()
+    with save_context:
+        ...
+    captured_results = save_context.captured_saves
+    """
+
+    def __init__(self):
+        self.captured_saves = []
+
+    def __enter__(self):
+        self.previous_save_contexts = copy(this.save_contexts)
+        this.save_contexts.append(self)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # assert self in this.save_contexts and this.save_contexts[-1] == self
+        # this.save_contexts.pop()
+        this.save_contexts = self.previous_save_contexts
+
+    def capture(self, save_result):
+        if save_result is not None:
+            self.captured_saves.append(save_result)
+
+
+class ClarityJSONEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, np.integer):
+        if isinstance(obj, (tuple, set)):
+            return list(obj)
+        elif isinstance(obj, np.integer):
             return int(obj)
         elif isinstance(obj, np.floating):
             return float(obj)
         elif isinstance(obj, np.ndarray):
             return obj.tolist()
+        elif hasattr(obj, "to_json"):
+            return obj.to_json()
         else:
-            return super(NumpyJSONEncoder, self).default(obj)
+            return super(ClarityJSONEncoder, self).default(obj)
+
+
+# this.threadpool = None
+
+
+# def _get_threadpool():
+#     if this.threadpool is None:
+#         this.threadpool = ThreadPoolExecutor(max_workers=8)
+#     return this.threadpool
 
 
 def save_json(object, handle, indent=2):
     """Save object as json on CNS."""
-    obj_json = json.dumps(object, indent=indent, cls=NumpyJSONEncoder)
+    obj_json = json.dumps(object, indent=indent, cls=ClarityJSONEncoder)
     handle.write(obj_json)
+
+    return {"type": "json", "url": handle.name}
 
 
 def save_npy(object, handle):
     """Save numpy array as npy file."""
     np.save(handle, object)
+
+    return {"type": "npy", "shape": object.shape, "url": handle.name}
 
 
 def save_npz(object, handle):
@@ -80,19 +130,26 @@ def save_npz(object, handle):
     else:
         log.warning("Saving non dict or list as npz file, did you maybe want npy?")
         np.savez(path, object)
+    return {"type": "npz", "url": path}
 
 
-def save_img(object, handle, **kwargs):
+def save_img(object, handle, domain=None, **kwargs):
     """Save numpy array as image file on CNS."""
 
     if isinstance(object, np.ndarray):
-        normalized = _normalize_array(object)
+        normalized = _normalize_array(object, domain=domain)
         object = PIL.Image.fromarray(normalized)
 
     if isinstance(object, PIL.Image.Image):
         object.save(handle, **kwargs)  # will infer format from handle's url ext.
     else:
         raise ValueError("Can only save_img for numpy arrays or PIL.Images!")
+
+    return {
+        "type": "image",
+        "shape": object.size + (len(object.getbands()),),
+        "url": handle.name,
+    }
 
 
 def save_txt(object, handle, **kwargs):
@@ -106,36 +163,54 @@ def save_txt(object, handle, **kwargs):
                 line_type = type(line)
                 line = repr(line).encode()
                 warnings.warn(
-                    "`save_txt` found an object of type {}; using `repr` to convert it to string.".format(line_type)
+                    "`save_txt` found an object of type {}; using `repr` to convert it to string.".format(
+                        line_type
+                    )
                 )
             if not line.endswith(b"\n"):
                 line += b"\n"
             handle.write(line)
 
+    return {"type": "txt", "url": handle.name}
+
 
 def save_str(object, handle, **kwargs):
     assert isinstance(object, str)
     handle.write(object)
+    return {"type": "txt", "url": handle.name}
 
 
 def save_pb(object, handle, **kwargs):
-  try:
-    handle.write(object.SerializeToString())
-  except AttributeError as e:
-    warnings.warn("`save_protobuf` failed for object {}. Re-raising original exception.".format(object))
-    raise e
+    try:
+        handle.write(object.SerializeToString())
+    except AttributeError:
+        warnings.warn(
+            "`save_protobuf` failed for object {}. Re-raising original exception.".format(
+                object
+            )
+        )
+        raise
+    finally:
+        return {"type": "pb", "url": handle.name}
 
 
 savers = {
     ".png": save_img,
     ".jpg": save_img,
     ".jpeg": save_img,
+    ".webp": save_img,
     ".npy": save_npy,
     ".npz": save_npz,
     ".json": save_json,
     ".txt": save_txt,
     ".pb": save_pb,
 }
+
+
+# def _set_contexts(f, *args, context=None, **kwargs):
+#     assert context
+#     this.save_contexts = context
+#     f(*args, **kwargs)
 
 
 def save(thing, url_or_handle, **kwargs):
@@ -151,13 +226,14 @@ def save(thing, url_or_handle, **kwargs):
     Raises:
       RuntimeError: If file extension not supported.
     """
+
     # Determine context
     # Is this a handle? What is the extension? Are we saving to GCS?
     is_handle = hasattr(url_or_handle, "write") and hasattr(url_or_handle, "name")
     if is_handle:
-      path = url_or_handle.name
+        path = url_or_handle.name
     else:
-      path = url_or_handle
+        path = url_or_handle
 
     _, ext = os.path.splitext(path)
     is_gcs = path.startswith("gs://")
@@ -172,16 +248,40 @@ def save(thing, url_or_handle, **kwargs):
         saver = save_str
     else:
         message = "Unknown extension '{}'. As a result, only strings can be saved, not {}. Supported extensions: {}"
-        raise ValueError(message.format(ext, type(thing).__name__, list(savers.keys()) ))
+        raise ValueError(message.format(ext, type(thing).__name__, list(savers.keys())))
 
     # Actually save
     if is_handle:
-        saver(thing, url_or_handle, **kwargs)
+        result = saver(thing, url_or_handle, **kwargs)
     else:
         with write_handle(url_or_handle) as handle:
-            saver(thing, handle, **kwargs)
+            result = saver(thing, handle, **kwargs)
 
     # Set mime type on gcs if html -- usually, when one saves an html to GCS,
     # they want it to be viewsable as a website.
     if is_gcs and ext == ".html":
-        subprocess.run(["gsutil", "setmeta", "-h", "Content-Type:text/html", path])
+        subprocess.run(
+            ["gsutil", "setmeta", "-h", "Content-Type: text/html; charset=utf-8", path]
+        )
+    if is_gcs and ext == ".json":
+        subprocess.run(
+            ["gsutil", "setmeta", "-h", "Content-Type: application/json", path]
+        )
+
+    # capture save if a save context is available
+    if this.save_contexts:
+        log.debug(
+            "capturing save: resulted in {} -> {} in save_context {}".format(
+                result, path, this.save_contexts[-1]
+            )
+        )
+        this.save_contexts[-1].capture(result)
+    # else:
+    #     log.debug(
+    #         f"NOT capturing save: resulted in {result} -> {path} (save_contexts: {this.save_contexts})"
+    #     )
+
+    if result is not None and "url" in result and result["url"].startswith("gs://"):
+        result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
+
+    return result

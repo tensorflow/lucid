@@ -33,7 +33,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from google.protobuf.message import DecodeError
 
 from lucid.misc.io.reading import read_handle
-from lucid import modelzoo
+from lucid.misc.io import scoping
+# from lucid import modelzoo
 
 
 # create logger with module name, e.g. lucid.misc.io.reading
@@ -183,7 +184,7 @@ def load_using_loader(url_or_handle, loader, cache, **kwargs):
             with read_handle(url, cache=cache) as handle:
                 result = loader(handle, **kwargs)
         except (DecodeError, ValueError):
-            log.warning("While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception!", url)
+            log.warning("While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r", url, scoping.io_scopes )
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
             with read_handle(url, cache='purge') as handle:

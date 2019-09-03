@@ -22,7 +22,16 @@ from lucid.optvis.param.color import to_valid_rgb
 from lucid.optvis.param.spatial import pixel_image, fft_image
 
 
-def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=False, channels=None):
+def image(
+    w,
+    h=None,
+    batch=None,
+    sd=None,
+    decorrelate=True,
+    fft=True,
+    alpha=False,
+    channels=None,
+):
     h = h or w
     batch = batch or 1
     ch = channels or (4 if alpha else 3)
@@ -35,10 +44,11 @@ def image(w, h=None, batch=None, sd=None, decorrelate=True, fft=True, alpha=Fals
         output = to_valid_rgb(t[..., :3], decorrelate=decorrelate, sigmoid=True)
         if alpha:
             a = tf.nn.sigmoid(t[..., 3:])
-            return tf.concat([output, a], -1)
+            output = tf.concat([output, a], -1)
     return output
 
+
 def grayscale_image_rgb(*args, **kwargs):
-  """Takes same arguments as image"""
-  output = image(*args, channels=1, **kwargs)
-  return tf.tile(output, (1,1,1,3))
+    """Takes same arguments as image"""
+    output = image(*args, channels=1, **kwargs)
+    return tf.tile(output, (1, 1, 1, 3))
