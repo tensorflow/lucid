@@ -34,6 +34,7 @@ from google.protobuf.message import DecodeError
 
 from lucid.misc.io.reading import read_handle
 from lucid.misc.io import scoping
+
 # from lucid import modelzoo
 
 
@@ -44,14 +45,16 @@ log = logging.getLogger(__name__)
 def _load_urls(urls, cache=None, **kwargs):
     pages = {}
     with ThreadPoolExecutor(max_workers=8) as executor:
-        future_to_urls = {executor.submit(load, url, cache=cache, **kwargs): url for url in urls}
+        future_to_urls = {
+            executor.submit(load, url, cache=cache, **kwargs): url for url in urls
+        }
         for future in as_completed(future_to_urls):
             url = future_to_urls[future]
             try:
                 pages[url] = future.result()
             except Exception as exc:
                 pages[url] = exc
-                log.error(f"Loading {url} generated an exception: {exc}")
+                log.error("Loading {} generated an exception: {}".format(url, exc))
     ordered = [pages[url] for url in urls]
     return ordered
 
@@ -70,7 +73,11 @@ def _load_img(handle, target_dtype=np.float32, size=None, **kwargs):
     if size is not None:
         if len(size) > 2:
             size = size[:2]
-            log.warning("`_load_img()` received size: {}, trimming to first two dims!".format(size))
+            log.warning(
+                "`_load_img()` received size: {}, trimming to first two dims!".format(
+                    size
+                )
+            )
         image_pil = image_pil.resize(size, resample=PIL.Image.LANCZOS)
 
     image_array = np.asarray(image_pil)
@@ -175,6 +182,7 @@ def load(url_or_handle, cache=None, **kwargs):
 
 # Helpers
 
+
 def load_using_loader(url_or_handle, loader, cache, **kwargs):
     if is_handle(url_or_handle):
         result = loader(url_or_handle, **kwargs)
@@ -184,10 +192,14 @@ def load_using_loader(url_or_handle, loader, cache, **kwargs):
             with read_handle(url, cache=cache) as handle:
                 result = loader(handle, **kwargs)
         except (DecodeError, ValueError):
-            log.warning("While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r", url, scoping.io_scopes )
+            log.warning(
+                "While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r",
+                url,
+                scoping.io_scopes,
+            )
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
-            with read_handle(url, cache='purge') as handle:
+            with read_handle(url, cache="purge") as handle:
                 result = load_using_loader(handle, loader, cache, **kwargs)
     return result
 

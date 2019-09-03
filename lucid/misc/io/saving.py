@@ -276,11 +276,7 @@ def save(thing, url_or_handle, **kwargs):
             )
         )
         this.save_contexts[-1].capture(result)
-    # else:
-    #     log.debug(
-    #         f"NOT capturing save: resulted in {result} -> {path} (save_contexts: {this.save_contexts})"
-    #     )
-
+        
     if result is not None and "url" in result and result["url"].startswith("gs://"):
         result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
 
