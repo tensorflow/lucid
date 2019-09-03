@@ -86,8 +86,12 @@ def test_set_write_scopes():
         os.remove(target_path)
 
     # fake write scopes, such as when called on a remote worker:
+    _old_scopes = scoping.io_scopes
     scoping.io_scopes = ["./tests", "fixtures"]
 
     write("test", "write_scope5.txt", mode="w")
 
     assert os.path.isfile(target_path)
+
+    # restore write scopes for later tests
+    scoping.io_scopes = _old_scopes
