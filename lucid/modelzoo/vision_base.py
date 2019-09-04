@@ -145,12 +145,15 @@ class Model():
   @property
   def name(self):
     if self.modelname == None:
-      return self.__class__.name
+      return self.__class__.__name__
     else:
       return self.modelname
 
   def __str__(self):
-    return self.__class__.name
+    if self.modelname == None:
+      return self.__class__.__name__
+    else:
+      return self.modelname
 
   def to_json(self):
     return self.name  # TODO
