@@ -19,7 +19,7 @@
 import math
 import numpy as np
 
-def hue_to_rgb(ang):
+def hue_to_rgb(ang, warp=True):
   """Produce an RGB unit vector corresponding to a hue of a given angle."""
   ang = ang - 360*(ang//360)
   colors = np.asarray([
@@ -34,6 +34,15 @@ def hue_to_rgb(ang):
   R = 360 / len(colors)
   n = math.floor(ang / R)
   D = (ang - n*R) / R
+
+  if warp:
+    # warping the angle away from the primary colors (RGB)
+    # helps make equally-spaced angles more visually distinguishable
+    adj = lambda x: math.sin(x * math.pi / 2)
+    if n % 2 == 0:
+      D = adj(D)
+    else:
+      D = 1 - adj(1 - D)
 
   v = (1-D) * colors[n] + D * colors[(n+1) % len(colors)]
   return v / np.linalg.norm(v)
