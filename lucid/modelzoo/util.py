@@ -62,7 +62,12 @@ def frozen_default_graph_def(input_node_names, output_node_names):
   """Return frozen and simplified graph_def of default graph."""
 
   sess = tf.get_default_session()
+  if sess is None:
+    raise RuntimeError("Default session not registered.")
+
   input_graph_def = tf.get_default_graph().as_graph_def()
+  if len(input_graph_def.node) == 0:
+    raise RuntimeError("Default graph is empty. Is it possible your model wasn't constructed or is in a different graph?")
 
   pruned_graph = tf.graph_util.remove_training_nodes(
       input_graph_def, protected_nodes=(output_node_names + input_node_names)
