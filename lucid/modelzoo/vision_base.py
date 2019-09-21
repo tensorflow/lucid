@@ -297,6 +297,11 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   @staticmethod
   def save(save_url, input_name, output_names, image_shape, image_value_range):
+    if ":" in input_name:
+      raise ValueError("input_name appears to be a tensor (name contains ':') but must be an op.")
+    if any([":" in name for name in output_names]):
+      raise ValueError("output_namess appears to be contain tensor (name contains ':') but must be ops.")
+
     metadata = {
       "input_name" : input_name,
       "image_shape" : image_shape,
