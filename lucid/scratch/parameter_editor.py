@@ -18,6 +18,13 @@ class ParameterEditor():
     for node in graph_def.node:
       if "value" in node.attr:
         self.nodes[str(node.name)] = node
+    # Set a flag to mark the fact that this is an edited model
+    if not "lucid_edited_model_flag" in self.nodes:
+      with tf.Graph().as_default() as temp_graph:
+        const = tf.constant(True, name="lucid_is_edited")
+        const_node = temp_graph.as_graph_def().node[0]
+        graph_def.node.extend([const_node])
+
 
   def __getitem__(self, key):
     name = key[0] if isinstance(key, tuple) else key
