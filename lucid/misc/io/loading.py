@@ -195,7 +195,7 @@ def load_using_loader(url_or_handle, loader, cache, **kwargs):
             log.warning(
                 "While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r",
                 url,
-                scoping.io_scopes,
+                scoping.current_io_scopes(),
             )
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
