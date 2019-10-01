@@ -24,6 +24,8 @@ This should support for example PNG images, JSON files, npy files, etc.
 import os
 import json
 import logging
+import pickle
+
 import numpy as np
 import PIL.Image
 import tensorflow as tf
@@ -132,6 +134,11 @@ def _load_graphdef_protobuf(handle, **kwargs):
     return graph_def
 
 
+def _load_pickle(handle, **kwargs):
+  """Load a pickled python object."""
+  return pickle.load(handle, **kwargs)
+
+
 loaders = {
     ".png": _load_img,
     ".jpg": _load_img,
@@ -142,6 +149,8 @@ loaders = {
     ".txt": _load_text,
     ".md": _load_text,
     ".pb": _load_graphdef_protobuf,
+    ".pickle": _load_pickle,
+    ".pkl": _load_pickle,
 }
 
 

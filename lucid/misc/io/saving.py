@@ -27,6 +27,7 @@ Possible extension: if not given a URL this could create one and return it?
 """
 
 import logging
+import pickle
 import subprocess
 import warnings
 import threading
@@ -186,6 +187,14 @@ def save_pb(object, handle, **kwargs):
         return {"type": "pb", "url": handle.name}
 
 
+def save_pickle(object, handle, **kwargs):
+  try:
+    pickle.dump(object, handle)
+  except AttributeError as e:
+    warnings.warn("`save_pickle` failed for object {}. Re-raising original exception.".format(object))
+    raise e
+
+
 savers = {
     ".png": save_img,
     ".jpg": save_img,
@@ -196,6 +205,8 @@ savers = {
     ".json": save_json,
     ".txt": save_txt,
     ".pb": save_pb,
+    ".pickle": save_pickle,
+    ".pkl": save_pickle,
 }
 
 
