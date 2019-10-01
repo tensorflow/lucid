@@ -436,7 +436,7 @@ def input_diff(orig_img):
 
 
 @wrap_objective()
-def class_logit(layer, label):
+def class_logit(layer, label, batch=None):
   """Like channel, but for softmax layers.
 
   Args:
@@ -447,6 +447,7 @@ def class_logit(layer, label):
   Returns:
     Objective maximizing a logit.
   """
+  @handle_batch(batch)
   def inner(T):
     if isinstance(label, int):
       class_n = label
