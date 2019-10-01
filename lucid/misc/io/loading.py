@@ -23,6 +23,7 @@ This should support for example PNG images, JSON files, npy files, etc.
 
 from __future__ import absolute_import, division, print_function
 
+import concurrent
 import os
 import json
 import logging
@@ -216,3 +217,20 @@ def get_extension(url_or_handle):
     if not ext:
         raise RuntimeError("No extension in URL: " + url_or_handle)
     return ext
+
+
+def batch_load(load_ops, num_workers=16):
+    current_io_scope = scoping.current_io_scopes()
+
+    def _do_load(load_op_tuple):
+        scoping.set_io_scopes(current_io_scope)
+        if len(load_op_tuple) == 1:
+            return load(load_op_tuple[0])
+        elif len(load_op_tuple) == 2:
+            return load(load_op_tuple[0], **(load_op_tuple[1]))
+        else:
+            raise ValueError(f'unknown load tuple size: {len(load_op_tuple)}')
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+        load_op_futures = [executor.submit(_do_load, load_op_tuple) for load_op_tuple in load_ops]
+        return [future.result() for future in load_op_futures]

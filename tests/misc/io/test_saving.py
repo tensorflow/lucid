@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 import numpy as np
-from lucid.misc.io.saving import save, CaptureSaveContext
+from lucid.misc.io.saving import save, CaptureSaveContext, batch_save
 from lucid.misc.io.scoping import io_scope
 import os.path
 import io
@@ -137,3 +137,14 @@ def test_capturing_saves():
     assert "type" in captured[0]
     assert captured[0]["type"] == "txt"
 
+
+def test_batch_saves():
+    # save_ops =
+    # path = "./tests/fixtures/write_scope_compatibility.txt"
+    # _remove(path)
+    #
+    # with io_scope("./tests/fixtures"):
+    #     save("test", "write_scope_compatibility.txt")
+    #
+    # assert os.path.isfile(path)
+    pass
