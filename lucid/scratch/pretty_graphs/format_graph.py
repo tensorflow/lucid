@@ -7,7 +7,6 @@ import lucid.optvis.param as param
 import lucid.optvis.render as render
 from lucid.misc.io import show, load
 from lucid.misc.io.showing import _image_url, _display_html
-import lucid.scratch.web.svelte as lucid_svelte
 from collections import defaultdict
 
 from lucid.scratch.pretty_graphs.graph import *
