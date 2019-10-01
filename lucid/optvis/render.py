@@ -250,11 +250,11 @@ def make_optimizer(optimizer, args):
            "optimizer, or tf.train.Optimizer instance.")
 
 
-def import_model(model, t_image, t_image_raw=None, scope="import"):
+def import_model(model, t_image, t_image_raw=None, scope="import", input_map=None):
   if t_image_raw is None:
     t_image_raw = t_image
 
-  model.import_graph(t_image, scope=scope, forget_xy_shape=True)
+  model.import_graph(t_image, scope=scope, forget_xy_shape=True, input_map=input_map)
 
   def T(layer):
     if layer == "input": return t_image_raw
