@@ -28,27 +28,29 @@ Possible extension: if not given a URL this could create one and return it?
 
 from __future__ import absolute_import, division, print_function
 
-import sys
 import logging
 import subprocess
 import warnings
+import threading
 from copy import copy
 
 # from concurrent.futures import ThreadPoolExecutor
 import os.path
 import json
+from typing import Optional, List
+
 import numpy as np
 import PIL.Image
 
 from lucid.misc.io.writing import write_handle
 from lucid.misc.io.serialize_array import _normalize_array
+from lucid.misc.io.scoping import current_io_scopes, set_io_scopes
 
 
 # create logger with module name, e.g. lucid.misc.io.saving
 log = logging.getLogger(__name__)
 
-this = sys.modules[__name__]
-this.save_contexts = []
+_module_thread_locals = threading.local()
 
 
 class CaptureSaveContext:
@@ -64,17 +66,21 @@ class CaptureSaveContext:
         self.captured_saves = []
 
     def __enter__(self):
-        self.previous_save_contexts = copy(this.save_contexts)
-        this.save_contexts.append(self)
+        if getattr(_module_thread_locals, 'save_contexts', None) is None:
+            _module_thread_locals.save_contexts = []
+        _module_thread_locals.save_contexts.append(self)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        # assert self in this.save_contexts and this.save_contexts[-1] == self
-        # this.save_contexts.pop()
-        this.save_contexts = self.previous_save_contexts
+        _module_thread_locals.save_contexts.pop()
 
     def capture(self, save_result):
         if save_result is not None:
             self.captured_saves.append(save_result)
+
+    @classmethod
+    def current_save_context(cls) -> Optional['CaptureSaveContext']:
+        contexts = getattr(_module_thread_locals, 'save_contexts', None)
+        return contexts[-1] if contexts else None
 
 
 class ClarityJSONEncoder(json.JSONEncoder):
@@ -91,15 +97,6 @@ class ClarityJSONEncoder(json.JSONEncoder):
             return obj.to_json()
         else:
             return super(ClarityJSONEncoder, self).default(obj)
-
-
-# this.threadpool = None
-
-
-# def _get_threadpool():
-#     if this.threadpool is None:
-#         this.threadpool = ThreadPoolExecutor(max_workers=8)
-#     return this.threadpool
 
 
 def save_json(object, handle, indent=2):
@@ -207,13 +204,7 @@ savers = {
 }
 
 
-# def _set_contexts(f, *args, context=None, **kwargs):
-#     assert context
-#     this.save_contexts = context
-#     f(*args, **kwargs)
-
-
-def save(thing, url_or_handle, **kwargs):
+def save(thing, url_or_handle, save_context: Optional[CaptureSaveContext] = None, **kwargs):
     """Save object to file on CNS.
 
     File format is inferred from path. Use save_img(), save_npy(), or save_json()
@@ -269,14 +260,15 @@ def save(thing, url_or_handle, **kwargs):
         )
 
     # capture save if a save context is available
-    if this.save_contexts:
+    save_context = save_context if save_context is not None else CaptureSaveContext.current_save_context()
+    if save_context:
         log.debug(
             "capturing save: resulted in {} -> {} in save_context {}".format(
-                result, path, this.save_contexts[-1]
+                result, path, save_context
             )
         )
-        this.save_contexts[-1].capture(result)
-        
+        save_context.capture(result)
+
     if result is not None and "url" in result and result["url"].startswith("gs://"):
         result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
 
