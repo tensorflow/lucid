@@ -6,7 +6,7 @@ import os
 import pytest
 
 import numpy as np
-from lucid.misc.io.loading import load, batch_load
+from lucid.misc.io.loading import load
 from lucid.misc.io.scoping import io_scope
 import io
 
@@ -86,9 +86,9 @@ def test_load_protobuf():
 
 
 def test_batch_load():
-    load_ops = [(os.path.basename(image), ) for image in test_images]
+    image_names = [os.path.basename(image) for image in test_images]
     with io_scope('./tests/fixtures'):
-        images = batch_load(load_ops)
+        images = load(image_names)
     assert len(images) == len(test_images)
     for i in range(len(test_images)):
         assert np.allclose(load(test_images[i]), images[i])

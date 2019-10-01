@@ -45,9 +45,15 @@ log = logging.getLogger(__name__)
 
 def _load_urls(urls, cache=None, **kwargs):
     pages = {}
+    current_io_scopes = scoping.current_io_scopes()
+
+    def _do_load(url):
+        scoping.set_io_scopes(current_io_scopes)
+        return load(url, cache=cache, **kwargs)
+
     with ThreadPoolExecutor(max_workers=8) as executor:
         future_to_urls = {
-            executor.submit(load, url, cache=cache, **kwargs): url for url in urls
+            executor.submit(_do_load, url): url for url in urls
         }
         for future in as_completed(future_to_urls):
             url = future_to_urls[future]
@@ -218,19 +224,3 @@ def get_extension(url_or_handle):
         raise RuntimeError("No extension in URL: " + url_or_handle)
     return ext
 
-
-def batch_load(load_ops, num_workers=16):
-    current_io_scope = scoping.current_io_scopes()
-
-    def _do_load(load_op_tuple):
-        scoping.set_io_scopes(current_io_scope)
-        if len(load_op_tuple) == 1:
-            return load(load_op_tuple[0])
-        elif len(load_op_tuple) == 2:
-            return load(load_op_tuple[0], **(load_op_tuple[1]))
-        else:
-            raise ValueError(f'unknown load tuple size: {len(load_op_tuple)}')
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
-        load_op_futures = [executor.submit(_do_load, load_op_tuple) for load_op_tuple in load_ops]
-        return [future.result() for future in load_op_futures]
