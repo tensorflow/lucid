@@ -130,7 +130,7 @@ def test_write_scope_compatibility():
 
 def test_capturing_saves():
     context = CaptureSaveContext()
-    with context:
+    with context, io_scope("./tests/fixtures"):
         save("test", "test_capturing_saves.txt")
     captured = context.captured_saves
     assert len(captured) == 1
@@ -139,12 +139,16 @@ def test_capturing_saves():
 
 
 def test_batch_saves():
-    # save_ops =
-    # path = "./tests/fixtures/write_scope_compatibility.txt"
-    # _remove(path)
-    #
-    # with io_scope("./tests/fixtures"):
-    #     save("test", "write_scope_compatibility.txt")
-    #
-    # assert os.path.isfile(path)
-    pass
+    save_ops = [(str(i), f"write_batch_{i}.txt") for i in range(5)]
+    [_remove(f"./tests/fixtures/write_batch_{i}.txt") for i in range(5)]
+
+    context = CaptureSaveContext()
+    with context, io_scope("./tests/fixtures"):
+        results = batch_save(save_ops)
+        assert len(results) == 5
+
+    assert len(context.captured_saves) == 5
+    assert context.captured_saves[0]['type'] == 'txt'
+    print(context.captured_saves)
+    assert 'write_batch_' in context.captured_saves[0]['url']
+    assert all([os.path.isfile(f"./tests/fixtures/write_batch_{i}.txt") for i in range(5)])

@@ -13,6 +13,8 @@ lucid-env
 .idea
 .vscode
 .mypy_cache
+tests/fixtures/write_batch*
+tests/fixtures/test_capturing*
 
 pip-selfcheck.json
 
