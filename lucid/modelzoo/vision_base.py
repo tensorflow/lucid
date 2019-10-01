@@ -14,11 +14,9 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
-from future.utils import with_metaclass
 from os import path
 import warnings
 import logging
-from itertools import chain
 
 import tensorflow as tf
 import numpy as np
@@ -87,14 +85,14 @@ def _layers_from_list_of_dicts(model_class, list_of_dicts):
   return tuple(layers)
 
 
-class ModelPropertiesMetaClass(type):
+# class ModelPropertiesMetaClass(type):
+#
+#   @property
+#   def name(cls):
+#       return cls.__name__
+#
 
-  @property
-  def name(cls):
-      return cls.__name__
-
-
-class Model(with_metaclass(ModelPropertiesMetaClass, object)):
+class Model:
   """Model allows using pre-trained models."""
 
   model_path = None
@@ -150,10 +148,10 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   @property
   def name(self):
-    return self.__class__.name
+    return self.__class__.__name__
 
   def __str__(self):
-    return self.__class__.name
+    return self.name
 
   def to_json(self):
     return self.name  # TODO
