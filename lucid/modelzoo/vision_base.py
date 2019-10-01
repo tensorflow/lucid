@@ -189,15 +189,18 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
     t_prep_input = lo + t_prep_input * (hi - lo)
     return t_input, t_prep_input
 
-  def import_graph(self, t_input=None, scope='import', forget_xy_shape=True):
+  def import_graph(self, t_input=None, scope='import', forget_xy_shape=True, input_map=None):
     """Import model GraphDef into the current graph."""
     graph = tf.get_default_graph()
     assert graph.unique_name(scope, False) == scope, (
         'Scope "%s" already exists. Provide explicit scope names when '
         'importing multiple instances of the model.') % scope
     t_input, t_prep_input = self.create_input(t_input, forget_xy_shape)
+    final_input_map = {self.input_name: t_prep_input}
+    if input_map is not None:
+      final_input_map.update(input_map)
     tf.import_graph_def(
-        self.graph_def, {self.input_name: t_prep_input}, name=scope)
+        self.graph_def, final_input_map, name=scope)
     self.post_import(scope)
 
   def show_graph(self):
