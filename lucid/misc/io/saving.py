@@ -30,6 +30,7 @@ from __future__ import absolute_import, division, print_function
 
 import concurrent
 import logging
+import lzma
 import pickle
 import subprocess
 import warnings
@@ -201,6 +202,16 @@ def save_pickle(object, handle, **kwargs):
     raise e
 
 
+def compress_xz(handle, **kwargs):
+    try:
+        ret = lzma.LZMAFile(handle, format=lzma.FORMAT_XZ, mode="wb")
+        ret.name = handle.name
+        return ret
+    except AttributeError as e:
+        warnings.warn("`compress_xz` failed for handle {}. Re-raising original exception.".format(handle))
+        raise e
+
+
 savers = {
     ".png": save_img,
     ".jpg": save_img,
@@ -213,6 +224,10 @@ savers = {
     ".pb": save_pb,
     ".pickle": save_pickle,
     ".pkl": save_pickle,
+}
+
+compressors = {
+    ".xz": compress_xz,
 }
 
 
@@ -238,8 +253,14 @@ def save(thing, url_or_handle, save_context: Optional[CaptureSaveContext] = None
     else:
         path = url_or_handle
 
-    _, ext = os.path.splitext(path)
+    path_without_ext, ext = os.path.splitext(path)
     is_gcs = path.startswith("gs://")
+
+    if ext in compressors:
+        compressor = compressors[ext]
+        _, ext = os.path.splitext(path_without_ext)
+    else:
+        compressor = None
 
     if not ext:
         raise RuntimeError("No extension in URL: " + path)
@@ -255,10 +276,15 @@ def save(thing, url_or_handle, save_context: Optional[CaptureSaveContext] = None
 
     # Actually save
     if is_handle:
+        assert compressor is None, "compressing an open handle is not currently supported, if you want compression - please wrap your handle using a compressor before passing it to this method"
         result = saver(thing, url_or_handle, **kwargs)
     else:
         with write_handle(url_or_handle) as handle:
-            result = saver(thing, handle, **kwargs)
+            if compressor:
+                with compressor(handle) as compressed_handle:
+                    result = saver(thing, compressed_handle, **kwargs)
+            else:
+                result = saver(thing, handle, **kwargs)
 
     # Set mime type on gcs if html -- usually, when one saves an html to GCS,
     # they want it to be viewsable as a website.
