@@ -21,6 +21,8 @@ loads the data into memory and returns a convenient representation.
 This should support for example PNG images, JSON files, npy files, etc.
 """
 
+import io
+import lzma
 import os
 import json
 import logging
@@ -139,6 +141,13 @@ def _load_pickle(handle, **kwargs):
   return pickle.load(handle, **kwargs)
 
 
+def _decompress_xz(handle, **kwargs):
+    if not hasattr(handle, 'seekable') or not handle.seekable():
+        # this handle is not seekable (gfile currently isn't), must load it all into memory to help lzma seek through it
+        handle = io.BytesIO(handle.read())
+    return lzma.LZMAFile(handle, mode="rb", format=lzma.FORMAT_XZ)
+
+
 loaders = {
     ".png": _load_img,
     ".jpg": _load_img,
@@ -151,6 +160,11 @@ loaders = {
     ".pb": _load_graphdef_protobuf,
     ".pickle": _load_pickle,
     ".pkl": _load_pickle,
+}
+
+
+decompressors = {
+    ".xz": _decompress_xz,
 }
 
 
@@ -171,12 +185,13 @@ def load(url_or_handle, cache=None, **kwargs):
     if isinstance(url_or_handle, (list, tuple)):
         return _load_urls(url_or_handle, cache=cache, **kwargs)
 
-    ext = get_extension(url_or_handle)
+    ext, decompressor_ext = _get_extension(url_or_handle)
     try:
         loader = loaders[ext.lower()]
+        decompressor = decompressors[decompressor_ext] if decompressor_ext is not None else None
         message = "Using inferred loader '%s' due to passed file extension '%s'."
         log.debug(message, loader.__name__[6:], ext)
-        return load_using_loader(url_or_handle, loader, cache, **kwargs)
+        return load_using_loader(url_or_handle, decompressor, loader, cache, **kwargs)
 
     except KeyError:
 
@@ -196,14 +211,22 @@ def load(url_or_handle, cache=None, **kwargs):
 # Helpers
 
 
-def load_using_loader(url_or_handle, loader, cache, **kwargs):
+def load_using_loader(url_or_handle, decompressor, loader, cache, **kwargs):
     if is_handle(url_or_handle):
-        result = loader(url_or_handle, **kwargs)
+        if decompressor:
+            with decompressor(url_or_handle) as decompressor_handle:
+                result = loader(decompressor_handle, **kwargs)
+        else:
+            result = loader(url_or_handle, **kwargs)
     else:
         url = url_or_handle
         try:
             with read_handle(url, cache=cache) as handle:
-                result = loader(handle, **kwargs)
+                if decompressor:
+                    with decompressor(handle) as decompressor_handle:
+                        result = loader(decompressor_handle, **kwargs)
+                else:
+                    result = loader(handle, **kwargs)
         except (DecodeError, ValueError):
             log.warning(
                 "While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r",
@@ -213,7 +236,7 @@ def load_using_loader(url_or_handle, loader, cache, **kwargs):
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
             with read_handle(url, cache="purge") as handle:
-                result = load_using_loader(handle, loader, cache, **kwargs)
+                result = load_using_loader(handle, decompressor, loader, cache, **kwargs)
     return result
 
 
@@ -221,12 +244,19 @@ def is_handle(url_or_handle):
     return hasattr(url_or_handle, "read") and hasattr(url_or_handle, "name")
 
 
-def get_extension(url_or_handle):
+def _get_extension(url_or_handle):
+    compression_ext = None
     if is_handle(url_or_handle):
-        _, ext = os.path.splitext(url_or_handle.name)
+        path_without_ext, ext = os.path.splitext(url_or_handle.name)
     else:
-        _, ext = os.path.splitext(url_or_handle)
+        path_without_ext, ext = os.path.splitext(url_or_handle)
+
+    if ext in decompressors:
+        decompressor_ext = ext
+        _, ext = os.path.splitext(path_without_ext)
+    else:
+        decompressor_ext = None
     if not ext:
         raise RuntimeError("No extension in URL: " + url_or_handle)
-    return ext
+    return ext, decompressor_ext
 
