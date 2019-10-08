@@ -14,7 +14,6 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
-from future.utils import with_metaclass
 from os import path
 import warnings
 import logging
@@ -95,7 +94,7 @@ class Model():
   image_value_range = (-1, 1)
   image_shape = (None, None, 3)
   layers = ()
-  modelname = None
+  model_name = None
 
   _labels = None
   _synset_ids = None
@@ -144,16 +143,13 @@ class Model():
 
   @property
   def name(self):
-    if self.modelname == None:
+    if self.model_name == None:
       return self.__class__.__name__
     else:
-      return self.modelname
+      return self.model_name
 
   def __str__(self):
-    if self.modelname == None:
-      return self.__class__.__name__
-    else:
-      return self.modelname
+    return self.name
 
   def to_json(self):
     return self.name  # TODO
