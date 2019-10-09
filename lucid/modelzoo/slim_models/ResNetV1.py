@@ -36,7 +36,7 @@ class ResnetV1_50_slim(Model):
 
 # In ResNetV1, each add (joining the residual branch) is followed by a Relu
 # this seems to be the natural "layer" position
-ResnetV1_50_slim.layers = _layers_from_list_of_dicts(ResnetV1_50_slim, [
+ResnetV1_50_slim.layers = _layers_from_list_of_dicts(ResnetV1_50_slim(), [
   {'tags': ['conv'], 'name': 'resnet_v1_50/conv1/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'resnet_v1_50/block1/unit_1/bottleneck_v1/Relu', 'depth': 256},
   {'tags': ['conv'], 'name': 'resnet_v1_50/block1/unit_2/bottleneck_v1/Relu', 'depth': 256},
@@ -75,7 +75,7 @@ class ResnetV1_101_slim(Model):
 
 # In ResNetV1, each add (joining the residual branch) is followed by a Relu
 # this seems to be the natural "layer" position
-ResnetV1_101_slim.layers = _layers_from_list_of_dicts(ResnetV1_101_slim, [
+ResnetV1_101_slim.layers = _layers_from_list_of_dicts(ResnetV1_101_slim(), [
   {'tags': ['conv'], 'name': 'resnet_v1_101/conv1/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'resnet_v1_101/block1/unit_1/bottleneck_v1/Relu', 'depth': 256},
   {'tags': ['conv'], 'name': 'resnet_v1_101/block1/unit_2/bottleneck_v1/Relu', 'depth': 256},
@@ -132,7 +132,7 @@ class ResnetV1_152_slim(Model):
 
 # In ResNetV1, each add (joining the residual branch) is followed by a Relu
 # this seems to be the natural "layer" position
-ResnetV1_152_slim.layers = _layers_from_list_of_dicts(ResnetV1_152_slim, [
+ResnetV1_152_slim.layers = _layers_from_list_of_dicts(ResnetV1_152_slim(), [
   {'tags': ['conv'], 'name': 'resnet_v1_152/conv1/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'resnet_v1_152/block1/unit_1/bottleneck_v1/Relu', 'depth': 256},
   {'tags': ['conv'], 'name': 'resnet_v1_152/block1/unit_2/bottleneck_v1/Relu', 'depth': 256},

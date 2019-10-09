@@ -60,7 +60,7 @@ class InceptionV1(Model):
     _populate_inception_bottlenecks(scope)
 
 
-InceptionV1.layers = _layers_from_list_of_dicts(InceptionV1, [
+InceptionV1.layers = _layers_from_list_of_dicts(InceptionV1(), [
   {'tags': ['conv'], 'name': 'conv2d0', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2d1', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2d2', 'depth': 192},

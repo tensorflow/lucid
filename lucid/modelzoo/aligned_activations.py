@@ -32,13 +32,13 @@ NUMBER_OF_PAGES = NUMBER_OF_AVAILABLE_SAMPLES // PAGE_SIZE
 
 
 @lru_cache()
-def get_aligned_activations(layer):
+def get_aligned_activations(layer) -> np.ndarray:
     """Downloads 100k activations of the specified layer sampled from iterating over
     ImageNet. Activations of all layers where sampled at the same spatial positions for
     each image, allowing the calculation of correlations."""
     activation_paths = [
         PATH_TEMPLATE.format(
-            sanitize(layer.model_class.name), sanitize(layer.name), page
+            sanitize(layer.model_name), sanitize(layer.name), page
         )
         for page in range(NUMBER_OF_PAGES)
     ]

@@ -41,7 +41,7 @@ class AlexNet(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'Placeholder'
 
-AlexNet.layers = _layers_from_list_of_dicts(AlexNet, [
+AlexNet.layers = _layers_from_list_of_dicts(AlexNet(), [
   {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D', 'depth': 96},
   {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_1', 'depth': 128},
   {'tags': ['pre_relu', 'conv'], 'name': 'Conv2D_2', 'depth': 128},

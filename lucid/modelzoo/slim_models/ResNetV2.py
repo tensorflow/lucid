@@ -37,7 +37,7 @@ class ResnetV2_50_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-ResnetV2_50_slim.layers = _layers_from_list_of_dicts(ResnetV2_50_slim, [
+ResnetV2_50_slim.layers = _layers_from_list_of_dicts(ResnetV2_50_slim(), [
   {'tags': ['conv'], 'name': 'resnet_v2_50/block1/unit_1/bottleneck_v2/preact/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'resnet_v2_50/block1/unit_1/bottleneck_v2/add', 'depth': 256},
   {'tags': ['conv'], 'name': 'resnet_v2_50/block1/unit_2/bottleneck_v2/add', 'depth': 256},
@@ -83,7 +83,7 @@ class ResnetV2_101_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-ResnetV2_101_slim.layers = _layers_from_list_of_dicts(ResnetV2_101_slim, [
+ResnetV2_101_slim.layers = _layers_from_list_of_dicts(ResnetV2_101_slim(), [
   {'tags': ['conv'], 'name': 'resnet_v2_101/block1/unit_1/bottleneck_v2/preact/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'resnet_v2_101/block1/unit_1/bottleneck_v2/add', 'depth': 256},
   {'tags': ['conv'], 'name': 'resnet_v2_101/block1/unit_2/bottleneck_v2/add', 'depth': 256},
@@ -146,7 +146,7 @@ class ResnetV2_152_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-ResnetV2_152_slim.layers = _layers_from_list_of_dicts(ResnetV2_152_slim, [
+ResnetV2_152_slim.layers = _layers_from_list_of_dicts(ResnetV2_152_slim(), [
   {'tags': ['conv'], 'name': 'resnet_v2_152/block1/unit_1/bottleneck_v2/preact/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'resnet_v2_152/block1/unit_1/bottleneck_v2/add', 'depth': 256},
   {'tags': ['conv'], 'name': 'resnet_v2_152/block1/unit_2/bottleneck_v2/add', 'depth': 256},

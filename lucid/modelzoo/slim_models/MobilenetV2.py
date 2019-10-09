@@ -33,7 +33,7 @@ class MobilenetV2_10_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-MobilenetV2_10_slim.layers = _layers_from_list_of_dicts(MobilenetV2_10_slim, [
+MobilenetV2_10_slim.layers = _layers_from_list_of_dicts(MobilenetV2_10_slim(), [
   {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 24},
   {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 32},
   {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 32},
@@ -65,7 +65,7 @@ class MobilenetV2_14_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-MobilenetV2_14_slim.layers = _layers_from_list_of_dicts(MobilenetV2_14_slim, [
+MobilenetV2_14_slim.layers = _layers_from_list_of_dicts(MobilenetV2_14_slim(), [
   {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_2/add', 'depth': 32},
   {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_4/add', 'depth': 48},
   {'tags': ['conv'], 'name': 'MobilenetV2/expanded_conv_5/add', 'depth': 48},

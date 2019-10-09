@@ -14,7 +14,6 @@
 # ==============================================================================
 
 from __future__ import absolute_import, division, print_function
-from future.utils import with_metaclass
 from os import path
 import warnings
 import logging
@@ -43,9 +42,10 @@ class Layer(object):
   height = None  # reserved for future use
   shape = None  # reserved for future use
 
-  def __init__(self, model_class, name, depth, tags):
+  def __init__(self, model_instance: 'Model', name, depth, tags):
     self._activations = None
-    self.model_class = model_class
+    self.model_class = model_instance.__class__
+    self.model_name = model_instance.name
     self.name = name
     self.depth = depth
     self.tags = set(tags)
@@ -72,29 +72,22 @@ class Layer(object):
     return self._activations
 
   def __repr__(self):
-    return "Layer (belonging to {s.model_class.name}) <{s.name}: {s.depth}> ([{s.tags}])".format(s=self)
+    return f"Layer (belonging to {sels.model_name}) <{self.name}: {self.depth}> ([{self.tags}])"
 
   def to_json(self):
     return self.name  # TODO
 
 
-def _layers_from_list_of_dicts(model_class, list_of_dicts):
+def _layers_from_list_of_dicts(model_instance: 'Model', list_of_dicts):
   layers = []
   for layer_info in list_of_dicts:
     name, depth, tags = layer_info['name'], layer_info['depth'], layer_info['tags']
-    layer = Layer(model_class, name, depth, tags)
+    layer = Layer(model_instance, name, depth, tags)
     layers.append(layer)
   return tuple(layers)
 
 
-class ModelPropertiesMetaClass(type):
-
-  @property
-  def name(cls):
-      return cls.__name__
-
-
-class Model(with_metaclass(ModelPropertiesMetaClass, object)):
+class Model():
   """Model allows using pre-trained models."""
 
   model_path = None
@@ -102,6 +95,7 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
   image_value_range = (-1, 1)
   image_shape = (None, None, 3)
   layers = ()
+  model_name = None
 
   _labels = None
   _synset_ids = None
@@ -150,10 +144,13 @@ class Model(with_metaclass(ModelPropertiesMetaClass, object)):
 
   @property
   def name(self):
-    return self.__class__.name
+    if self.model_name == None:
+      return self.__class__.__name__
+    else:
+      return self.model_name
 
   def __str__(self):
-    return self.__class__.name
+    return self.name
 
   def to_json(self):
     return self.name  # TODO
@@ -388,7 +385,7 @@ class FrozenGraphModel(SerializedModel):
       if isinstance(layers_or_layer_names[0], str):
         self.layer_names = layers_or_layer_names
       elif isinstance(layers_or_layer_names[0], dict):
-        self.layers = _layers_from_list_of_dicts(self.__class__, layers_or_layer_names)
+        self.layers = _layers_from_list_of_dicts(self, layers_or_layer_names)
         self.layer_names = [layer.name for layer in self.layers]
 
     super().__init__()

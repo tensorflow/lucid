@@ -37,7 +37,7 @@ class InceptionV1_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-InceptionV1_slim.layers = _layers_from_list_of_dicts(InceptionV1_slim, [
+InceptionV1_slim.layers = _layers_from_list_of_dicts(InceptionV1_slim(), [
   {'tags': ['conv'], 'name': 'InceptionV1/InceptionV1/Conv2d_1a_7x7/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'InceptionV1/InceptionV1/Conv2d_2b_1x1/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'InceptionV1/InceptionV1/Conv2d_2c_3x3/Relu', 'depth': 192},
@@ -73,7 +73,7 @@ class InceptionV2_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-InceptionV2_slim.layers = _layers_from_list_of_dicts(InceptionV2_slim, [
+InceptionV2_slim.layers = _layers_from_list_of_dicts(InceptionV2_slim(), [
   {'tags': ['conv'], 'name': 'InceptionV2/InceptionV2/Conv2d_1a_7x7/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'InceptionV2/InceptionV2/Conv2d_2b_1x1/Relu', 'depth': 64},
   {'tags': ['conv'], 'name': 'InceptionV2/InceptionV2/Conv2d_2c_3x3/Relu', 'depth': 192},
@@ -111,7 +111,7 @@ class InceptionV3_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-InceptionV3_slim.layers = _layers_from_list_of_dicts(InceptionV3_slim, [
+InceptionV3_slim.layers = _layers_from_list_of_dicts(InceptionV3_slim(), [
   {'tags': ['conv'], 'name': 'InceptionV3/InceptionV3/Conv2d_1a_3x3/Relu', 'depth': 32},
   {'tags': ['conv'], 'name': 'InceptionV3/InceptionV3/Conv2d_2a_3x3/Relu', 'depth': 32},
   {'tags': ['conv'], 'name': 'InceptionV3/InceptionV3/Conv2d_2b_3x3/Relu', 'depth': 64},
@@ -152,7 +152,7 @@ class InceptionV4_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-InceptionV4_slim.layers = _layers_from_list_of_dicts(InceptionV4_slim, [
+InceptionV4_slim.layers = _layers_from_list_of_dicts(InceptionV4_slim(), [
   {'tags': ['conv'], 'name': 'InceptionV4/InceptionV4/Conv2d_1a_3x3/Relu', 'depth': 32},
   {'tags': ['conv'], 'name': 'InceptionV4/InceptionV4/Conv2d_2a_3x3/Relu', 'depth': 32},
   {'tags': ['conv'], 'name': 'InceptionV4/InceptionV4/Conv2d_2b_3x3/Relu', 'depth': 64},
@@ -200,7 +200,7 @@ class InceptionResnetV2_slim(Model):
   input_name = 'input'
 
 # TODO: understand this graph, see if we can delete some add or relu nodes from layers
-InceptionResnetV2_slim.layers = _layers_from_list_of_dicts(InceptionResnetV2_slim, [
+InceptionResnetV2_slim.layers = _layers_from_list_of_dicts(InceptionResnetV2_slim(), [
   {'tags': ['conv'], 'name': 'InceptionResnetV2/InceptionResnetV2/Conv2d_1a_3x3/Relu', 'depth': 32},
   {'tags': ['conv'], 'name': 'InceptionResnetV2/InceptionResnetV2/Conv2d_2a_3x3/Relu', 'depth': 32},
   {'tags': ['conv'], 'name': 'InceptionResnetV2/InceptionResnetV2/Conv2d_2b_3x3/Relu', 'depth': 64},
