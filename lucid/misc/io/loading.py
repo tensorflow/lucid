@@ -21,8 +21,6 @@ loads the data into memory and returns a convenient representation.
 This should support for example PNG images, JSON files, npy files, etc.
 """
 
-from __future__ import absolute_import, division, print_function
-
 import os
 import json
 import logging
@@ -33,7 +31,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from google.protobuf.message import DecodeError
 
 from lucid.misc.io.reading import read_handle
-from lucid.misc.io import scoping
+from lucid.misc.io.scoping import current_io_scopes, set_io_scopes
 
 # from lucid import modelzoo
 
@@ -44,9 +42,15 @@ log = logging.getLogger(__name__)
 
 def _load_urls(urls, cache=None, **kwargs):
     pages = {}
+    caller_io_scopes = current_io_scopes()
+
+    def _do_load(url):
+        set_io_scopes(caller_io_scopes)
+        return load(url, cache=cache, **kwargs)
+
     with ThreadPoolExecutor(max_workers=8) as executor:
         future_to_urls = {
-            executor.submit(load, url, cache=cache, **kwargs): url for url in urls
+            executor.submit(_do_load, url): url for url in urls
         }
         for future in as_completed(future_to_urls):
             url = future_to_urls[future]
@@ -195,7 +199,7 @@ def load_using_loader(url_or_handle, loader, cache, **kwargs):
             log.warning(
                 "While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r",
                 url,
-                scoping.current_io_scopes(),
+                current_io_scopes(),
             )
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
@@ -216,3 +220,4 @@ def get_extension(url_or_handle):
     if not ext:
         raise RuntimeError("No extension in URL: " + url_or_handle)
     return ext
+

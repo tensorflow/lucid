@@ -1,11 +1,7 @@
-from __future__ import absolute_import, division, print_function
-
 import time
-
 import pytest
-
 import numpy as np
-from lucid.misc.io.saving import save, CaptureSaveContext
+from lucid.misc.io.saving import save, CaptureSaveContext, batch_save
 from lucid.misc.io.scoping import io_scope, current_io_scopes
 from concurrent.futures import ThreadPoolExecutor
 import os.path
@@ -135,8 +131,10 @@ def test_capturing_saves():
     path = "./tests/fixtures/generated_outputs/test_capturing_saves.txt"
     _remove(path)
     context = CaptureSaveContext()
-    with context:
-        save("test", path)
+
+    with context, io_scope("./tests/fixtures/generated_outputs"):
+        save("test", "test_capturing_saves.txt")
+
     captured = context.captured_saves
     assert len(captured) == 1
     assert "type" in captured[0]
@@ -156,3 +154,19 @@ def test_threadlocal_io_scopes():
         futures = {executor.submit(_return_io_scope, f'gs://test-{i}'): f'gs://test-{i}' for i in range(n_tasks)}
         results = [f.result() for f in futures]
         assert results == list(futures.values())
+
+
+def test_batch_saves():
+    save_ops = [(str(i), f"write_batch_{i}.txt") for i in range(5)]
+    [_remove(f"./tests/fixtures/generated_outputs/write_batch_{i}.txt") for i in range(5)]
+
+    context = CaptureSaveContext()
+    with context, io_scope("./tests/fixtures/generated_outputs"):
+        results = batch_save(save_ops)
+        assert len(results) == 5
+
+    assert len(context.captured_saves) == 5
+    assert context.captured_saves[0]['type'] == 'txt'
+    print(context.captured_saves)
+    assert 'write_batch_' in context.captured_saves[0]['url']
+    assert all([os.path.isfile(f"./tests/fixtures/generated_outputs/write_batch_{i}.txt") for i in range(5)])
