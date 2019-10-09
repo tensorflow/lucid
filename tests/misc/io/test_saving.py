@@ -1,10 +1,13 @@
 from __future__ import absolute_import, division, print_function
 
+import time
+
 import pytest
 
 import numpy as np
 from lucid.misc.io.saving import save, CaptureSaveContext
-from lucid.misc.io.scoping import io_scope
+from lucid.misc.io.scoping import io_scope, current_io_scopes
+from concurrent.futures import ThreadPoolExecutor
 import os.path
 import io
 import tensorflow as tf
@@ -26,7 +29,7 @@ def _remove(path):
 
 
 def test_save_json():
-    path = "./tests/fixtures/dictionary.json"
+    path = "./tests/fixtures/generated_outputs/dictionary.json"
     _remove(path)
     save(dictionary, path)
     assert os.path.isfile(path)
@@ -35,7 +38,7 @@ def test_save_json():
 
 
 def test_save_npy():
-    path = "./tests/fixtures/array.npy"
+    path = "./tests/fixtures/generated_outputs/array.npy"
     _remove(path)
     save(array1, path)
     assert os.path.isfile(path)
@@ -44,7 +47,7 @@ def test_save_npy():
 
 
 def test_save_npz_array():
-    path = "./tests/fixtures/arrays.npz"
+    path = "./tests/fixtures/generated_outputs/arrays.npz"
     _remove(path)
     save([array1, array2], path)
     assert os.path.isfile(path)
@@ -55,7 +58,7 @@ def test_save_npz_array():
 
 
 def test_save_npz_dict():
-    path = "./tests/fixtures/arrays.npz"
+    path = "./tests/fixtures/generated_outputs/arrays.npz"
     _remove(path)
     arrays = {"array1": array1, "array2": array2}
     save(arrays, path)
@@ -66,21 +69,21 @@ def test_save_npz_dict():
 
 
 def test_save_image_png():
-    path = "./tests/fixtures/rgbeye.png"
+    path = "./tests/fixtures/generated_outputs/rgbeye.png"
     _remove(path)
     save(array2, path)
     assert os.path.isfile(path)
 
 
 def test_save_image_jpg():
-    path = "./tests/fixtures/rgbeye.jpg"
+    path = "./tests/fixtures/generated_outputs/rgbeye.jpg"
     _remove(path)
     save(array2, path)
     assert os.path.isfile(path)
 
 
 def test_save_array_txt():
-    path = "./tests/fixtures/multiline.txt"
+    path = "./tests/fixtures/generated_outputs/multiline.txt"
     _remove(path)
     stringarray = ["Line {:d}".format(i) for i in range(10)]
     save(stringarray, path)
@@ -88,7 +91,7 @@ def test_save_array_txt():
 
 
 def test_save_txt():
-    path = "./tests/fixtures/multiline.txt"
+    path = "./tests/fixtures/generated_outputs/multiline.txt"
     _remove(path)
     string = "".join(["Line {:d}\n".format(i) for i in range(10)])
     save(string, path)
@@ -96,7 +99,7 @@ def test_save_txt():
 
 
 def test_save_named_handle():
-    path = "./tests/fixtures/rgbeye.jpg"
+    path = "./tests/fixtures/generated_outputs/rgbeye.jpg"
     _remove(path)
     with io.open(path, "wb") as handle:
         save(array2, handle)
@@ -109,7 +112,7 @@ def test_unknown_extension():
 
 
 def test_save_protobuf():
-    path = "./tests/fixtures/graphdef.pb"
+    path = "./tests/fixtures/generated_outputs/graphdef.pb"
     _remove(path)
     with tf.Graph().as_default():
         a = tf.Variable(42)
@@ -119,21 +122,37 @@ def test_save_protobuf():
 
 
 def test_write_scope_compatibility():
-    path = "./tests/fixtures/write_scope_compatibility.txt"
+    path = "./tests/fixtures/generated_outputs/write_scope_compatibility.txt"
     _remove(path)
 
-    with io_scope("./tests/fixtures"):
-        save("test", "write_scope_compatibility.txt")
+    with io_scope("./tests/fixtures/generated_outputs"):
+        save("test content", 'write_scope_compatibility.txt')
 
     assert os.path.isfile(path)
 
 
 def test_capturing_saves():
+    path = "./tests/fixtures/generated_outputs/test_capturing_saves.txt"
+    _remove(path)
     context = CaptureSaveContext()
     with context:
-        save("test", "test_capturing_saves.txt")
+        save("test", path)
     captured = context.captured_saves
     assert len(captured) == 1
     assert "type" in captured[0]
     assert captured[0]["type"] == "txt"
 
+
+def test_threadlocal_io_scopes():
+    """ This tests that scopes are thread local and they don't clobber each other when different threads are competing"""
+    def _return_io_scope(io_scope_path):
+        with io_scope(io_scope_path):
+            time.sleep(np.random.uniform(0.05, 0.1))
+            return current_io_scopes()[-1]
+
+    n_tasks = 16
+    n_workers = 8
+    with ThreadPoolExecutor(max_workers=n_workers) as executor:
+        futures = {executor.submit(_return_io_scope, f'gs://test-{i}'): f'gs://test-{i}' for i in range(n_tasks)}
+        results = [f.result() for f in futures]
+        assert results == list(futures.values())
