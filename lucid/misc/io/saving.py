@@ -26,19 +26,14 @@ intended serializations from the URL's file extension.
 Possible extension: if not given a URL this could create one and return it?
 """
 
-from __future__ import absolute_import, division, print_function
-
 import logging
 import subprocess
 import warnings
 import threading
-from copy import copy
-
-# from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import os.path
 import json
-from typing import Optional, List
-
+from typing import Optional, List, Tuple
 import numpy as np
 import PIL.Image
 
@@ -273,3 +268,21 @@ def save(thing, url_or_handle, save_context: Optional[CaptureSaveContext] = None
         result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
 
     return result
+
+
+def batch_save(save_ops: List[Tuple], num_workers: int = 16):
+    caller_io_scopes = current_io_scopes()
+    current_save_context = CaptureSaveContext.current_save_context()
+
+    def _do_save(save_op_tuple: Tuple):
+        set_io_scopes(caller_io_scopes)
+        if len(save_op_tuple) == 2:
+            return save(save_op_tuple[0], save_op_tuple[1], save_context=current_save_context)
+        elif len(save_op_tuple) == 3:
+            return save(save_op_tuple[0], save_op_tuple[1], save_context=current_save_context, **(save_op_tuple[2]))
+        else:
+            raise ValueError(f'unknown save tuple size: {len(save_op_tuple)}')
+
+    with ThreadPoolExecutor(max_workers=num_workers) as executor:
+        save_op_futures = [executor.submit(_do_save, save_op_tuple) for save_op_tuple in save_ops]
+        return [future.result() for future in save_op_futures]
