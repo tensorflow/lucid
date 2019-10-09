@@ -63,10 +63,9 @@ def test_model_properties(name, model_class):
     assert 'dense' in last_layer.tags
     assert type(last_layer) == Layer
     assert last_layer.model_class == model_class
-    assert hasattr(model_class, "name")
-    assert model_class.name == model_class.__name__
     model_instance = model_class()
     assert model_instance.name == model_class.__name__
+    assert last_layer.model_name == model_instance.name
 
 @pytest.mark.slow
 @pytest.mark.parametrize("model_class", models_map.values())

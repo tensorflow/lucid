@@ -35,7 +35,7 @@ class InceptionV1_caffe(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
-InceptionV1_caffe.layers = _layers_from_list_of_dicts(InceptionV1_caffe, [
+InceptionV1_caffe.layers = _layers_from_list_of_dicts(InceptionV1_caffe(), [
   {'tags': ['conv'], 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2_3x3/conv2_3x3', 'depth': 192},
@@ -69,7 +69,7 @@ class InceptionV1_caffe_Places205(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
-InceptionV1_caffe_Places205.layers = _layers_from_list_of_dicts(InceptionV1_caffe_Places205, [
+InceptionV1_caffe_Places205.layers = _layers_from_list_of_dicts(InceptionV1_caffe_Places205(), [
   {'tags': ['conv'], 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2_3x3/conv2_3x3', 'depth': 192},
@@ -104,7 +104,7 @@ class InceptionV1_caffe_Places365(Model):
   image_value_range = (-IMAGENET_MEAN_BGR, 255-IMAGENET_MEAN_BGR)
   input_name = 'data'
 
-InceptionV1_caffe_Places365.layers = _layers_from_list_of_dicts(InceptionV1_caffe_Places365, [
+InceptionV1_caffe_Places365.layers = _layers_from_list_of_dicts(InceptionV1_caffe_Places365(), [
   {'tags': ['conv'], 'name': 'conv1_7x7_s2/conv1_7x7_s2', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2_3x3_reduce/conv2_3x3_reduce', 'depth': 64},
   {'tags': ['conv'], 'name': 'conv2_3x3/conv2_3x3', 'depth': 192},

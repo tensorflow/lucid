@@ -4,6 +4,7 @@ import pytest
 
 import tensorflow as tf
 from lucid.modelzoo.vision_models import InceptionV1
+from lucid.modelzoo.aligned_activations import get_aligned_activations
 
 important_layer_names = [
     "mixed3a",
@@ -38,3 +39,12 @@ def test_InceptionV1_labels():
     model = InceptionV1()
     assert model.labels is not None
     assert model.labels[0] == "dummy"
+
+
+@pytest.mark.slow
+def test_InceptionV1_aligned_activations():
+    model = InceptionV1()
+    activations = get_aligned_activations(model.layers[0])
+    assert activations.shape == (100000, 64)
+
+

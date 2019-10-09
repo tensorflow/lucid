@@ -36,7 +36,7 @@ class AlexNet_caffe_Places365(Model):
   input_name = 'input'
 
 # TODO - Sanity check this graph and layers
-AlexNet_caffe_Places365.layers = _layers_from_list_of_dicts(AlexNet_caffe_Places365, [
+AlexNet_caffe_Places365.layers = _layers_from_list_of_dicts(AlexNet_caffe_Places365(), [
   {'tags': ['conv'], 'name': 'conv5/concat', 'depth': 256} ,
   {'tags': ['conv'], 'name': 'conv5/conv5', 'depth': 256} ,
   {'tags': ['dense'], 'name': 'fc6/fc6', 'depth': 4096} ,

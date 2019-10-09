@@ -33,7 +33,7 @@ class MobilenetV1_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-MobilenetV1_slim.layers = _layers_from_list_of_dicts(MobilenetV1_slim, [
+MobilenetV1_slim.layers = _layers_from_list_of_dicts(MobilenetV1_slim(), [
   {'name': 'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'depth': 32, 'tags': ['conv']},
   {'name': 'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'depth': 64, 'tags': ['conv']},
   {'name': 'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'depth': 128, 'tags': ['conv']},
@@ -71,7 +71,7 @@ class MobilenetV1_050_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-MobilenetV1_050_slim.layers = _layers_from_list_of_dicts(MobilenetV1_050_slim, [
+MobilenetV1_050_slim.layers = _layers_from_list_of_dicts(MobilenetV1_050_slim(), [
   {'name': 'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'depth': 16, 'tags': ['conv']},
   {'name': 'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'depth': 32, 'tags': ['conv']},
   {'name': 'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'depth': 64, 'tags': ['conv']},
@@ -109,7 +109,7 @@ class MobilenetV1_025_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-MobilenetV1_025_slim.layers = _layers_from_list_of_dicts(MobilenetV1_025_slim, [
+MobilenetV1_025_slim.layers = _layers_from_list_of_dicts(MobilenetV1_025_slim(), [
   {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_0/Relu6', 'depth': 8},
   {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6', 'depth': 16},
   {'tags': ['conv'], 'name': 'MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6', 'depth': 32},

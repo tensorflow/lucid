@@ -119,7 +119,7 @@ class NasnetMobile_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-NasnetMobile_slim.layers = _layers_from_list_of_dicts(NasnetMobile_slim, [
+NasnetMobile_slim.layers = _layers_from_list_of_dicts(NasnetMobile_slim(), [
   {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 32},
   {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 44},
   {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 88},
@@ -158,7 +158,7 @@ class NasnetLarge_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-NasnetLarge_slim.layers = _layers_from_list_of_dicts(NasnetLarge_slim, [
+NasnetLarge_slim.layers = _layers_from_list_of_dicts(NasnetLarge_slim(), [
   {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 96},
   {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 168},
   {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 336},
@@ -204,7 +204,7 @@ class PnasnetMobile_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-PnasnetMobile_slim.layers = _layers_from_list_of_dicts(PnasnetMobile_slim, [
+PnasnetMobile_slim.layers = _layers_from_list_of_dicts(PnasnetMobile_slim(), [
   {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 32},
   {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 65},
   {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 135},
@@ -238,7 +238,7 @@ class PnasnetLarge_slim(Model):
   image_value_range = (-1, 1)
   input_name = 'input'
 
-PnasnetLarge_slim.layers = _layers_from_list_of_dicts(PnasnetLarge_slim, [
+PnasnetLarge_slim.layers = _layers_from_list_of_dicts(PnasnetLarge_slim(), [
   {'tags': ['conv'], 'name': 'conv0/Conv2D', 'depth': 96},
   {'tags': ['conv'], 'name': 'cell_stem_0/cell_output/concat', 'depth': 270},
   {'tags': ['conv'], 'name': 'cell_stem_1/cell_output/concat', 'depth': 540},
