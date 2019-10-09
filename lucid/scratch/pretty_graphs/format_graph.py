@@ -7,7 +7,6 @@ import lucid.optvis.param as param
 import lucid.optvis.render as render
 from lucid.misc.io import show, load
 from lucid.misc.io.showing import _image_url, _display_html
-import lucid.scratch.web.svelte as lucid_svelte
 from collections import defaultdict
 
 from lucid.scratch.pretty_graphs.graph import *
@@ -402,9 +401,12 @@ def render_with_groups(seq, groups, bg_pad=6, pad_diff=8, pad_none=2):
   return {"svg_inner" : "\n".join(inners), "shape" : fragment_container.shape, "node_boxes" : node_boxes }
 
 
-def complete_render_model_graph(model):
+def complete_render_model_graph(model, custom_ops=None):
   graph = Graph.from_graphdef(model.graph_def)
-  graph = filter_graph_ops(graph)
+  include_ops = standard_include_ops
+  if custom_ops is not None:
+    include_ops += custom_ops
+  graph = filter_graph_ops(graph, include_ops=include_ops)
   graph = filter_graph_dynamic(graph)
   graph = filter_graph_collapse_sequence(graph, ["Conv2D", "Relu"])
   parsed_graph = parse_graph(graph)
