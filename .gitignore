@@ -23,3 +23,5 @@ bin
 include
 lib
 share
+
+tests/fixtures/generated_outputs/
