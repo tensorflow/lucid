@@ -158,6 +158,10 @@ loaders = {
     ".txt": _load_text,
     ".md": _load_text,
     ".pb": _load_graphdef_protobuf,
+}
+
+
+unsafe_loaders = {
     ".pickle": _load_pickle,
     ".pkl": _load_pickle,
 }
@@ -168,7 +172,7 @@ decompressors = {
 }
 
 
-def load(url_or_handle, cache=None, **kwargs):
+def load(url_or_handle, allow_unsafe_formats=False, cache=None, **kwargs):
     """Load a file.
 
     File format is inferred from url. File retrieval strategy is inferred from
@@ -176,6 +180,7 @@ def load(url_or_handle, cache=None, **kwargs):
 
     Args:
       url_or_handle: a (reachable) URL, or an already open file handle
+      allow_unsafe_formats: set to True to allow saving unsafe formats (eg. pickles)
 
     Raises:
       RuntimeError: If file extension or URL is not supported.
@@ -187,7 +192,15 @@ def load(url_or_handle, cache=None, **kwargs):
 
     ext, decompressor_ext = _get_extension(url_or_handle)
     try:
-        loader = loaders[ext.lower()]
+        ext = ext.lower()
+        if ext in loaders:
+            loader = loaders[ext]
+        elif ext in unsafe_loaders:
+            if not allow_unsafe_formats:
+                raise ValueError(f"{ext} is considered unsafe, you must explicitly allow its use by passing allow_unsafe_formats=True")
+            loader = unsafe_loaders[ext]
+        else:
+            raise KeyError(f'no loader found for {ext}')
         decompressor = decompressors[decompressor_ext] if decompressor_ext is not None else None
         message = "Using inferred loader '%s' due to passed file extension '%s'."
         log.debug(message, loader.__name__[6:], ext)

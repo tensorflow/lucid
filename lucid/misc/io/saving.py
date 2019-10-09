@@ -216,6 +216,9 @@ savers = {
     ".json": save_json,
     ".txt": save_txt,
     ".pb": save_pb,
+}
+
+unsafe_savers = {
     ".pickle": save_pickle,
     ".pkl": save_pickle,
 }
@@ -225,7 +228,7 @@ compressors = {
 }
 
 
-def save(thing, url_or_handle, save_context: Optional[CaptureSaveContext] = None, **kwargs):
+def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optional[CaptureSaveContext] = None, **kwargs):
     """Save object to file on CNS.
 
     File format is inferred from path. Use save_img(), save_npy(), or save_json()
@@ -234,6 +237,8 @@ def save(thing, url_or_handle, save_context: Optional[CaptureSaveContext] = None
     Args:
       obj: object to save.
       path: CNS path.
+      allow_unsafe_formats: set to True to allow saving unsafe formats (eg. pickles)
+      save_context: a context into which to capture saves, otherwise will try to use global context
 
     Raises:
       RuntimeError: If file extension not supported.
@@ -262,6 +267,10 @@ def save(thing, url_or_handle, save_context: Optional[CaptureSaveContext] = None
     # Determine which saver should be used
     if ext in savers:
         saver = savers[ext]
+    elif ext in unsafe_savers:
+        if not allow_unsafe_formats:
+            raise ValueError(f"{ext} is considered unsafe, you must explicitly allow its use by passing allow_unsafe_formats=True")
+        saver = unsafe_savers[ext]
     elif isinstance(thing, str):
         saver = save_str
     else:
