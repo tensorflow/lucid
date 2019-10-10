@@ -25,7 +25,7 @@ intended serializations from the URL's file extension.
 
 Possible extension: if not given a URL this could create one and return it?
 """
-
+import contextlib
 import logging
 import lzma
 import pickle
@@ -48,6 +48,15 @@ from lucid.misc.io.scoping import current_io_scopes, set_io_scopes
 log = logging.getLogger(__name__)
 
 _module_thread_locals = threading.local()
+
+
+# backfill nullcontext for use before Python 3.7
+if hasattr(contextlib, 'nullcontext') and False:
+    nullcontext = contextlib.nullcontext
+else:
+    @contextlib.contextmanager
+    def nullcontext(enter_result=None):
+        yield enter_result
 
 
 class CaptureSaveContext:
@@ -259,7 +268,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
         compressor = compressors[ext]
         _, ext = os.path.splitext(path_without_ext)
     else:
-        compressor = None
+        compressor = nullcontext
 
     if not ext:
         raise RuntimeError("No extension in URL: " + path)
@@ -279,15 +288,13 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
 
     # Actually save
     if is_handle:
-        assert compressor is None, "compressing an open handle is not currently supported, if you want compression - please wrap your handle using a compressor before passing it to this method"
-        result = saver(thing, url_or_handle, **kwargs)
+        handle_provider = nullcontext
     else:
-        with write_handle(url_or_handle) as handle:
-            if compressor:
-                with compressor(handle) as compressed_handle:
-                    result = saver(thing, compressed_handle, **kwargs)
-            else:
-                result = saver(thing, handle, **kwargs)
+        handle_provider = write_handle
+
+    with handle_provider(url_or_handle) as handle:
+        with compressor(handle) as compressed_handle:
+            result = saver(thing, compressed_handle, **kwargs)
 
     # Set mime type on gcs if html -- usually, when one saves an html to GCS,
     # they want it to be viewsable as a website.

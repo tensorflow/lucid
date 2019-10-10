@@ -20,7 +20,6 @@ loads the data into memory and returns a convenient representation.
 
 This should support for example PNG images, JSON files, npy files, etc.
 """
-
 import io
 import lzma
 import os
@@ -36,6 +35,7 @@ from google.protobuf.message import DecodeError
 
 from lucid.misc.io.reading import read_handle
 from lucid.misc.io.scoping import current_io_scopes, set_io_scopes
+from lucid.misc.io.saving import nullcontext
 
 # from lucid import modelzoo
 
@@ -201,13 +201,11 @@ def load(url_or_handle, allow_unsafe_formats=False, cache=None, **kwargs):
             loader = unsafe_loaders[ext]
         else:
             raise KeyError(f'no loader found for {ext}')
-        decompressor = decompressors[decompressor_ext] if decompressor_ext is not None else None
+        decompressor = decompressors[decompressor_ext] if decompressor_ext is not None else nullcontext
         message = "Using inferred loader '%s' due to passed file extension '%s'."
         log.debug(message, loader.__name__[6:], ext)
         return load_using_loader(url_or_handle, decompressor, loader, cache, **kwargs)
-
     except KeyError:
-
         log.warning("Unknown extension '%s', attempting to load as image.", ext)
         try:
             with read_handle(url_or_handle, cache=cache) as handle:
@@ -226,20 +224,14 @@ def load(url_or_handle, allow_unsafe_formats=False, cache=None, **kwargs):
 
 def load_using_loader(url_or_handle, decompressor, loader, cache, **kwargs):
     if is_handle(url_or_handle):
-        if decompressor:
-            with decompressor(url_or_handle) as decompressor_handle:
-                result = loader(decompressor_handle, **kwargs)
-        else:
-            result = loader(url_or_handle, **kwargs)
+        with decompressor(url_or_handle) as decompressor_handle:
+            result = loader(decompressor_handle, **kwargs)
     else:
         url = url_or_handle
         try:
             with read_handle(url, cache=cache) as handle:
-                if decompressor:
-                    with decompressor(handle) as decompressor_handle:
-                        result = loader(decompressor_handle, **kwargs)
-                else:
-                    result = loader(handle, **kwargs)
+                with decompressor(handle) as decompressor_handle:
+                    result = loader(decompressor_handle, **kwargs)
         except (DecodeError, ValueError):
             log.warning(
                 "While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r",
