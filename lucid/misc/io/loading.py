@@ -20,10 +20,13 @@ loads the data into memory and returns a convenient representation.
 
 This should support for example PNG images, JSON files, npy files, etc.
 """
-
+import io
+import lzma
 import os
 import json
 import logging
+import pickle
+
 import numpy as np
 import PIL.Image
 import tensorflow as tf
@@ -32,6 +35,7 @@ from google.protobuf.message import DecodeError
 
 from lucid.misc.io.reading import read_handle
 from lucid.misc.io.scoping import current_io_scopes, set_io_scopes
+from lucid.misc.io.saving import nullcontext
 
 # from lucid import modelzoo
 
@@ -132,6 +136,18 @@ def _load_graphdef_protobuf(handle, **kwargs):
     return graph_def
 
 
+def _load_pickle(handle, **kwargs):
+  """Load a pickled python object."""
+  return pickle.load(handle, **kwargs)
+
+
+def _decompress_xz(handle, **kwargs):
+    if not hasattr(handle, 'seekable') or not handle.seekable():
+        # this handle is not seekable (gfile currently isn't), must load it all into memory to help lzma seek through it
+        handle = io.BytesIO(handle.read())
+    return lzma.LZMAFile(handle, mode="rb", format=lzma.FORMAT_XZ)
+
+
 loaders = {
     ".png": _load_img,
     ".jpg": _load_img,
@@ -145,7 +161,18 @@ loaders = {
 }
 
 
-def load(url_or_handle, cache=None, **kwargs):
+unsafe_loaders = {
+    ".pickle": _load_pickle,
+    ".pkl": _load_pickle,
+}
+
+
+decompressors = {
+    ".xz": _decompress_xz,
+}
+
+
+def load(url_or_handle, allow_unsafe_formats=False, cache=None, **kwargs):
     """Load a file.
 
     File format is inferred from url. File retrieval strategy is inferred from
@@ -153,6 +180,7 @@ def load(url_or_handle, cache=None, **kwargs):
 
     Args:
       url_or_handle: a (reachable) URL, or an already open file handle
+      allow_unsafe_formats: set to True to allow saving unsafe formats (eg. pickles)
 
     Raises:
       RuntimeError: If file extension or URL is not supported.
@@ -162,15 +190,22 @@ def load(url_or_handle, cache=None, **kwargs):
     if isinstance(url_or_handle, (list, tuple)):
         return _load_urls(url_or_handle, cache=cache, **kwargs)
 
-    ext = get_extension(url_or_handle)
+    ext, decompressor_ext = _get_extension(url_or_handle)
     try:
-        loader = loaders[ext.lower()]
+        ext = ext.lower()
+        if ext in loaders:
+            loader = loaders[ext]
+        elif ext in unsafe_loaders:
+            if not allow_unsafe_formats:
+                raise ValueError(f"{ext} is considered unsafe, you must explicitly allow its use by passing allow_unsafe_formats=True")
+            loader = unsafe_loaders[ext]
+        else:
+            raise KeyError(f'no loader found for {ext}')
+        decompressor = decompressors[decompressor_ext] if decompressor_ext is not None else nullcontext
         message = "Using inferred loader '%s' due to passed file extension '%s'."
         log.debug(message, loader.__name__[6:], ext)
-        return load_using_loader(url_or_handle, loader, cache, **kwargs)
-
+        return load_using_loader(url_or_handle, decompressor, loader, cache, **kwargs)
     except KeyError:
-
         log.warning("Unknown extension '%s', attempting to load as image.", ext)
         try:
             with read_handle(url_or_handle, cache=cache) as handle:
@@ -187,14 +222,16 @@ def load(url_or_handle, cache=None, **kwargs):
 # Helpers
 
 
-def load_using_loader(url_or_handle, loader, cache, **kwargs):
+def load_using_loader(url_or_handle, decompressor, loader, cache, **kwargs):
     if is_handle(url_or_handle):
-        result = loader(url_or_handle, **kwargs)
+        with decompressor(url_or_handle) as decompressor_handle:
+            result = loader(decompressor_handle, **kwargs)
     else:
         url = url_or_handle
         try:
             with read_handle(url, cache=cache) as handle:
-                result = loader(handle, **kwargs)
+                with decompressor(handle) as decompressor_handle:
+                    result = loader(decompressor_handle, **kwargs)
         except (DecodeError, ValueError):
             log.warning(
                 "While loading '%s' an error occurred. Purging cache once and trying again; if this fails we will raise an Exception! Current io scopes: %r",
@@ -204,7 +241,7 @@ def load_using_loader(url_or_handle, loader, cache, **kwargs):
             # since this may have been cached, it's our responsibility to try again once
             # since we use a handle here, the next DecodeError should propagate upwards
             with read_handle(url, cache="purge") as handle:
-                result = load_using_loader(handle, loader, cache, **kwargs)
+                result = load_using_loader(handle, decompressor, loader, cache, **kwargs)
     return result
 
 
@@ -212,12 +249,19 @@ def is_handle(url_or_handle):
     return hasattr(url_or_handle, "read") and hasattr(url_or_handle, "name")
 
 
-def get_extension(url_or_handle):
+def _get_extension(url_or_handle):
+    compression_ext = None
     if is_handle(url_or_handle):
-        _, ext = os.path.splitext(url_or_handle.name)
+        path_without_ext, ext = os.path.splitext(url_or_handle.name)
     else:
-        _, ext = os.path.splitext(url_or_handle)
+        path_without_ext, ext = os.path.splitext(url_or_handle)
+
+    if ext in decompressors:
+        decompressor_ext = ext
+        _, ext = os.path.splitext(path_without_ext)
+    else:
+        decompressor_ext = None
     if not ext:
         raise RuntimeError("No extension in URL: " + url_or_handle)
-    return ext
+    return ext, decompressor_ext
 

@@ -2,6 +2,7 @@ import time
 import pytest
 import numpy as np
 from lucid.misc.io.saving import save, CaptureSaveContext, batch_save
+from lucid.misc.io.loading import load
 from lucid.misc.io.scoping import io_scope, current_io_scopes
 from concurrent.futures import ThreadPoolExecutor
 import os.path
@@ -102,9 +103,49 @@ def test_save_named_handle():
     assert os.path.isfile(path)
 
 
+def test_save_compressed_npy():
+    uncompressed_path = "./tests/fixtures/generated_outputs/array.npy"
+    _remove(uncompressed_path)
+    save(array2, uncompressed_path)
+    compressed_path = "./tests/fixtures/generated_outputs/array.npy.xz"
+    _remove(compressed_path)
+    save(array2, compressed_path)
+    assert os.path.isfile(uncompressed_path)
+    assert os.path.isfile(compressed_path)
+    re_read_array = load(compressed_path)
+    assert np.array_equal(array2, re_read_array)
+    uncompressed_size = os.path.getsize(uncompressed_path)
+    compressed_size = os.path.getsize(compressed_path)
+    assert compressed_size < uncompressed_size
+
+
+def test_save_load_pickle():
+    path = "./tests/fixtures/generated_outputs/some_data.pickle"
+    data = {
+        'test': [1, 2, 3, "some string"],
+        'numpy_values': array2
+    }
+    _remove(path)
+    with io.open(path, "wb") as handle:
+        with pytest.raises(ValueError):
+            save(data, handle)
+        save(data, handle, allow_unsafe_formats=True)
+    assert os.path.isfile(path)
+    with pytest.raises(ValueError):
+        loaded_data = load(path)
+    loaded_data = load(path, allow_unsafe_formats=True)
+    assert loaded_data['test'] == data['test']
+    assert np.array_equal(loaded_data['numpy_values'], data['numpy_values'])
+
+
 def test_unknown_extension():
     with pytest.raises(ValueError):
         save({}, "test.unknown")
+
+
+def test_unknown_compressor():
+    with pytest.raises(ValueError):
+        save(array2, "test.npy.gz")  # .gz is not currently supported, only xy
 
 
 def test_save_protobuf():
