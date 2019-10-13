@@ -12,13 +12,13 @@
 
 
 Lucid is a collection of infrastructure and tools for research in neural
-network interpretability.
+network interpretability. **We're not currently supporting tensorflow 2!**
 
-* [📓 **Notebooks**](#notebooks) -- Get started without any setup!
-* [📚 **Reading**](#recomended-reading) -- Learn more about visualizing neural nets.
-* [💬 **Community**](#community) -- Want to get involved? Please reach out!
-* [🔧 **Additional Information**](#additional-information) -- Licensing, code style, etc.
-* [🔬 **Start Doing Research!**](https://github.com/tensorflow/lucid/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Aresearch) -- Want to get involved? We're trying to research openly!
+* [📓 **Notebooks**](#notebooks) -- Get started without any setup!
+* [📚 **Reading**](#recomended-reading) -- Learn more about visualizing neural nets.
+* [💬 **Community**](#community) -- Want to get involved? Please reach out!
+* [🔧 **Additional Information**](#additional-information) -- Licensing, code style, etc.
+* [🔬 **Start Doing Research!**](https://github.com/tensorflow/lucid/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Aresearch) -- Want to get involved? We're trying to research openly!
 * [📦 **Visualize your own model**](https://github.com/tensorflow/lucid/wiki/Importing-Models-into-Lucid) -- How to import your own model for visualization
 
 <br>
