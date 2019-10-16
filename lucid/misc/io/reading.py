@@ -146,9 +146,10 @@ def local_cache_path(remote_url):
     """Returns the path that remote_url would be cached at locally."""
     local_name = RESERVED_PATH_CHARS.sub("_", remote_url)
     if len(local_name) > MAX_FILENAME_LENGTH:
-        hashed_name = hashlib.sha256(local_name.encode('utf-8')).hexdigest()
-        log.debug(f'truncated long cache filename to {hashed_name} (original {len(local_name)} char name: {local_name}')
-        local_name = hashed_name
+        filename_hash = hashlib.sha256(local_name.encode('utf-8')).hexdigest()
+        truncated_name = local_name[:(MAX_FILENAME_LENGTH-(len(filename_hash)) - 1)] + '-' + filename_hash
+        log.debug(f'truncated long cache filename to {truncated_name} (original {len(local_name)} char name: {local_name}')
+        local_name = truncated_name
     if _LUCID_CACHE_DIR is None:
         _LUCID_CACHE_DIR = os.path.join(gettempdir(), LUCID_CACHE_DIR_NAME)
         if not os.path.exists(_LUCID_CACHE_DIR):
