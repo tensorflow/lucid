@@ -18,13 +18,8 @@
 This module takes a URL, infers how to locate it,
 loads the data into memory and returns it.
 """
-
-from __future__ import absolute_import, division, print_function
-from future.standard_library import install_aliases
-
-install_aliases()
-
 from contextlib import contextmanager
+import hashlib
 import os
 import re
 import logging
@@ -141,12 +136,27 @@ def _is_remote(scheme):
 
 
 RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
+LUCID_CACHE_DIR_NAME = 'lucid_cache'
+MAX_FILENAME_LENGTH = 200
+_LUCID_CACHE_DIR = None  # filled on first use
 
 
 def local_cache_path(remote_url):
+    global _LUCID_CACHE_DIR
     """Returns the path that remote_url would be cached at locally."""
     local_name = RESERVED_PATH_CHARS.sub("_", remote_url)
-    return os.path.join(gettempdir(), local_name)
+    if len(local_name) > MAX_FILENAME_LENGTH:
+        filename_hash = hashlib.sha256(local_name.encode('utf-8')).hexdigest()
+        truncated_name = local_name[:(MAX_FILENAME_LENGTH-(len(filename_hash)) - 1)] + '-' + filename_hash
+        log.debug(f'truncated long cache filename to {truncated_name} (original {len(local_name)} char name: {local_name}')
+        local_name = truncated_name
+    if _LUCID_CACHE_DIR is None:
+        _LUCID_CACHE_DIR = os.path.join(gettempdir(), LUCID_CACHE_DIR_NAME)
+        if not os.path.exists(_LUCID_CACHE_DIR):
+            # folder might exist if another thread/process creates it concurrently, this would be ok
+            os.makedirs(_LUCID_CACHE_DIR, exist_ok=True)
+            log.info(f'created lucid cache dir at {_LUCID_CACHE_DIR}')
+    return os.path.join(_LUCID_CACHE_DIR, local_name)
 
 
 def _purge_cached(url):
@@ -166,9 +176,9 @@ def _read_and_cache(url, mode="rb"):
     lock = FileLock(local_path + ".lockfile")
     with lock:
         if os.path.exists(local_path):
-            log.info("Found cached file '%s'.", local_path)
+            log.debug("Found cached file '%s'.", local_path)
             return _handle_gfile(local_path)
-        log.info("Caching URL '%s' locally at '%s'.", url, local_path)
+        log.debug("Caching URL '%s' locally at '%s'.", url, local_path)
         try:
             with write_handle(local_path, "wb") as output_handle, read_handle(
                 url, cache=False, mode="rb"
