@@ -72,7 +72,7 @@ class Layer(object):
     return self._activations
 
   def __repr__(self):
-    return f"Layer (belonging to {sels.model_name}) <{self.name}: {self.depth}> ([{self.tags}])"
+    return f"Layer (belonging to {self.model_name}) <{self.name}: {self.depth}> ([{self.tags}])"
 
   def to_json(self):
     return self.name  # TODO
