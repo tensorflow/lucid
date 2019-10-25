@@ -97,9 +97,9 @@ def summarize(tiles, params, layout, metadata):
   summary["max_density"] = max_density
   summary["min_density"] = min_density
   summary["total_count"] = total_count
-  summary["user_max_density"] = max_density
-  summary["user_min_density"] = min_density
-  summary["user_total_count"] = total_count
-  summary["user_num_cells"] = num_cells
+  summary["user_max_density"] = user_max_density
+  summary["user_min_density"] = user_min_density
+  summary["user_total_count"] = user_total_count
+  summary["num_cells"] = num_cells
   # TODO: enable summarizing of meta attributes?
   return summary
