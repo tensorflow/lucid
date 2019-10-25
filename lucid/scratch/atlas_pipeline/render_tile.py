@@ -15,6 +15,12 @@ def render_tile(cells, ti, tj, render, params, metadata, layout, summary):
   image_size = params["cell_size"] * params["n_tile"]
   tile = Image.new("RGB", (image_size, image_size), (255,255,255))
   keys = cells.keys()
+
+  def density(cell, metadata):
+    return len(cell["gi"])
+  # if the user doesn't provide a scale function its just the density
+  user_density = params.get("density_function", density)
+
   for i,key in enumerate(keys):
     print("cell", i+1, "/", len(keys), end='\r')
     cell_image = render(cells[key], params, metadata, layout, summary)
@@ -27,9 +33,10 @@ def render_tile(cells, ti, tj, render, params, metadata, layout, summary):
     ymax = (cj+1)*params["cell_size"]
 
     if params.get("scale_density", False):
-      density = len(cells[key]["gi"])
+      cell_density = user_density(cells[key])
       # scale = density/summary["max_density"]
-      scale = math.log(density)/(math.log(summary["max_density"]) or 1)
+      # for now, user_max_density will be the same as max_density if the user didn't supply a fn
+      scale = math.log(cell_density)/(math.log(summary["user_max_density"]) or 1)
       owidth = xmax - xmin
       width = int(round(owidth * scale))
       if(width < 1):
