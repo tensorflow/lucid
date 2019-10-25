@@ -22,7 +22,7 @@ def run(render, aggregate, params, metadata, layout):
     tiles = grid.grid(metadata, layout, params)
 
     # TODO: write out summary? might be useful for the client-side renderer
-    summary = summarize(tiles, params, layout)
+    summary = summarize(tiles, params, layout, metadata)
     print("summary", summary)
     etiles = grid.enumerate_tiles(tiles)
     for i,t in enumerate(etiles):
@@ -45,7 +45,7 @@ def run(render, aggregate, params, metadata, layout):
       with gfile.Open(filename, 'w') as f:
         tile_img.save(f)
 
-def summarize(tiles, params, layout):
+def summarize(tiles, params, layout, metadata):
   # calculate summary statistics that may be useful for rendering
   # e.g. max point density, bounds of x and y
   # we can also track the parameters for convenience
@@ -64,23 +64,41 @@ def summarize(tiles, params, layout):
   # maximum density of a cell
   max_density = 0
   min_density = float("inf")
+  user_max_density = 0
+  user_min_density = float("inf")
+
   num_cells = 0
   total_count = 0
+  def density(cell, metadata):
+    return len(cell["gi"])
+  # if the user doesn't provide a scale function its just the density
+  user_density = params.get("density_function", density)
+
   for t in grid.enumerate_tiles(tiles):
     tile = t[2] 
     cells = grid.tile_cells(tile) 
     keys = cells.keys()
     for i,key in enumerate(keys):
       num_cells += 1
-      num_points = len(cells[key]["gi"])
+      num_points = density(cells[key], metadata)
+      user_num_points = user_density(cells[key], metadata)
+      
       total_count += num_points
+      user_total_count += user_num_points
       if num_points > max_density:
         max_density = num_points
       if num_points < min_density:
         min_density = num_points
+      if user_num_points > user_max_density:
+        user_max_density = user_num_points
+      if user_num_points < user_min_density:
+        user_min_density = user_num_points
   summary["max_density"] = max_density
   summary["min_density"] = min_density
-  summary["num_cells"] = num_cells
   summary["total_count"] = total_count
+  summary["user_max_density"] = max_density
+  summary["user_min_density"] = min_density
+  summary["user_total_count"] = total_count
+  summary["user_num_cells"] = num_cells
   # TODO: enable summarizing of meta attributes?
   return summary
