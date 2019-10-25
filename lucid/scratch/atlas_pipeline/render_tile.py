@@ -33,7 +33,7 @@ def render_tile(cells, ti, tj, render, params, metadata, layout, summary):
     ymax = (cj+1)*params["cell_size"]
 
     if params.get("scale_density", False):
-      cell_density = user_density(cells[key])
+      cell_density = user_density(cells[key], metadata)
       # scale = density/summary["max_density"]
       # for now, user_max_density will be the same as max_density if the user didn't supply a fn
       scale = math.log(cell_density)/(math.log(summary["user_max_density"]) or 1)
