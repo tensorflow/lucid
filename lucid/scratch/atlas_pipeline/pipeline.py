@@ -69,6 +69,7 @@ def summarize(tiles, params, layout, metadata):
 
   num_cells = 0
   total_count = 0
+  user_total_count = 0
   def density(cell, metadata):
     return len(cell["gi"])
   # if the user doesn't provide a scale function its just the density
