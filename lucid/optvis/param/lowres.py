@@ -34,7 +34,7 @@ def lowres_tensor(shape, underlying_shape, offset=None, sd=None):
       Fourier transform). If None, apply no offset. If a scalar, apply the same
       offset to each dimension; if a list use each entry for each dimension.
       If a int, offset by that much. If False, do not offset. If True, offset by
-      half the ratio between shape and underlying shape (analagous to 90
+      half the ratio between shape and underlying shape (analogous to 90
       degrees).
     sd: Standard deviation of initial tensor variable.
 
