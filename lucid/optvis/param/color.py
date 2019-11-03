@@ -26,17 +26,17 @@ color_correlation_svd_sqrt = np.asarray([[0.26, 0.09, 0.02],
                                          [0.27, -0.09, 0.03]]).astype("float32")
 max_norm_svd_sqrt = np.max(np.linalg.norm(color_correlation_svd_sqrt, axis=0))
 
-color_mean = [0.48, 0.46, 0.41]       
+color_mean = [0.48, 0.46, 0.41]
 
 
 def _linear_decorelate_color(t):
-  """Multiply input by sqrt of emperical (ImageNet) color correlation matrix.
-  
+  """Multiply input by sqrt of empirical (ImageNet) color correlation matrix.
+
   If you interpret t's innermost dimension as describing colors in a
   decorrelated version of the color space (which is a very natural way to
   describe colors -- see discussion in Feature Visualization article) the way
   to map back to normal colors is multiply the square root of your color
-  correlations. 
+  correlations.
   """
   # check that inner dimension is 3?
   t_flat = tf.reshape(t, [-1, 3])
@@ -48,12 +48,12 @@ def _linear_decorelate_color(t):
 
 def to_valid_rgb(t, decorrelate=False, sigmoid=True):
   """Transform inner dimension of t to valid rgb colors.
-  
-  In practice this consistes of two parts: 
+
+  In practice this consists of two parts:
   (1) If requested, transform the colors from a decorrelated color space to RGB.
   (2) Constrain the color channels to be in [0,1], either using a sigmoid
       function or clipping.
-  
+
   Args:
     t: input tensor, innermost dimension will be interpreted as colors
       and transformed/constrained.
@@ -61,7 +61,7 @@ def to_valid_rgb(t, decorrelate=False, sigmoid=True):
       a whitened space or not?
     sigmoid: should the colors be constrained using sigmoid (if True) or
       clipping (if False).
-  
+
   Returns:
     t with the innermost dimension transformed.
   """
@@ -73,4 +73,3 @@ def to_valid_rgb(t, decorrelate=False, sigmoid=True):
     return tf.nn.sigmoid(t)
   else:
     return constrain_L_inf(2*t-1)/2 + 0.5
-    

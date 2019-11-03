@@ -41,7 +41,7 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
   """Create a data URL representing an image from a PIL.Image.
 
   Args:
-    image: a numpy
+    image: a numpy array
     mode: presently only supports "data" for data URL
 
   Returns:
@@ -107,14 +107,14 @@ def images(arrays, labels=None, domain=None, w=None):
 
 
 def show(thing, domain=(0, 1), **kwargs):
-  """Display a nupmy array without having to specify what it represents.
+  """Display a numpy array without having to specify what it represents.
 
   This module will attempt to infer how to display your tensor based on its
   rank, shape and dtype. rank 4 tensors will be displayed as image grids, rank
   2 and 3 tensors as images.
 
   For tensors of rank 3 or 4, the innermost dimension is interpreted as channel.
-  Depending on the size of that dimenion, different types of images will be
+  Depending on the size of that dimension, different types of images will be
   generated:
 
     shp[-1]

@@ -16,7 +16,7 @@
 
 """Objective functions for visualizing neural networks.
 
-We represent objectives with a class `Objective` enclsoing functions of the
+We represent objectives with a class `Objective` enclosing functions of the
 form:
 
   (T) => TensorFlow Scalar
@@ -48,7 +48,7 @@ class Objective(object):
   For example, suppose you want to optimize 20% for mixed4a:20 and 80% for
   mixed4a:21. Then you could use:
 
-    objetive = 0.2 * channel("mixed4a", 20) + 0.8 * channel("mixed4a", 21)
+    objective = 0.2 * channel("mixed4a", 20) + 0.8 * channel("mixed4a", 21)
 
   Under the hood, we think of objectives as functions of the form:
 
@@ -116,9 +116,9 @@ def wrap_objective(require_format=None, handle_batch=False):
   """Decorator for creating Objective factories.
 
   Changes f from the closure: (args) => () => TF Tensor
-  into an Obejective factory: (args) => Objective
+  into an Objective factory: (args) => Objective
 
-  while perserving function name, arg info, docs... for interactive python.
+  while preserving function name, arg info, docs... for interactive python.
   """
 
   @decorator
@@ -360,15 +360,15 @@ def alignment(layer, decay_ratio=2):
   """Encourage neighboring images to be similar.
 
   When visualizing the interpolation between two objectives, it's often
-  desireable to encourage analagous boejcts to be drawn in the same position,
+  desirable to encourage analogous objects to be drawn in the same position,
   to make them more comparable.
 
   This term penalizes L2 distance between neighboring images, as evaluated at
   layer.
 
-  In general, we find this most effective if used with a paramaterization that
-  shares across the batch. (In fact, that works quite well by iteself, so this
-  function may just be obselete.)
+  In general, we find this most effective if used with a parameterization that
+  shares across the batch. (In fact, that works quite well by itself, so this
+  function may just be obsolete.)
 
   Args:
     layer: layer to penalize at.
@@ -397,7 +397,7 @@ def diversity(layer):
   visualization often only shows us one. If you optimize a batch of images,
   this objective will encourage them all to be different.
 
-  In particular, it caculuates the correlation matrix of activations at layer
+  In particular, it calculates the correlation matrix of activations at layer
   for each image, and then penalizes cossine similarity between them. This is
   very similar to ideas in style transfer, except we're *penalizing* style
   similarity instead of encouraging it.
