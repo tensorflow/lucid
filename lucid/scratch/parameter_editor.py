@@ -4,11 +4,14 @@ import tensorflow as tf
 
 class ParameterEditor():
   """Conveniently edit the parameters of a lucid model.
+
   Example usage:
+
     model = models.InceptionV1()
     param = ParameterEditor(model.graph_def)
     # Flip weights of first channel of conv2d0
     param["conv2d0_w", :, :, :, 0] *= -1
+
   """
 
   def __init__(self, graph_def):
