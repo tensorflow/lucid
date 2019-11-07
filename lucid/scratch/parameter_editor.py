@@ -20,7 +20,7 @@ class ParameterEditor():
       if "value" in node.attr:
         self.nodes[str(node.name)] = node
     # Set a flag to mark the fact that this is an edited model
-    if not "lucid_edited_model_flag" in self.nodes:
+    if not "lucid_is_edited" in self.nodes:
       with tf.Graph().as_default() as temp_graph:
         const = tf.constant(True, name="lucid_is_edited")
         const_node = temp_graph.as_graph_def().node[0]
@@ -37,7 +37,7 @@ class ParameterEditor():
   def __setitem__(self, key, new_value):
     name = key[0] if isinstance(key, tuple) else key
     tensor = self.nodes[name].attr["value"].tensor
-    node_shape = [int(d.size) for d in tensor.tensor_shape.dim]
+    node_shape = tuple([int(d.size) for d in tensor.tensor_shape.dim])
     if isinstance(key, tuple):
       array = np.frombuffer(tensor.tensor_content, dtype="float32")
       array = array.reshape(node_shape).copy()
@@ -45,4 +45,5 @@ class ParameterEditor():
       tensor.tensor_content = array.tostring()
     else:
       assert new_value.shape == node_shape
-      tensor.tensor_content = new_value.tostring()
+      dtype = tf.DType(tensor.dtype).as_numpy_dtype
+      tensor.tensor_content = new_value.astype(dtype).tostring()
