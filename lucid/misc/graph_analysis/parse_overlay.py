@@ -49,19 +49,35 @@ def parse_structure(node):
   structure = node.sub_structure
 
   if structure is None:
-    return node.name
+    return {
+        "type" : "Node",
+        "name": node.name
+    }
   elif structure.structure_type == "Sequence":
-    return {"Sequence" : [parse_structure(n) for n in structure.structure["sequence"]]}
+    return {
+        "type" : "Sequence",
+        "children": [parse_structure(n) for n in structure.structure["sequence"]]
+    }
   elif structure.structure_type == "HeadBranch":
-    return {"Sequence" : [
-        {"Branch" : [parse_structure(n) for n in structure.structure["branches"]] },
-        parse_structure(structure.structure["head"])
-    ]}
+    return {
+        "type" : "Sequence",
+        "children": [{
+            "type": "Branch",
+            "children": [parse_structure(n) for n in structure.structure["branches"]]
+        },
+        parse_structure(structure.structure["head"])]
+    }
   elif structure.structure_type == "TailBranch":
-    return {"Sequence" : [
+    return {
+        "type" : "Sequence",
+        "children": [
         parse_structure(structure.structure["tail"]),
-        {"Branch" : [parse_structure(n) for n in structure.structure["branches"]] },
-    ]}
+        {
+            "type": "Branch",
+            "subtype": "AuxilliaryHeadBranch",
+            "children": [parse_structure(n) for n in structure.structure["branches"]]
+        }]
+    }
   else:
     data = {}
     for k in structure.structure:
@@ -70,26 +86,27 @@ def parse_structure(node):
       else:
         data[k] = parse_structure(structure.structure[k])
 
-    return {structure.structure_type : data}
+    data["type"] = structure.structure_type
+    return data
 
 
 def flatten_sequences(structure):
   """Flatten nested sequences into a single sequence."""
-  if isinstance(structure, str) or structure is None:
+  if isinstance(structure, str) or (isinstance(structure, dict) and structure["type"] == "Node") or structure is None:
     return structure
   else:
     structure = structure.copy()
-    for k in structure:
-      structure[k] = [flatten_sequences(sub) for sub in structure[k]]
+    if "children" in structure:
+      structure["children"] = [flatten_sequences(sub) for sub in structure["children"]]
 
-  if "Sequence" in structure:
+  if structure["type"] == "Sequence":
     new_seq = []
-    for sub in structure["Sequence"]:
-      if isinstance(sub, dict) and "Sequence" in sub:
-        new_seq += sub["Sequence"]
+    for sub in structure["children"]:
+      if isinstance(sub, dict) and sub["type"] == "Sequence":
+        new_seq += sub["children"]
       else:
         new_seq.append(sub)
-    structure["Sequence"] = new_seq
+    structure["children"] = new_seq
   return structure
 
 
