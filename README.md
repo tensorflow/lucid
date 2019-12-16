@@ -12,7 +12,11 @@
 
 
 Lucid is a collection of infrastructure and tools for research in neural
-network interpretability. **We're not currently supporting tensorflow 2!**
+network interpretability.
+
+**We're not currently supporting tensorflow 2!**
+
+**Lucid is research code, not production code. We provide no guarantee it will work for your use case. Lucid is maintained by volunteers who are unable to provide significant technical support.**
 
 * [📓 **Notebooks**](#notebooks) -- Get started without any setup!
 * [📚 **Reading**](#recomended-reading) -- Learn more about visualizing neural nets.
