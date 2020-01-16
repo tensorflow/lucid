@@ -22,6 +22,12 @@ apply to arbitrary rank tensors. It saves lots of annoying reshaping.
 import numpy as np
 import sklearn.decomposition
 
+try:
+    from sklearn.decomposition.base import BaseEstimator
+except AttributeError:
+    from sklearn.base import BaseEstimator
+
+
 class ChannelReducer(object):
   """Helper for dimensionality reduction to the innermost dimension of a tensor.
 
@@ -51,7 +57,7 @@ class ChannelReducer(object):
     algorithm_map = {}
     for name in dir(sklearn.decomposition):
       obj = sklearn.decomposition.__getattribute__(name)
-      if isinstance(obj, type) and issubclass(obj, sklearn.decomposition.base.BaseEstimator):
+      if isinstance(obj, type) and issubclass(obj, BaseEstimator):
         algorithm_map[name] = obj
     if isinstance(reduction_alg, str):
       if reduction_alg in algorithm_map:
