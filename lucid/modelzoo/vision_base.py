@@ -24,6 +24,7 @@ import numpy as np
 
 from lucid.modelzoo import util as model_util
 from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_aligned_activations
+from lucid.modelzoo.get_activations import get_activations
 from lucid.misc.io import load, save
 import lucid.misc.io.showing as showing
 
@@ -200,6 +201,14 @@ class Model():
         self.graph_def, final_input_map, name=scope)
     self.post_import(scope)
 
+    def T(layer):
+      if ":" in layer:
+          return graph.get_tensor_by_name("%s/%s" % (scope,layer))
+      else:
+          return graph.get_tensor_by_name("%s/%s:0" % (scope,layer))
+
+    return T
+
   def show_graph(self):
     if self.graph_def is None:
       raise Exception("Model.show_graph(): Must load graph def before showing it.")
@@ -349,6 +358,41 @@ class Model():
       return FrozenGraphModel(manifest_folder, manifest)
     else:
       raise NotImplementedError("SerializedModel Manifest type '{}' has not been implemented!".format(manifest.get('type')))
+
+  def get_activations(self, layer, examples, batch_size=64,
+                         dtype=None, ind_shape=None, center_only=False):
+    """Collect center activtions of a layer over an n-dimensional array of images.
+
+    Note: this is mostly intended for large synthetic families of images, where
+      you can cheaply generate them in Python. For collecting activations over,
+      say, ImageNet, there will be better workflows based on various dataset APIs
+      in TensorFlow.
+
+    Args:
+      layer: layer (in model) for activtions to be collected from.
+      examples: A (potentially n-dimensional) array of images. Can be any nested
+        iterable object, including a generator, as long as the inner most objects
+        are a numpy array with at least 3 dimensions (image X, Y, channels=3).
+      batch_size: How many images should be processed at once?
+      dtype: determines dtype of returned data (defaults to model activation
+        dtype). Can be used to make funciton memory efficient.
+      ind_shape: Shape that the index (non-image) dimensions of examples. Makes
+        code much more memory efficient if examples is not a numpy array.
+
+    Memory efficeincy:
+      Have examples be a generator rather than an array of images; this allows
+      them to be lazily generated and not all stored in memory at once. Also
+      use ind_shape so that activations can be stored in an efficient data
+      structure. If you still have memory problems, dtype="float16" can probably
+      get you another 2x.
+
+    Returns:
+      A numpy array of shape [ind1, ind2, ..., layer_channels]
+    """
+
+    return get_activations(self, layer, examples, batch_size=batch_size,
+                           dtype=dtype, ind_shape=ind_shape,
+                           center_only=center_only)
 
 
 class SerializedModel(Model):
