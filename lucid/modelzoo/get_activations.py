@@ -43,8 +43,8 @@ def get_activations_iter(model, layer, generator, reducer="mean", batch_size=64,
       Supports "mean", "rms", and "max".
     batch_size: How many images from the generator should be processes at once?
     dtype: determines dtype of returned data (defaults to model activation
-      dtype). Can be used to make funciton memory efficient.
-    ind_shape: Shape that indices can span. Optional, but makes funciton orders
+      dtype). Can be used to make function memory efficient.
+    ind_shape: Shape that indices can span. Optional, but makes function orders
       of magnitiude more memory efficient.
 
   Memory efficeincy:
@@ -140,7 +140,7 @@ def get_activations(model, layer, examples, batch_size=64,
       are a numpy array with at least 3 dimensions (image X, Y, channels=3).
     batch_size: How many images should be processed at once?
     dtype: determines dtype of returned data (defaults to model activation
-      dtype). Can be used to make funciton memory efficient.
+      dtype). Can be used to make function memory efficient.
     ind_shape: Shape that the index (non-image) dimensions of examples. Makes
       code much more memory efficient if examples is not a numpy array.
 

@@ -24,7 +24,7 @@ import numpy as np
 
 from lucid.modelzoo import util as model_util
 from lucid.modelzoo.aligned_activations import get_aligned_activations as _get_aligned_activations
-from lucid.modelzoo.get_activations import get_activations
+from lucid.modelzoo.get_activations import get_activations as _get_activations
 from lucid.misc.io import load, save
 import lucid.misc.io.showing as showing
 
@@ -375,7 +375,7 @@ class Model():
         are a numpy array with at least 3 dimensions (image X, Y, channels=3).
       batch_size: How many images should be processed at once?
       dtype: determines dtype of returned data (defaults to model activation
-        dtype). Can be used to make funciton memory efficient.
+        dtype). Can be used to make function memory efficient.
       ind_shape: Shape that the index (non-image) dimensions of examples. Makes
         code much more memory efficient if examples is not a numpy array.
 
@@ -390,9 +390,9 @@ class Model():
       A numpy array of shape [ind1, ind2, ..., layer_channels]
     """
 
-    return get_activations(self, layer, examples, batch_size=batch_size,
-                           dtype=dtype, ind_shape=ind_shape,
-                           center_only=center_only)
+    return _get_activations(self, layer, examples, batch_size=batch_size,
+                            dtype=dtype, ind_shape=ind_shape,
+                            center_only=center_only)
 
 
 class SerializedModel(Model):

@@ -70,17 +70,19 @@ def dict_to_ndarray(d):
      [0, 7]]
 
   """
+  assert len(d), "Dictionary passed to dict_to_ndarray() must not be empty."
   inds = list(d.keys())
   ind_dims = len(inds[0])
   assert all(len(ind) == ind_dims for ind in inds)
   ind_shape = [max(ind[i]+1 for ind in inds) for i in range(ind_dims)]
-  arr = None
+
+  val0  = d[inds[0]]
+  if isinstance(val0, np.ndarray):
+    arr = np.zeros(ind_shape + list(val0.shape), dtype=val0.dtype)
+  else:
+    arr = np.zeros(ind_shape, dtype="float32")
+
   for ind, val in d.items():
-    if arr is None:
-      if isinstance(val, np.ndarray):
-        arr = np.zeros(ind_shape + list(val.shape), dtype=val.dtype)
-      else:
-        arr = np.zeros(ind_shape, dtype="float32")
     arr[ind] = val
   return arr
 

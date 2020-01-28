@@ -79,7 +79,7 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
     use_fixed_seed: Seed the RNG with a fixed value so results are reproducible.
       Off by default. As of tf 1.8 this does not work as intended, see:
       https://github.com/tensorflow/tensorflow/issues/9171
-  
+
   Returns:
     2D array of optimization results containing of evaluations of supplied
     param_f snapshotted at specified thresholds. Usually that will mean one or
@@ -254,14 +254,11 @@ def import_model(model, t_image, t_image_raw=None, scope="import", input_map=Non
   if t_image_raw is None:
     t_image_raw = t_image
 
-  model.import_graph(t_image, scope=scope, forget_xy_shape=True, input_map=input_map)
+  T_ = model.import_graph(t_image, scope=scope, forget_xy_shape=True, input_map=input_map)
 
   def T(layer):
     if layer == "input": return t_image_raw
     if layer == "labels": return model.labels
-    if ":" in layer:
-        return t_image.graph.get_tensor_by_name("%s/%s" % (scope,layer))
-    else:
-        return t_image.graph.get_tensor_by_name("%s/%s:0" % (scope,layer))
+    return T_(layer)
 
   return T
