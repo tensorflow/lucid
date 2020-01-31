@@ -121,7 +121,6 @@ def sample_binary_image(size, alias_factor=10, color_a=(1,1,1), color_b=(0,0,0),
 
     # final transformations to colorize and fade
     img = img*color_a + (1-img)*color_b
-    fade_coef = fade_coef[..., None]
     img = (1-fade_coef)*img + fade_coef*fade_color
     return img
   return sampler
