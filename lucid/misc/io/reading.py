@@ -199,7 +199,7 @@ def _read_and_cache(url, mode="rb"):
 
 
 from functools import partial
-_READ_BUFFER_SIZE = 1048576
+_READ_BUFFER_SIZE = 1048576     # setting a larger value here to help read bigger chunks of files over the network (eg from GCS)
 
 
 def _file_chunk_iterator(file_handle):
