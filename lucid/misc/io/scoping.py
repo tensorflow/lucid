@@ -20,10 +20,13 @@ def set_io_scopes(scopes):
 
 
 @contextmanager
-def io_scope(path):
+def io_scope(path, replace_current_scopes=False):
     current_scope = current_io_scopes()
     before = copy(current_scope)
-    current_scope.append(path)
+    if replace_current_scopes:
+        set_io_scopes(path if isinstance(path, list) else [path])
+    else:
+        current_scope.append(path)
     try:
         yield
     finally:

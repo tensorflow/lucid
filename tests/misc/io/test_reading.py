@@ -42,7 +42,7 @@ def test_read_binary_file():
 def test_read_remote_url(mocker):
   path = "https://example.com/example.html"
   golden = b"42"
-  mock_urlopen = mocker.patch('future.moves.urllib.request.urlopen',
+  mock_urlopen = mocker.patch('urllib.request.urlopen',
     return_value=io.BytesIO(golden))
 
   content = read(path, cache=False)
