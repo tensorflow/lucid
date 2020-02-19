@@ -13,7 +13,7 @@ def as_tensor(t):
     return t
 
 
-def infer_data_format(t, max_depth=5):
+def infer_data_format(t, max_depth=20):
   """Infer data_format of a conv net activation.
 
   Inputs:

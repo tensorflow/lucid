@@ -24,7 +24,7 @@ import os
 import re
 import logging
 from urllib.parse import urlparse
-from future.moves.urllib import request
+from urllib import request
 from tensorflow import gfile
 import tensorflow as tf
 from tempfile import gettempdir
@@ -199,11 +199,11 @@ def _read_and_cache(url, mode="rb"):
 
 
 from functools import partial
-from io import DEFAULT_BUFFER_SIZE
+_READ_BUFFER_SIZE = 1048576
 
 
 def _file_chunk_iterator(file_handle):
-    reader = partial(file_handle.read, DEFAULT_BUFFER_SIZE)
+    reader = partial(file_handle.read, _READ_BUFFER_SIZE)
     file_iterator = iter(reader, bytes())
     # TODO: once dropping Python <3.3 compat, update to `yield from ...`
     for chunk in file_iterator:

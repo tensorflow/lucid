@@ -45,6 +45,8 @@ log = logging.getLogger(__name__)
 
 
 def _load_urls(urls, cache=None, **kwargs):
+    if not urls:
+        return []
     pages = {}
     caller_io_scopes = current_io_scopes()
 
