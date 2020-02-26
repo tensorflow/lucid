@@ -117,7 +117,7 @@ def save_npy(object, handle):
     """Save numpy array as npy file."""
     np.save(handle, object)
 
-    return {"type": "npy", "shape": object.shape, "url": handle.name}
+    return {"type": "npy", "shape": object.shape, "dtype": str(object.dtype), "url": handle.name}
 
 
 def save_npz(object, handle):
