@@ -8,7 +8,7 @@ _thread_local_scopes = threading.local()
 
 
 def current_io_scopes():
-    ret = getattr(_thread_local_scopes, 'io_scopes', None)
+    ret = getattr(_thread_local_scopes, "io_scopes", None)
     if ret is None:
         ret = []
         _thread_local_scopes.io_scopes = ret
@@ -33,9 +33,18 @@ def io_scope(path, replace_current_scopes=False):
         set_io_scopes(before)
 
 
+def _normalize_url(url: str) -> str:
+    # os.path.normpath mangles url schemes: gs://etc -> gs:/etc
+    # urlparse.urljoin doesn't normalize paths
+    url_scheme, sep, url_path = url.partition("://")
+    normalized_path = os.path.normpath(url_path)
+    return url_scheme + sep + normalized_path
+
+
 def scope_url(url, io_scopes=None):
     io_scopes = io_scopes or current_io_scopes()
     if "//" in url or url.startswith("/"):
         return url
     paths = io_scopes + [url]
-    return os.path.join(*paths)
+    joined = os.path.join(*paths)
+    return _normalize_url(joined)
