@@ -29,6 +29,7 @@ Custom overrides
 
 """
 from lucid.optvis.overrides.gradient_override import gradient_override_map, use_gradient
+from lucid.optvis.overrides.identity_grad import identity_grad
 from lucid.optvis.overrides.redirected_relu_grad import (
     redirected_relu_grad,
     redirected_relu6_grad,
@@ -42,11 +43,18 @@ relu_overrides_map = {"Relu": redirected_relu_grad, "Relu6": redirected_relu6_gr
 default_overrides_map = {**pooling_overrides_map, **relu_overrides_map}
 
 
-def default_overrides():
-    return gradient_override_map(default_overrides_map)
-
 def relu_overrides():
     return gradient_override_map(relu_overrides_map)
 
+
 def pooling_overrides():
     return gradient_override_map(pooling_overrides_map)
+
+
+def default_overrides():
+    return gradient_override_map(default_overrides_map)
+
+
+def linearization_overrides():
+    return gradient_override_map({"Relu": identity_grad, **pooling_overrides_map})
+
