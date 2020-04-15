@@ -16,6 +16,10 @@ network interpretability.
 
 **We're not currently supporting tensorflow 2!**
 
+If you'd like to use lucid in colab which defaults to tensorflow 2, add this magic to a cell before you import tensorflow:
+
+```%tensorflow_version 1.x```
+
 **Lucid is research code, not production code. We provide no guarantee it will work for your use case. Lucid is maintained by volunteers who are unable to provide significant technical support.**
 
 * [📓 **Notebooks**](#notebooks) -- Get started without any setup!
