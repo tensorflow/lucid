@@ -39,7 +39,7 @@ def rand_fft_image(shape, sd=None, decay_power=1):
         spertum_scale = 1.0 / np.maximum(freqs, 1.0 / max(h, w)) ** decay_power
         # Scale the spectrum by the square-root of the number of pixels
         # to get a unitary transformation. This allows to use similar
-        # leanring rates to pixel-wise optimisation.
+        # learning rates to pixel-wise optimisation.
         spertum_scale *= np.sqrt(w * h)
         scaled_spectrum = spectrum * spertum_scale
         img = tf.spectral.irfft2d(scaled_spectrum)
