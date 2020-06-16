@@ -43,7 +43,7 @@ def _normalize_url(url: str) -> str:
 
 def scope_url(url, io_scopes=None):
     io_scopes = io_scopes or current_io_scopes()
-    if "//" in url or url.startswith("/"):
+    if "//" in url or url.startswith("/") or url.startswith("./"):
         return url
     paths = io_scopes + [url]
     joined = os.path.join(*paths)
