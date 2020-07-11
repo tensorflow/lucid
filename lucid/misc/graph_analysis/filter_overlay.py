@@ -25,7 +25,7 @@ Example use:
 """
 
 
-standard_include_ops = ["Placeholder", "Relu", "Relu6", "Add", "Split", "Softmax", "Concat", "ConcatV2", "Conv2D", "MaxPool", "AvgPool", "MatMul"] # Conv2D
+standard_include_ops = ["Placeholder", "Relu", "Relu6", "Add", "Split", "Softmax", "Concat", "ConcatV2", "Conv2D", "MaxPool", "AvgPool", "MatMul", "EwZXy"] # Conv2D
 
 def ops_whitelist(graph, include_ops=standard_include_ops):
   keep_nodes = [node.name for node in graph.nodes if node.op in include_ops]
