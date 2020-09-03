@@ -183,6 +183,8 @@ def load(url_or_handle, allow_unsafe_formats=False, cache=None, **kwargs):
     Args:
       url_or_handle: a (reachable) URL, or an already open file handle
       allow_unsafe_formats: set to True to allow saving unsafe formats (eg. pickles)
+      cache: whether to attempt caching the resource. Defaults to True only if
+          the given URL specifies a remote resource.
 
     Raises:
       RuntimeError: If file extension or URL is not supported.
