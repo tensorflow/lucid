@@ -16,7 +16,7 @@
     "fetch-mock": "^6.1.0",
     "mocha": "^5.0.4",
     "ndarray": "^1.0.18",
-    "node-fetch": "^2.1.1",
+    "node-fetch": "^2.6.1",
     "numpy-parser": "^1.0.2",
     "rollup": "^0.56.4",
     "rollup-plugin-commonjs": "^8.4.0",
