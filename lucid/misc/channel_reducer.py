@@ -44,7 +44,7 @@ class ChannelReducer(object):
     Inputs:
       n_components: Numer of dimensions to reduce inner most dimension to.
       reduction_alg: A string or sklearn.decomposition class. Defaults to
-        "NMF" (non-negative matrix facotrization). Other options include:
+        "NMF" (non-negative matrix factorization). Other options include:
         "PCA", "FastICA", and "MiniBatchDictionaryLearning". The name of any of
         the sklearn.decomposition classes will work, though.
       kwargs: Additional kwargs to be passed on to the reducer.
