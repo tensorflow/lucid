@@ -81,3 +81,16 @@ InceptionV1.layers = _layers_from_list_of_dicts(InceptionV1(), [
   {'tags': ['dense'], 'name': 'softmax1', 'depth': 1008},
   {'tags': ['dense'], 'name': 'softmax2', 'depth': 1008},
 ])
+
+
+class InceptionV1_adv_finetuned(InceptionV1):
+    """adversarially fine-tuned InceptionV1
+
+    This model is based on InceptionV1 and has been fine-tuned with
+    PGD-generated adversarial examples (https://arxiv.org/pdf/1706.06083.pdf).
+    The PGD-attack was L2-bounded with an epsilon of 255 (1.0 for normalized images).
+    After fine-tuning, this model achieves a robust top-5 accuracy of ~67%
+    for eps. 255 L2-bounded adversarial examples compared to ~4% before fine-tuning.
+    """
+    model_path = 'gs://modelzoo/vision/other_models/InceptionV1_adv_finetuned.pb'
+
