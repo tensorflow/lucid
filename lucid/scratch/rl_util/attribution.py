@@ -40,7 +40,7 @@ def get_grad_or_attr(
     *,
     act_dir=None,
     act_poses=None,
-    score_fn=tf.reduce_sum,
+    score_fn=lambda t: tf.reduce_sum(t, axis=-1),
     grad_or_attr,
     override=None,
     integrate_steps=1
@@ -62,7 +62,7 @@ def get_grad_or_attr(
                 t_acts,
                 tf.concat([tf.range(obses.shape[0])[..., None], act_poses], axis=-1),
             )
-        t_score = score_fn(t_acts)
+        t_score = tf.reduce_sum(score_fn(t_acts))
         t_grad = tf.gradients(t_score, [t_acts_prev])[0]
         if integrate_steps > 1:
             acts_prev = t_acts_prev.eval()
@@ -146,7 +146,7 @@ def get_multi_path_attr(
     *,
     act_dir=None,
     act_poses=None,
-    score_fn=tf.reduce_sum,
+    score_fn=lambda t: tf.reduce_sum(t, axis=-1),
     override=None,
     max_paths=50,
     integrate_steps=10
@@ -168,7 +168,7 @@ def get_multi_path_attr(
                 t_acts,
                 tf.concat([tf.range(obses.shape[0])[..., None], act_poses], axis=-1),
             )
-        t_score = score_fn(t_acts)
+        t_score = tf.reduce_sum(score_fn(t_acts))
         t_grad = tf.gradients(t_score, [t_acts_prev])[0]
         acts_prev = t_acts_prev.eval()
         path_acts = get_paths(
