@@ -25,3 +25,7 @@ lib
 share
 
 tests/fixtures/generated_outputs/
+
+
+lucid/scratch/js/package-lock.json
+lucid/scratch/js/yarn.lock
