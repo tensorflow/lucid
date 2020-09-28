@@ -22,7 +22,7 @@
     "rollup-plugin-commonjs": "^8.4.0",
     "rollup-plugin-node-resolve": "^3.0.3",
     "rollup-plugin-svelte": "^4.0.0",
-    "serve": "^9.4.0",
+    "serve": "^10.1.2",
     "svelte": "^1.56.1"
   },
   "scripts": {
