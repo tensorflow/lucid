@@ -58,7 +58,11 @@ def conv2d(input_, filter_):
         filter_.ndim == 2
     ), "filter_ must have 2 dimensions and will be applied channelwise"
     with tf.Graph().as_default(), tf.Session():
-        filter_ = tf.tensordot(filter_, np.eye(input_.shape[-1]), axes=[[], []])
+        filter_ = tf.tensordot(
+            filter_.astype(input_.dtype),
+            np.eye(input_.shape[-1], dtype=input_.dtype),
+            axes=[[], []],
+        )
         return tf.nn.conv2d(
             input_, filter=filter_, strides=[1, 1, 1, 1], padding="SAME"
         ).eval()
