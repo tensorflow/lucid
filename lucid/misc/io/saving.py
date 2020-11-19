@@ -42,7 +42,7 @@ import PIL.Image
 from lucid.misc.io.writing import write_handle
 from lucid.misc.io.serialize_array import _normalize_array
 from lucid.misc.io.scoping import current_io_scopes, set_io_scopes
-
+from lucid.misc.io.util import isazure
 
 # create logger with module name, e.g. lucid.misc.io.saving
 log = logging.getLogger(__name__)
@@ -227,6 +227,18 @@ savers = {
     ".pb": save_pb,
 }
 
+modes = {
+    ".png": "wb",
+    ".jpg": "wb",
+    ".jpeg": "wb",
+    ".webp": "wb",
+    ".npy": "wb",
+    ".npz": "wb",
+    ".json": "w",
+    ".txt": "w",
+    ".pb": "wb",
+}
+
 unsafe_savers = {
     ".pickle": save_pickle,
     ".pkl": save_pickle,
@@ -255,6 +267,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
 
     # Determine context
     # Is this a handle? What is the extension? Are we saving to GCS?
+
     is_handle = hasattr(url_or_handle, "write") and hasattr(url_or_handle, "name")
     if is_handle:
         path = url_or_handle.name
@@ -292,7 +305,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
     else:
         handle_provider = write_handle
 
-    with handle_provider(url_or_handle) as handle:
+    with handle_provider(url_or_handle, mode = modes[ext]) as handle:
         with compressor(handle) as compressed_handle:
             result = saver(thing, compressed_handle, **kwargs)
 
@@ -309,6 +322,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
 
     # capture save if a save context is available
     save_context = save_context if save_context is not None else CaptureSaveContext.current_save_context()
+
     if save_context:
         log.debug(
             "capturing save: resulted in {} -> {} in save_context {}".format(
@@ -319,6 +333,9 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
 
     if result is not None and "url" in result and result["url"].startswith("gs://"):
         result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
+
+    if isazure(result["url"]):
+        result["serve"] = url
 
     return result
 

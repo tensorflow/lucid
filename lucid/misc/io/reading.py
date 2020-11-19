@@ -33,7 +33,9 @@ from filelock import FileLock
 
 from lucid.misc.io.writing import write_handle
 from lucid.misc.io.scoping import scope_url
+from lucid.misc.io.util import isazure
 
+import blobfile
 
 # create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
@@ -92,6 +94,12 @@ def read_handle(url, cache=None, mode="rb"):
         The handle will be closed automatically once execution leaves this context.
     """
     url = scope_url(url)
+
+    if isazure(url):
+        handle = blobfile.BlobFile(url, mode)
+        yield handle
+        handle.close()
+        return
 
     scheme = urlparse(url).scheme
 

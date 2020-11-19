@@ -26,8 +26,10 @@ import logging
 from contextlib import contextmanager
 from urllib.parse import urlparse
 from tensorflow import gfile
+import blobfile
 
 from lucid.misc.io.scoping import scope_url
+from lucid.misc.io.util import isazure
 
 log = logging.getLogger(__name__)
 
@@ -60,10 +62,17 @@ def write(data, url, mode="wb"):
 
     _write_to_path(data, url, mode=mode)
 
-
 @contextmanager
 def write_handle(path, mode=None):
     path = scope_url(path)
+
+    if isazure(path):
+        if mode is None:
+            mode = "w"            
+        handle = blobfile.BlobFile(path, mode)
+        yield handle
+        handle.close()
+        return
 
     if _supports_make_dirs(path):
         gfile.MakeDirs(os.path.dirname(path))
