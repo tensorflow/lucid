@@ -38,7 +38,7 @@ from lucid.optvis.overrides.smoothed_maxpool_grad import avg_smoothed_maxpool_gr
 
 pooling_overrides_map = {"MaxPool": avg_smoothed_maxpool_grad}
 
-relu_overrides_map = {"Relu": redirected_relu_grad, "Relu6": redirected_relu6_grad}
+relu_overrides_map = {"Relu": redirected_relu_grad, "Relu6": redirected_relu6_grad, "EwZXa": redirected_relu_grad}
 
 default_overrides_map = {**pooling_overrides_map, **relu_overrides_map}
 

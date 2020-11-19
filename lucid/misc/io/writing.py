@@ -70,6 +70,7 @@ def write_handle(path, mode=None):
         if mode is None:
             mode = "w"            
         handle = blobfile.BlobFile(path, mode)
+        handle.path = path
         yield handle
         handle.close()
         return
@@ -84,5 +85,6 @@ def write_handle(path, mode=None):
             mode = "w"
 
     handle = gfile.Open(path, mode)
+    handle.path = handle.name
     yield handle
     handle.close()

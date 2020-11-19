@@ -95,12 +95,6 @@ def read_handle(url, cache=None, mode="rb"):
     """
     url = scope_url(url)
 
-    if isazure(url):
-        handle = blobfile.BlobFile(url, mode)
-        yield handle
-        handle.close()
-        return
-
     scheme = urlparse(url).scheme
 
     if cache == "purge":
@@ -185,6 +179,8 @@ def _read_and_cache(url, mode="rb"):
     with lock:
         if os.path.exists(local_path):
             log.debug("Found cached file '%s'.", local_path)
+            if isazure(url):
+                return blobfile.BlobFile(url, mode)
             return _handle_gfile(local_path)
         log.debug("Caching URL '%s' locally at '%s'.", url, local_path)
         try:
@@ -194,6 +190,8 @@ def _read_and_cache(url, mode="rb"):
                 for chunk in _file_chunk_iterator(input_handle):
                     output_handle.write(chunk)
             gc.collect()
+            if isazure(url):
+                return blobfile.BlobFile(url, mode)
             return _handle_gfile(local_path, mode=mode)
         except tf.errors.NotFoundError:
             raise

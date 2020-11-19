@@ -110,21 +110,21 @@ def save_json(object, handle, indent=2):
     obj_json = json.dumps(object, indent=indent, cls=ClarityJSONEncoder)
     handle.write(obj_json)
 
-    return {"type": "json", "url": handle.name}
+    return {"type": "json", "url": handle.path}
 
 
 def save_npy(object, handle):
     """Save numpy array as npy file."""
     np.save(handle, object)
 
-    return {"type": "npy", "shape": object.shape, "dtype": str(object.dtype), "url": handle.name}
+    return {"type": "npy", "shape": object.shape, "dtype": str(object.dtype), "url": handle.path}
 
 
 def save_npz(object, handle):
     """Save dict of numpy array as npz file."""
     # there is a bug where savez doesn't actually accept a file handle.
     log.warning("Saving npz files currently only works locally. :/")
-    path = handle.name
+    path = handle.path
     handle.close()
     if type(object) is dict:
         np.savez(path, **object)
@@ -151,7 +151,7 @@ def save_img(object, handle, domain=None, **kwargs):
     return {
         "type": "image",
         "shape": object.size + (len(object.getbands()),),
-        "url": handle.name,
+        "url": handle.path,
     }
 
 
@@ -174,13 +174,13 @@ def save_txt(object, handle, **kwargs):
                 line += b"\n"
             handle.write(line)
 
-    return {"type": "txt", "url": handle.name}
+    return {"type": "txt", "url": handle.path}
 
 
 def save_str(object, handle, **kwargs):
     assert isinstance(object, str)
     handle.write(object)
-    return {"type": "txt", "url": handle.name}
+    return {"type": "txt", "url": handle.path}
 
 
 def save_pb(object, handle, **kwargs):
@@ -194,7 +194,7 @@ def save_pb(object, handle, **kwargs):
         )
         raise
     finally:
-        return {"type": "pb", "url": handle.name}
+        return {"type": "pb", "url": handle.path}
 
 
 def save_pickle(object, handle, **kwargs):
@@ -208,7 +208,7 @@ def save_pickle(object, handle, **kwargs):
 def compress_xz(handle, **kwargs):
     try:
         ret = lzma.LZMAFile(handle, format=lzma.FORMAT_XZ, mode="wb")
-        ret.name = handle.name
+        ret.name = handle.path
         return ret
     except AttributeError as e:
         warnings.warn("`compress_xz` failed for handle {}. Re-raising original exception.".format(handle))
@@ -335,7 +335,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
         result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
 
     if isazure(result["url"]):
-        result["serve"] = url
+        result["serve"] = result["url"]
 
     return result
 
