@@ -243,7 +243,7 @@ def total_variation(layer="input"):
   """Total variation of image (or activations at some layer).
 
   This operation is most often used as a penalty to reduce noise.
-  See Simonyan, et al., 2014.
+  See Mahendran, V. 2014. Understanding Deep Image Representations by Inverting Them.
   """
   return lambda T: tf.image.total_variation(T(layer))
 
