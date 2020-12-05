@@ -24,7 +24,7 @@ import numpy as np
 def recursive_enumerate_nd(it, stop_iter=None, prefix=()):
   """Recursively enumerate nested iterables with tuples n-dimenional indices.
 
-  Arguments:
+  Args:
     it: object to be enumerated
     stop_iter: User defined funciton which can conditionally block further
       iteration. Defaults to allowing iteration.
