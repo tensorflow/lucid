@@ -50,7 +50,7 @@ def sample_binary_image(size, alias_factor=10, color_a=(1,1,1), color_b=(0,0,0),
         return (negative if interior, positive if exterior)
       img = sampler(img_f)
 
-  Arguments:
+  Args:
     size: Size of image to be rendered in pixels.
     alias_factor: Number of samples to use in aliasing.
     color_a: Color of exterior. A 3-tuple of floats between 0 and 1. Defaults
@@ -148,7 +148,7 @@ def rounded_corner(orientation, r, angular_width=90, size=224, **kwds):
   This function is a flexible generator of "rounded corner" stimuli. It returns
   an image, represented as a numpy array of shape [size, size, 3].
 
-  Arguments:
+  Args:
     orientation: The orientation of the curve, in degrees.
     r: radius of the curve
     angular_width: when r=0 and we have sharp corner, this controls the angle
