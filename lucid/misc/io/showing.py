@@ -61,7 +61,7 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
 
 def _image_html(array, w=None, domain=None, fmt='png'):
   url = _image_url(array, domain=domain, fmt=fmt)
-  style = "image-rendering: pixelated;"
+  style = "image-rendering: pixelated; image-rendering: crisp-edges;"
   if w is not None:
     style += "width: {w}px;".format(w=w)
   return """<img src="{url}" style="{style}">""".format(**locals())
