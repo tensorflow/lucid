@@ -23,9 +23,9 @@ import numpy as np
 import sklearn.decomposition
 
 try:
-    from sklearn.decomposition.base import BaseEstimator
-except AttributeError:
-    from sklearn.base import BaseEstimator
+  from sklearn.decomposition.base import BaseEstimator
+except ModuleNotFoundError:
+  from sklearn.base import BaseEstimator
 
 
 class ChannelReducer(object):
