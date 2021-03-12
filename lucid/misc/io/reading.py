@@ -25,7 +25,7 @@ import re
 import logging
 from urllib.parse import urlparse
 from urllib import request
-from tensorflow import gfile
+from tensorflow.io.gfile import GFile
 import tensorflow as tf
 from tempfile import gettempdir
 import gc
@@ -121,7 +121,7 @@ def read_handle(url, cache=None, mode="rb"):
 
 
 def _handle_gfile(url, mode="rb"):
-    return gfile.Open(url, mode)
+    return GFile(url, mode)
 
 
 def _handle_web_url(url, mode="r"):
@@ -136,7 +136,7 @@ def _is_remote(scheme):
 
 
 RESERVED_PATH_CHARS = re.compile("[^a-zA-Z0-9]")
-LUCID_CACHE_DIR_NAME = 'lucid_cache'
+LUCID_CACHE_DIR_NAME = "lucid_cache"
 MAX_FILENAME_LENGTH = 200
 _LUCID_CACHE_DIR = None  # filled on first use
 
@@ -146,16 +146,22 @@ def local_cache_path(remote_url):
     """Returns the path that remote_url would be cached at locally."""
     local_name = RESERVED_PATH_CHARS.sub("_", remote_url)
     if len(local_name) > MAX_FILENAME_LENGTH:
-        filename_hash = hashlib.sha256(local_name.encode('utf-8')).hexdigest()
-        truncated_name = local_name[:(MAX_FILENAME_LENGTH-(len(filename_hash)) - 1)] + '-' + filename_hash
-        log.debug(f'truncated long cache filename to {truncated_name} (original {len(local_name)} char name: {local_name}')
+        filename_hash = hashlib.sha256(local_name.encode("utf-8")).hexdigest()
+        truncated_name = (
+            local_name[: (MAX_FILENAME_LENGTH - (len(filename_hash)) - 1)]
+            + "-"
+            + filename_hash
+        )
+        log.debug(
+            f"truncated long cache filename to {truncated_name} (original {len(local_name)} char name: {local_name}"
+        )
         local_name = truncated_name
     if _LUCID_CACHE_DIR is None:
         _LUCID_CACHE_DIR = os.path.join(gettempdir(), LUCID_CACHE_DIR_NAME)
         if not os.path.exists(_LUCID_CACHE_DIR):
             # folder might exist if another thread/process creates it concurrently, this would be ok
             os.makedirs(_LUCID_CACHE_DIR, exist_ok=True)
-            log.info(f'created lucid cache dir at {_LUCID_CACHE_DIR}')
+            log.info(f"created lucid cache dir at {_LUCID_CACHE_DIR}")
     return os.path.join(_LUCID_CACHE_DIR, local_name)
 
 
@@ -199,7 +205,8 @@ def _read_and_cache(url, mode="rb"):
 
 
 from functools import partial
-_READ_BUFFER_SIZE = 1048576     # setting a larger value here to help read bigger chunks of files over the network (eg from GCS)
+
+_READ_BUFFER_SIZE = 1048576  # setting a larger value here to help read bigger chunks of files over the network (eg from GCS)
 
 
 def _file_chunk_iterator(file_handle):

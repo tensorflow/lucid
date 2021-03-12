@@ -10,6 +10,7 @@ enforced by tests in test/modelzoo/test_vision_models.
 from lucid.modelzoo.vision_base import Model as _Model
 
 from lucid.modelzoo.other_models.AlexNet import AlexNet
+from lucid.modelzoo.other_models.Clip import Clip_ResNet50_4x
 from lucid.modelzoo.other_models.InceptionV1 import InceptionV1, InceptionV1_adv_finetuned
 
 
