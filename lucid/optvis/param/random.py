@@ -42,7 +42,7 @@ def rand_fft_image(shape, sd=None, decay_power=1):
         # learning rates to pixel-wise optimisation.
         spertum_scale *= np.sqrt(w * h)
         scaled_spectrum = spectrum * spertum_scale
-        img = tf.spectral.irfft2d(scaled_spectrum)
+        img = tf.signal.irfft2d(scaled_spectrum)
         # in case of odd input dimension we cut off the additional pixel
         # we get from irfft2d length computation
         img = img[:ch, :h, :w]
