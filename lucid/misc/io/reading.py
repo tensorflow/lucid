@@ -25,7 +25,7 @@ import re
 import logging
 from urllib.parse import urlparse
 from urllib import request
-from tensorflow.io import gfile
+from tensorflow.io.gfile import GFile
 import tensorflow as tf
 from tempfile import gettempdir
 import gc
@@ -121,7 +121,7 @@ def read_handle(url, cache=None, mode="rb"):
 
 
 def _handle_gfile(url, mode="rb"):
-    return gfile.Open(url, mode)
+    return GFile(url, mode)
 
 
 def _handle_web_url(url, mode="r"):
