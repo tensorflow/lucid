@@ -5,8 +5,19 @@ install:
   - pip install -U pip wheel
   - pip install python-coveralls
   - pip install tox-travis
+  - pip install nbconvert jupyter_client ipykernel
+  - ipython kernel install --user --name testkernel
 script:
   - tox
+  - shopt -s globstar
+  - jupyter kernelspec list
+  - for nb in **/*ipynb; do
+    jupyter nbconvert --ExecutePreprocessor.timeout=3600 --ExecutePreprocessor.kernel_name=testkernel --execute "$nb" --to markdown |& tee nb_to_md.txt;
+    traceback=$(grep "Traceback (most recent call last):" nb_to_md.txt);
+    if [[ $traceback ]]; then
+        exit 1;
+    fi;
+    done
 deploy:
   - provider: releases
     api_key: $GITHUB_PRODUCTION_TOKEN
