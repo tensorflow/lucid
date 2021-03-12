@@ -52,7 +52,7 @@ setup(
         "optimization",
     ],
     install_requires=[
-        "numpy",
+        "numpy<=1.19",
         "scipy",
         "scikit-learn",
         "umap-learn",
