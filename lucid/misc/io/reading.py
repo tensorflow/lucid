@@ -183,7 +183,7 @@ def _read_and_cache(url, mode="rb"):
     with lock:
         if os.path.exists(local_path):
             log.debug("Found cached file '%s'.", local_path)
-            return _handle_gfile(local_path)
+            return _handle_gfile(local_path, mode)
         log.debug("Caching URL '%s' locally at '%s'.", url, local_path)
         try:
             with write_handle(local_path, "wb") as output_handle, read_handle(
