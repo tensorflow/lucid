@@ -37,8 +37,12 @@ def _populate_inception_bottlenecks(scope):
 class InceptionV1(Model):
   """InceptionV1 (or 'GoogLeNet')
 
-  This is a (re?)implementation of InceptionV1
-  https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+  This is a (re?)implementation of InceptionV1 from the "Going deeper 
+  with convolutions" paper. Links:
+    * Official CVPR paper, requires subscription: https://ieeexplore.ieee.org/document/7298594
+    * Author preprint: https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf
+    * arXiv: https://arxiv.org/abs/1409.4842
+
   The weights were trained at Google and released in an early TensorFlow
   tutorial. It is possible the parameters are the original weights
   (trained in TensorFlow's predecessor), but we haven't been able to
@@ -46,7 +50,7 @@ class InceptionV1(Model):
 
   As far as we can tell, it is exactly the same as the model described in
   the original paper, where as the slim and caffe implementations have
-  minor implementation differences (such as eliding the heads).
+  minor implementation differences (such as eliding extra classification heads).
   """
   model_path = 'gs://modelzoo/vision/other_models/InceptionV1.pb'
   labels_path = 'gs://modelzoo/labels/ImageNet_alternate.txt'
