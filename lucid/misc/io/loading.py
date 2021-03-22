@@ -163,6 +163,18 @@ loaders = {
 }
 
 
+modes = {
+    ".png": "wb",
+    ".jpg": "wb",
+    ".jpeg": "wb",
+    ".webp": "wb",
+    ".npy": "wb",
+    ".npz": "wb",
+    ".json": "w",
+    ".txt": "w",
+    ".pb": "wb",
+}
+
 unsafe_loaders = {
     ".pickle": _load_pickle,
     ".pkl": _load_pickle,

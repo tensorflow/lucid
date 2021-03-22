@@ -33,7 +33,9 @@ from filelock import FileLock
 
 from lucid.misc.io.writing import write_handle
 from lucid.misc.io.scoping import scope_url
+from lucid.misc.io.util import isazure
 
+import blobfile
 
 # create logger with module name, e.g. lucid.misc.io.reading
 log = logging.getLogger(__name__)
@@ -183,6 +185,8 @@ def _read_and_cache(url, mode="rb"):
     with lock:
         if os.path.exists(local_path):
             log.debug("Found cached file '%s'.", local_path)
+            if isazure(url):
+                return blobfile.BlobFile(url, mode)
             return _handle_gfile(local_path)
         log.debug("Caching URL '%s' locally at '%s'.", url, local_path)
         try:
@@ -192,6 +196,8 @@ def _read_and_cache(url, mode="rb"):
                 for chunk in _file_chunk_iterator(input_handle):
                     output_handle.write(chunk)
             gc.collect()
+            if isazure(url):
+                return blobfile.BlobFile(url, mode)
             return _handle_gfile(local_path, mode=mode)
         except tf.errors.NotFoundError:
             raise

@@ -42,7 +42,7 @@ import PIL.Image
 from lucid.misc.io.writing import write_handle
 from lucid.misc.io.serialize_array import _normalize_array
 from lucid.misc.io.scoping import current_io_scopes, set_io_scopes
-
+from lucid.misc.io.util import isazure
 
 # create logger with module name, e.g. lucid.misc.io.saving
 log = logging.getLogger(__name__)
@@ -110,21 +110,21 @@ def save_json(object, handle, indent=2):
     obj_json = json.dumps(object, indent=indent, cls=ClarityJSONEncoder)
     handle.write(obj_json)
 
-    return {"type": "json", "url": handle.name}
+    return {"type": "json", "url": handle.path}
 
 
 def save_npy(object, handle):
     """Save numpy array as npy file."""
     np.save(handle, object)
 
-    return {"type": "npy", "shape": object.shape, "dtype": str(object.dtype), "url": handle.name}
+    return {"type": "npy", "shape": object.shape, "dtype": str(object.dtype), "url": handle.path}
 
 
 def save_npz(object, handle):
     """Save dict of numpy array as npz file."""
     # there is a bug where savez doesn't actually accept a file handle.
     log.warning("Saving npz files currently only works locally. :/")
-    path = handle.name
+    path = handle.path
     handle.close()
     if type(object) is dict:
         np.savez(path, **object)
@@ -151,7 +151,7 @@ def save_img(object, handle, domain=None, **kwargs):
     return {
         "type": "image",
         "shape": object.size + (len(object.getbands()),),
-        "url": handle.name,
+        "url": handle.path,
     }
 
 
@@ -174,13 +174,13 @@ def save_txt(object, handle, **kwargs):
                 line += b"\n"
             handle.write(line)
 
-    return {"type": "txt", "url": handle.name}
+    return {"type": "txt", "url": handle.path}
 
 
 def save_str(object, handle, **kwargs):
     assert isinstance(object, str)
     handle.write(object)
-    return {"type": "txt", "url": handle.name}
+    return {"type": "txt", "url": handle.path}
 
 
 def save_pb(object, handle, **kwargs):
@@ -194,7 +194,7 @@ def save_pb(object, handle, **kwargs):
         )
         raise
     finally:
-        return {"type": "pb", "url": handle.name}
+        return {"type": "pb", "url": handle.path}
 
 
 def save_pickle(object, handle, **kwargs):
@@ -208,7 +208,7 @@ def save_pickle(object, handle, **kwargs):
 def compress_xz(handle, **kwargs):
     try:
         ret = lzma.LZMAFile(handle, format=lzma.FORMAT_XZ, mode="wb")
-        ret.name = handle.name
+        ret.name = handle.path
         return ret
     except AttributeError as e:
         warnings.warn("`compress_xz` failed for handle {}. Re-raising original exception.".format(handle))
@@ -225,6 +225,18 @@ savers = {
     ".json": save_json,
     ".txt": save_txt,
     ".pb": save_pb,
+}
+
+modes = {
+    ".png": "wb",
+    ".jpg": "wb",
+    ".jpeg": "wb",
+    ".webp": "wb",
+    ".npy": "wb",
+    ".npz": "wb",
+    ".json": "w",
+    ".txt": "w",
+    ".pb": "wb",
 }
 
 unsafe_savers = {
@@ -255,6 +267,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
 
     # Determine context
     # Is this a handle? What is the extension? Are we saving to GCS?
+
     is_handle = hasattr(url_or_handle, "write") and hasattr(url_or_handle, "name")
     if is_handle:
         path = url_or_handle.name
@@ -292,7 +305,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
     else:
         handle_provider = write_handle
 
-    with handle_provider(url_or_handle) as handle:
+    with handle_provider(url_or_handle, mode = modes[ext]) as handle:
         with compressor(handle) as compressed_handle:
             result = saver(thing, compressed_handle, **kwargs)
 
@@ -309,6 +322,7 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
 
     # capture save if a save context is available
     save_context = save_context if save_context is not None else CaptureSaveContext.current_save_context()
+
     if save_context:
         log.debug(
             "capturing save: resulted in {} -> {} in save_context {}".format(
@@ -319,6 +333,9 @@ def save(thing, url_or_handle, allow_unsafe_formats=False, save_context: Optiona
 
     if result is not None and "url" in result and result["url"].startswith("gs://"):
         result["serve"] = "https://storage.googleapis.com/{}".format(result["url"][5:])
+
+    if isazure(result["url"]):
+        result["serve"] = result["url"]
 
     return result
 

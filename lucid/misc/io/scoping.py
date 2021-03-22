@@ -6,7 +6,6 @@ from contextlib import contextmanager
 
 _thread_local_scopes = threading.local()
 
-
 def current_io_scopes():
     ret = getattr(_thread_local_scopes, "io_scopes", None)
     if ret is None:
