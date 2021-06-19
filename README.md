@@ -1,5 +1,3 @@
-<img src="https://storage.googleapis.com/lucid-static/common/stickers/channels-visualizations.jpg" width="782"></img>
-
 # Lucid
 
 <!--*DeepDream, but sane. Home of cats, dreams, and interpretable neural networks.*-->
