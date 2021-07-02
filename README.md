@@ -1,4 +1,4 @@
-<img src="https://storage.googleapis.com/lucid-static/common/stickers/channels-visualizations.jpg" width="782"></img>
+<img src="https://user-images.githubusercontent.com/8676510/124208528-91c08a00-da9c-11eb-98ef-683ca25db1c8.png" width="782"></img>
 
 # Lucid
 
