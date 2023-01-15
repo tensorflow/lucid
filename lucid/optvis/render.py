@@ -221,7 +221,7 @@ def make_t_image(param_f):
   if not isinstance(t_image, tf.Tensor):
     raise TypeError("param_f should produce a Tensor, but instead created a "
                    + str(type(t_image)) )
-  elif t_image.graph != tf.get_default_graph():
+  elif t_image.graph != tf.compat.v1.get_default_graph():
     raise TypeError("""param_f produced a t_image tensor belonging to a graph
                      that isn't the default graph for rendering. Did you
                      accidentally use render_vis when you meant to use
