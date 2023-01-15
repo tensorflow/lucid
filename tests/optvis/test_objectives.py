@@ -20,7 +20,7 @@ def inceptionv1():
 
 
 def assert_gradient_ascent(objective, model, batch=None, alpha=False, shape=None):
-    with tf.Graph().as_default() as graph, tf.Session() as sess:
+    with tf.Graph().as_default() as graph, tf.compat.v1.Session() as sess:
         shape = shape or [1, 32, 32, 3]
         t_input = param.image(shape[1], h=shape[2], batch=batch, alpha=alpha)
         if alpha:
@@ -35,8 +35,8 @@ def assert_gradient_ascent(objective, model, batch=None, alpha=False, shape=None
             return graph.get_tensor_by_name("import/%s:0" % layer)
 
         loss_t = objective(T)
-        opt_op = tf.train.AdamOptimizer(0.1).minimize(-loss_t)
-        tf.global_variables_initializer().run()
+        opt_op = tf.compat.v1.train.AdamOptimizer(0.1).minimize(-loss_t)
+        tf.compat.v1.global_variables_initializer().run()
         start_value = sess.run([loss_t])
         for _ in range(NUM_STEPS):
             _ = sess.run([opt_op])

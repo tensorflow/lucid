@@ -11,7 +11,7 @@ def test_use_gradient():
   def foo(x, y):
     return x + y
 
-  with tf.Session().as_default() as sess:
+  with tf.compat.v1.Session().as_default() as sess:
     x = tf.constant(1.)
     y = tf.constant(2.)
     z = foo(x, y)
@@ -28,9 +28,9 @@ def test_gradient_override_map():
   def gradient_override(op, grad):
     return tf.constant(42)
 
-  with tf.Session().as_default() as sess:
-    global_step = tf.train.get_or_create_global_step()
-    init_global_step = tf.variables_initializer([global_step])
+  with tf.compat.v1.Session().as_default() as sess:
+    global_step = tf.compat.v1.train.get_or_create_global_step()
+    init_global_step = tf.compat.v1.variables_initializer([global_step])
     init_global_step.run()
 
     a = tf.constant(1.)
@@ -59,9 +59,9 @@ nonls = [("Relu", tf.nn.relu, redirected_relu_grad, relu_examples),
 def test_gradient_override_relu6_directionality(nonl_name, nonl,
     nonl_grad_override, examples):
   for incoming_grad, input, grad in examples:
-    with tf.Session().as_default() as sess:
-      global_step = tf.train.get_or_create_global_step()
-      init_global_step = tf.variables_initializer([global_step])
+    with tf.compat.v1.Session().as_default() as sess:
+      global_step = tf.compat.v1.train.get_or_create_global_step()
+      init_global_step = tf.compat.v1.variables_initializer([global_step])
       init_global_step.run()
 
       batched_shape = [1,1]
@@ -76,11 +76,11 @@ def test_gradient_override_relu6_directionality(nonl_name, nonl,
 def test_gradient_override_shutoff(nonl_name, nonl,
     nonl_grad_override, examples):
   for incoming_grad, input, grad in examples:
-    with tf.Session().as_default() as sess:
-      global_step_t = tf.train.get_or_create_global_step()
-      global_step_init_op = tf.variables_initializer([global_step_t])
+    with tf.compat.v1.Session().as_default() as sess:
+      global_step_t = tf.compat.v1.train.get_or_create_global_step()
+      global_step_init_op = tf.compat.v1.variables_initializer([global_step_t])
       global_step_init_op.run()
-      global_step_assign_t = tf.assign(global_step_t, 17)
+      global_step_assign_t = tf.compat.v1.assign(global_step_t, 17)
       sess.run(global_step_assign_t)
 
       # similar setup to test_gradient_override_relu6_directionality,

@@ -86,16 +86,16 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
     multiple channel visualizations stacked on top of each other.
   """
 
-  with tf.Graph().as_default() as graph, tf.Session() as sess:
+  with tf.Graph().as_default() as graph, tf.compat.v1.Session() as sess:
 
     if use_fixed_seed:  # does not mean results are reproducible, see Args doc
-      tf.set_random_seed(0)
+        tf.compat.v1.set_random_seed(0)
 
     T = make_vis_T(model, objective_f, param_f, optimizer, transforms,
                    relu_gradient_override)
     print_objective_func = make_print_objective_func(print_objectives, T)
     loss, vis_op, t_image = T("loss"), T("vis_op"), T("input")
-    tf.global_variables_initializer().run()
+    tf.compat.v1.global_variables_initializer().run()
 
     images = []
     try:
@@ -167,8 +167,8 @@ def make_vis_T(model, objective_f, param_f=None, optimizer=None,
   transform_f = make_transform_f(transforms)
   optimizer = make_optimizer(optimizer, [])
 
-  global_step = tf.train.get_or_create_global_step()
-  init_global_step = tf.variables_initializer([global_step])
+  global_step = tf.compat.v1.train.get_or_create_global_step()
+  init_global_step = tf.compat.v1.variables_initializer([global_step])
   init_global_step.run()
 
   if relu_gradient_override:
@@ -239,7 +239,7 @@ def make_transform_f(transforms):
 
 def make_optimizer(optimizer, args):
   if optimizer is None:
-    return tf.train.AdamOptimizer(0.05)
+    return tf.compat.v1.train.AdamOptimizer(0.05)
   elif callable(optimizer):
     return optimizer(*args)
   elif isinstance(optimizer, tf.train.Optimizer):

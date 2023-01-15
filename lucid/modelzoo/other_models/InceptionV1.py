@@ -21,7 +21,7 @@ from lucid.modelzoo.vision_base import Model, _layers_from_list_of_dicts
 
 def _populate_inception_bottlenecks(scope):
   """Add Inception bottlenecks and their pre-Relu versions to the graph."""
-  graph = tf.get_default_graph()
+  graph = tf.compat.v1.get_default_graph()
   for op in graph.get_operations():
     if op.name.startswith(scope+'/') and 'Concat' in op.type:
       name = op.name.split('/')[1]
@@ -37,7 +37,7 @@ def _populate_inception_bottlenecks(scope):
 class InceptionV1(Model):
   """InceptionV1 (or 'GoogLeNet')
 
-  This is a (re?)implementation of InceptionV1 from the "Going deeper 
+  This is a (re?)implementation of InceptionV1 from the "Going deeper
   with convolutions" paper. Links:
     * Official CVPR paper, requires subscription: https://ieeexplore.ieee.org/document/7298594
     * Author preprint: https://www.cs.unc.edu/~wliu/papers/GoogLeNet.pdf

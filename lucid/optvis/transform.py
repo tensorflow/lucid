@@ -35,7 +35,7 @@ def jitter(d, seed=None):
         t_image = tf.convert_to_tensor(t_image, preferred_dtype=tf.float32)
         t_shp = tf.shape(t_image)
         crop_shape = tf.concat([t_shp[:-3], t_shp[-3:-1] - d, t_shp[-1:]], 0)
-        crop = tf.random_crop(t_image, crop_shape, seed=seed)
+        crop = tf.image.random_crop(t_image, crop_shape, seed=seed)
         shp = t_image.get_shape().as_list()
         mid_shp_changed = [
             shp[-3] - d if shp[-3] is not None else None,
@@ -80,7 +80,7 @@ def random_scale(scales, seed=None):
         scale = _rand_select(scales, seed=seed)
         shp = tf.shape(t)
         scale_shape = tf.cast(scale * tf.cast(shp[-3:-1], "float32"), "int32")
-        return tf.image.resize_bilinear(t, scale_shape)
+        return tf.compat.v1.image.resize_bilinear(t, scale_shape)
 
     return inner
 
@@ -138,7 +138,8 @@ def collapse_alpha_random(sd=0.5):
 
 def _rand_select(xs, seed=None):
     xs_list = list(xs)
-    rand_n = tf.random_uniform((), 0, len(xs_list), "int32", seed=seed)
+    # rand_n = tf.random_uniform((), 0, len(xs_list), "int32", seed=seed) # removing warning tf 1.15.5
+    rand_n = tf.random.uniform((), 0, len(xs_list), "int32", seed=seed) # removing warning tf 1.15.5
     return tf.constant(xs_list)[rand_n]
 
 

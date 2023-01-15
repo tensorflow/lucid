@@ -100,7 +100,7 @@ def gradient_override_map(override_dict):
        override_dict_by_name[op_name] = grad_f
     else:
       override_dict_by_name[op_name] = register_to_random_name(grad_f)
-  with tf.get_default_graph().gradient_override_map(override_dict_by_name):
+  with tf.compat.v1.get_default_graph().gradient_override_map(override_dict_by_name):
     yield
 
 

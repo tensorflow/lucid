@@ -108,7 +108,7 @@ def redirected_relu_grad(op, grad):
     relu_grad_mag = tf.norm(reshaped_relu_grad, axis=1)
   result_grad = tf.where(relu_grad_mag > 0., relu_grad, redirected_grad)
 
-  global_step_t =tf.train.get_or_create_global_step()
+  global_step_t = tf.compat.v1.train.get_or_create_global_step()
   return_relu_grad = tf.greater(global_step_t, tf.constant(16, tf.int64))
 
   return tf.where(return_relu_grad, relu_grad, result_grad)
@@ -139,7 +139,7 @@ def redirected_relu6_grad(op, grad):
     relu_grad_mag = tf.norm(reshaped_relu_grad, axis=1)
   result_grad =  tf.where(relu_grad_mag > 0., relu_grad, redirected_grad)
 
-  global_step_t = tf.train.get_or_create_global_step()
+  global_step_t = tf.compat.v1.train.get_or_create_global_step()
   return_relu_grad = tf.greater(global_step_t, tf.constant(16, tf.int64))
 
   return tf.where(return_relu_grad, relu_grad, result_grad)
