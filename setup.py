@@ -66,7 +66,7 @@ setup(
         "cachetools",
         "more-itertools",
         "tf_slim",
-        "tensorflow_addons==0.6.0",
+        "tensorflow_addons==0.7.1",
         "protobuf<=3.20.3"
     ],
     setup_requires=["pytest-runner"],
