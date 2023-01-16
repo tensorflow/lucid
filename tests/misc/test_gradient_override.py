@@ -3,6 +3,9 @@ import pytest
 import tensorflow as tf
 from lucid.misc.gradient_override import use_gradient
 
+# ref. https://stackoverflow.com/questions/66221788/tf-gradients-is-not-supported-when-eager-execution-is-enabled-use-tf-gradientta
+tf.compat.v1.disable_eager_execution()
+
 def test_use_gradient():
   def foo_grad(op, grad):
     return tf.constant(42), tf.constant(43)
@@ -15,8 +18,8 @@ def test_use_gradient():
     x = tf.constant(1.)
     y = tf.constant(2.)
     z = foo(x, y)
-    grad_wrt_x = tf.gradients(z, x, [1.])[0]
-    grad_wrt_y = tf.gradients(z, y, [1.])[0]
+    grad_wrt_x = tf.compat.v1.gradients(z, x, [1.])[0]
+    grad_wrt_y = tf.compat.v1.gradients(z, y, [1.])[0]
     assert grad_wrt_x.eval() == 42
     assert grad_wrt_y.eval() == 43
 

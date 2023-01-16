@@ -18,7 +18,8 @@
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.contrib import slim
+# from tensorflow.contrib import slim
+import tf_slim as slim
 
 
 def _composite_activation(x, biased=True):
@@ -83,8 +84,8 @@ def cppn(
         [slim.conv2d],
         kernel_size=[1, 1],
         activation_fn=None,
-        weights_initializer=tf.initializers.variance_scaling(),
-        biases_initializer=tf.initializers.random_normal(0.0, 0.1),
+        weights_initializer=tf.compat.v1.initializers.variance_scaling(),
+        biases_initializer=tf.compat.v1.initializers.random_normal(0.0, 0.1),
     ):
         for i in range(num_layers):
             x = slim.conv2d(net, num_hidden_channels)

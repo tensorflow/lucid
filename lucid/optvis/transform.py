@@ -26,13 +26,14 @@ tensorflow tensor. The functions are of the form:
 import tensorflow as tf
 import numpy as np
 import uuid
+import tensorflow_addons as tfa
 
 from lucid.optvis import param
 
 
 def jitter(d, seed=None):
     def inner(t_image):
-        t_image = tf.convert_to_tensor(t_image, preferred_dtype=tf.float32)
+        t_image = tf.compat.v1.convert_to_tensor(t_image, preferred_dtype=tf.float32)
         t_shp = tf.shape(t_image)
         crop_shape = tf.concat([t_shp[:-3], t_shp[-3:-1] - d, t_shp[-1:]], 0)
         crop = tf.image.random_crop(t_image, crop_shape, seed=seed)
@@ -76,7 +77,7 @@ def pad(w, mode="REFLECT", constant_value=0.5):
 # 2D only version
 def random_scale(scales, seed=None):
     def inner(t):
-        t = tf.convert_to_tensor(t, preferred_dtype=tf.float32)
+        t = tf.compat.v1.convert_to_tensor(t, preferred_dtype=tf.float32)
         scale = _rand_select(scales, seed=seed)
         shp = tf.shape(t)
         scale_shape = tf.cast(scale * tf.cast(shp[-3:-1], "float32"), "int32")
@@ -87,10 +88,11 @@ def random_scale(scales, seed=None):
 
 def random_rotate(angles, units="degrees", seed=None):
     def inner(t):
-        t = tf.convert_to_tensor(t, preferred_dtype=tf.float32)
+        t = tf.compat.v1.convert_to_tensor(t, preferred_dtype=tf.float32)
         angle = _rand_select(angles, seed=seed)
         angle = _angle2rads(angle, units)
-        return tf.contrib.image.rotate(t, angle)
+        # return tf.contrib.image.rotate(t, angle)
+        return tfa.image.rotate(t, angle)
 
     return inner
 

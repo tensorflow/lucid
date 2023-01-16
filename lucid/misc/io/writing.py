@@ -25,8 +25,7 @@ import os
 import logging
 from contextlib import contextmanager
 from urllib.parse import urlparse
-#from tensorflow import gfile # removing warning tf 1.15.5
-from tensorflow.io import gfile # removing warning tf 1.15.5
+from tensorflow.compat.v1.io import gfile
 
 from lucid.misc.io.scoping import scope_url
 
