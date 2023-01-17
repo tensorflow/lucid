@@ -140,8 +140,7 @@ def collapse_alpha_random(sd=0.5):
 
 def _rand_select(xs, seed=None):
     xs_list = list(xs)
-    # rand_n = tf.random_uniform((), 0, len(xs_list), "int32", seed=seed) # removing warning tf 1.15.5
-    rand_n = tf.random.uniform((), 0, len(xs_list), "int32", seed=seed) # removing warning tf 1.15.5
+    rand_n = tf.random.uniform((), 0, len(xs_list), "int32", seed=seed)
     return tf.constant(xs_list)[rand_n]
 
 
