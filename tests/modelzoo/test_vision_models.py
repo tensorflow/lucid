@@ -52,7 +52,7 @@ def test_model_properties(name, model_class):
     assert model_class.model_path.endswith(".pb")
     assert hasattr(model_class, "labels_path")
     if name == 'Clip_ResNet50_4x':
-        pytest.xfail('Clip_ResNet50_4x does not have labels path set, as well as other properties.')
+        pytest.skip('Clip_ResNet50_4x does not have labels path set, as well as other properties.')
     assert model_class.labels_path.endswith(".txt")
     assert hasattr(model_class, "dataset")
     assert hasattr(model_class, "image_shape")

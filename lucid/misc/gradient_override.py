@@ -155,6 +155,7 @@ def use_gradient(grad_f):
 
       store_name = "store_" + f.__name__
       store = tf.compat.v1.py_func(store_out, [out], (), stateful=True, name=store_name)
+      # store = tf.numpy_function(store_out, [out], (), stateful=True, name=store_name) # not yet implemented in TF 2.5
 
       # Next, we create the mock function, with an overriden gradient.
       # Note that we need to make sure store gets evaluated before the mock
@@ -168,6 +169,7 @@ def use_gradient(grad_f):
         with gradient_override_map({"PyFunc": grad_f_name}):
           mock_name = "mock_" + f.__name__
           mock_out = tf.compat.v1.py_func(mock_f, inputs, out.dtype, stateful=True, name=mock_name)
+          # mock_out = tf.numpy_function(mock_f, inputs, out.dtype, stateful=True, name=mock_name) # not yet implemented in TF 2.5
           mock_out.set_shape(out.get_shape())
 
       # Finally, we can return the mock.
