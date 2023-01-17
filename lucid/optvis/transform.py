@@ -51,7 +51,7 @@ def jitter(d, seed=None):
 def pad(w, mode="REFLECT", constant_value=0.5):
     def inner(t_image):
         if constant_value == "uniform":
-            constant_value_ = tf.random_uniform([], 0, 1)
+            constant_value_ = tf.random.uniform([], 0, 1)
         else:
             constant_value_ = constant_value
         return tf.pad(
@@ -159,7 +159,7 @@ def crop_or_pad_to(height, width):
     spatial shape of their inputs.
     """
     def inner(t_image):
-        return tf.image.resize_image_with_crop_or_pad(t_image, height, width)
+        return tf.compat.v1.image.resize_image_with_crop_or_pad(t_image, height, width)
     return inner
 
 

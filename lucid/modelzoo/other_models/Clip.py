@@ -21,3 +21,4 @@ class Clip_ResNet50_4x(Model):
     model_name = "Clip_ResNet50_4x"
     image_shape = [288, 288, 3]
     model_path = "gs://modelzoo/vision/other_models/Clip_ResNet50_4x.pb"
+    dataset = None
