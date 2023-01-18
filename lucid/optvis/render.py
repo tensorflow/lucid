@@ -242,12 +242,12 @@ def make_optimizer(optimizer, args):
     return tf.compat.v1.train.AdamOptimizer(0.05)
   elif callable(optimizer):
     return optimizer(*args)
-  elif isinstance(optimizer, tf.train.Optimizer):
+  elif isinstance(optimizer, tf.compat.v1.train.Optimizer):
     return optimizer
   else:
     raise ("Could not convert optimizer argument to usable optimizer. "
            "Needs to be one of None, function from (graph, sess) to "
-           "optimizer, or tf.train.Optimizer instance.")
+           "optimizer, or tf.compat.v1.train.Optimizer instance.")
 
 
 def import_model(model, t_image, t_image_raw=None, scope="import", input_map=None):
