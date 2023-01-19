@@ -87,6 +87,7 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
   """
 
   with tf.Graph().as_default() as graph, tf.compat.v1.Session() as sess:
+    print(f'render vis graph: {graph}')
 
     if use_fixed_seed:  # does not mean results are reproducible, see Args doc
         tf.compat.v1.set_random_seed(0)

@@ -92,12 +92,12 @@ def redirected_relu_grad(op, grad):
   x = op.inputs[0]
 
   # Compute ReLu gradient
-  relu_grad = tf.compat.v2.where(x < 0., tf.zeros_like(grad), grad)
+  relu_grad = tf.compat.v1.where(x < 0., tf.zeros_like(grad), grad)
 
   # Compute redirected gradient: where do we need to zero out incoming gradient
   # to prevent input going lower if its already negative
   neg_pushing_lower = tf.logical_and(x < 0., grad > 0.)
-  redirected_grad = tf.compat.v2.where(neg_pushing_lower, tf.zeros_like(grad), grad)
+  redirected_grad = tf.compat.v1.where(neg_pushing_lower, tf.zeros_like(grad), grad)
 
   # Ensure we have at least a rank 2 tensor, as we expect a batch dimension
   assert_op = tf.Assert(tf.greater(tf.rank(relu_grad), 1), [tf.rank(relu_grad)])
@@ -106,12 +106,12 @@ def redirected_relu_grad(op, grad):
     batch = tf.shape(relu_grad)[0]
     reshaped_relu_grad = tf.reshape(relu_grad, [batch, -1])
     relu_grad_mag = tf.norm(reshaped_relu_grad, axis=1)
-  result_grad = tf.compat.v2.where(relu_grad_mag > 0., relu_grad, redirected_grad)
+  result_grad = tf.compat.v1.where(relu_grad_mag > 0., relu_grad, redirected_grad)
 
   global_step_t = tf.compat.v1.train.get_or_create_global_step()
   return_relu_grad = tf.greater(global_step_t, tf.constant(16, tf.int64))
 
-  return tf.compat.v2.where(return_relu_grad, relu_grad, result_grad)
+  return tf.compat.v1.where(return_relu_grad, relu_grad, result_grad)
 
 
 def redirected_relu6_grad(op, grad):
@@ -120,7 +120,7 @@ def redirected_relu6_grad(op, grad):
 
   # Compute ReLu gradient
   relu6_cond = tf.logical_or(x < 0., x > 6.)
-  relu_grad = tf.compat.v2.where(relu6_cond, tf.zeros_like(grad), grad)
+  relu_grad = tf.compat.v1.where(relu6_cond, tf.zeros_like(grad), grad)
 
   # Compute redirected gradient: where do we need to zero out incoming gradient
   # to prevent input going lower if its already negative, or going higher if
@@ -128,7 +128,7 @@ def redirected_relu6_grad(op, grad):
   neg_pushing_lower = tf.logical_and(x < 0., grad > 0.)
   pos_pushing_higher = tf.logical_and(x > 6., grad < 0.)
   dir_filter = tf.logical_or(neg_pushing_lower, pos_pushing_higher)
-  redirected_grad = tf.compat.v2.where(dir_filter, tf.zeros_like(grad), grad)
+  redirected_grad = tf.compat.v1.where(dir_filter, tf.zeros_like(grad), grad)
 
   # Ensure we have at least a rank 2 tensor, as we expect a batch dimension
   assert_op = tf.Assert(tf.greater(tf.rank(relu_grad), 1), [tf.rank(relu_grad)])
@@ -137,9 +137,9 @@ def redirected_relu6_grad(op, grad):
     batch = tf.shape(relu_grad)[0]
     reshaped_relu_grad = tf.reshape(relu_grad, [batch, -1])
     relu_grad_mag = tf.norm(reshaped_relu_grad, axis=1)
-  result_grad =  tf.compat.v2.where(relu_grad_mag > 0., relu_grad, redirected_grad)
+  result_grad =  tf.compat.v1.where(relu_grad_mag > 0., relu_grad, redirected_grad)
 
   global_step_t = tf.compat.v1.train.get_or_create_global_step()
   return_relu_grad = tf.greater(global_step_t, tf.constant(16, tf.int64))
 
-  return tf.compat.v2.where(return_relu_grad, relu_grad, result_grad)
+  return tf.compat.v1.where(return_relu_grad, relu_grad, result_grad)
