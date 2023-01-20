@@ -43,6 +43,9 @@ import os
 
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
+
+# Note: no longer need since this new version of lucid does not support Python 2.7
+#
 # OpenGL loading workaround.
 #
 # * PyOpenGL tries to load libGL, but we need libOpenGL, see [1,2].
@@ -55,15 +58,27 @@ os.environ['PYOPENGL_PLATFORM'] = 'egl'
 # [1] https://devblogs.nvidia.com/egl-eye-opengl-visualization-without-x-server/
 # [2] https://devblogs.nvidia.com/linking-opengl-server-side-rendering/
 # [3] https://bugs.python.org/issue9998
-_find_library_old = ctypes.util.find_library
-try:
+# _find_library_old = ctypes.util.find_library
+# try:
+#
+#   def _find_library_new(name):
+#     return {
+#         'GL': 'libOpenGL.so',
+#         'EGL': 'libEGL.so',
+#     }.get(name, _find_library_old(name))
+#   ctypes.util.find_library = _find_library_new
+#   import OpenGL.GL as gl
+#   import OpenGL.EGL as egl
+# except:
+#   print('Unable to load OpenGL libraries. '
+#         'Make sure you use GPU-enabled backend.')
+#   print('Press "Runtime->Change runtime type" and set '
+#         '"Hardware accelerator" to GPU.')
+#   raise
+# finally:
+#   ctypes.util.find_library = _find_library_old
 
-  def _find_library_new(name):
-    return {
-        'GL': 'libOpenGL.so',
-        'EGL': 'libEGL.so',
-    }.get(name, _find_library_old(name))
-  ctypes.util.find_library = _find_library_new
+try:
   import OpenGL.GL as gl
   import OpenGL.EGL as egl
 except:
@@ -72,8 +87,6 @@ except:
   print('Press "Runtime->Change runtime type" and set '
         '"Hardware accelerator" to GPU.')
   raise
-finally:
-  ctypes.util.find_library = _find_library_old
 
 
 def create_opengl_context(surface_size=(640, 480)):
