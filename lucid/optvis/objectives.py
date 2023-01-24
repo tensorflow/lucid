@@ -184,8 +184,7 @@ def channel(layer, n_channel, batch=None):
 def direction(layer, vec, cossim_pow=0, batch=None):
   """Visualize a direction"""
   vec = vec[None, None, None]
-  # vec = vec.astype("float32")
-  vec = tf.cast(vec, tf.float32)
+  vec = vec.astype("float32")
 
   @handle_batch(batch)
   def inner(T):
