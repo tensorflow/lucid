@@ -105,7 +105,7 @@ def resize_bilinear_nd(t, target_shape):
     # We can then reshape and use the 2d tf.image.resize_bilinear() on the
     # inner two dimesions.
     t_ = tf.reshape(t, shape_)
-    t_ = tf.image.resize_bilinear(t_, new_shape_[1:3])
+    t_ = tf.compat.v1.image.resize_bilinear(t_, new_shape_[1:3])
 
     # And then reshape back to our uncollapsed version, having finished resizing
     # two more dimensions in our shape.

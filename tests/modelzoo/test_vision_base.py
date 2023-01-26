@@ -8,9 +8,9 @@ from lucid.modelzoo.vision_models import AlexNet, InceptionV1, InceptionV3_slim,
 def test_suggest_save_args_happy_path(capsys, minimodel):
   path = "./tests/fixtures/minigraph.pb"
 
-  with tf.Graph().as_default() as graph, tf.Session() as sess:
+  with tf.Graph().as_default() as graph, tf.compat.v1.Session() as sess:
     _ = minimodel()
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     # ask for suggested arguments
     inferred = Model.suggest_save_args()
@@ -28,11 +28,11 @@ def test_suggest_save_args_happy_path(capsys, minimodel):
 
 
 def test_suggest_save_args_int_input(capsys, minimodel):
-  with tf.Graph().as_default() as graph, tf.Session() as sess:
-    image_t = tf.placeholder(tf.uint8, shape=(32, 32, 3), name="input")
+  with tf.Graph().as_default() as graph, tf.compat.v1.Session() as sess:
+    image_t = tf.compat.v1.placeholder(tf.uint8, shape=(32, 32, 3), name="input")
     input_t = tf.math.divide(image_t, tf.constant(255, dtype=tf.uint8), name="divide")
     _ = minimodel(input_t)
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     # ask for suggested arguments
     inferred = Model.suggest_save_args()

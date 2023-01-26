@@ -125,11 +125,11 @@ def bilinearly_sampled_image(texture, uv):
     h, w = tf.unstack(tf.shape(texture)[:2])
     u, v = tf.split(uv, 2, axis=-1)
     v = 1.0 - v  # vertical flip to match GL convention
-    u, v = u * tf.to_float(w) - 0.5, v * tf.to_float(h) - 0.5
-    u0, u1 = tf.floor(u), tf.ceil(u)
-    v0, v1 = tf.floor(v), tf.ceil(v)
+    u, v = u * tf.cast(w, tf.float32) - 0.5, v * tf.cast(h, tf.float32) - 0.5
+    u0, u1 = tf.math.floor(u), tf.math.ceil(u)
+    v0, v1 = tf.math.floor(v), tf.math.ceil(v)
     uf, vf = u - u0, v - v0
-    u0, u1, v0, v1 = map(tf.to_int32, [u0, u1, v0, v1])
+    u0, u1, v0, v1 = map(lambda x: tf.cast(x, tf.int32), [u0, u1, v0, v1])
 
     def sample(u, v):
         vu = tf.concat([v % h, u % w], axis=-1)

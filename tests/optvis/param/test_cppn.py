@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 @pytest.mark.slow
 def test_cppn_fits_xor():
 
-    with tf.Graph().as_default(), tf.Session() as sess:
+    with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
         cppn_param = cppn(16, num_output_channels=1)[0]
 
         def xor_objective(a):
@@ -28,10 +28,10 @@ def test_cppn_fits_xor():
             )
 
         loss_t = xor_objective(cppn_param)
-        optimizer = tf.train.AdamOptimizer(0.01)
+        optimizer = tf.compat.v1.train.AdamOptimizer(0.01)
         objective = optimizer.minimize(loss_t)
         for try_i in range(3):
-            tf.global_variables_initializer().run()
+            tf.compat.v1.global_variables_initializer().run()
             # loss = loss_t.eval()
             for i in range(200):
                 _, vis = sess.run([objective, cppn_param])

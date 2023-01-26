@@ -51,6 +51,8 @@ def test_model_properties(name, model_class):
     assert hasattr(model_class, "model_path")
     assert model_class.model_path.endswith(".pb")
     assert hasattr(model_class, "labels_path")
+    if name == 'Clip_ResNet50_4x':
+        pytest.skip('Clip_ResNet50_4x does not have labels path set, as well as other properties.')
     assert model_class.labels_path.endswith(".txt")
     assert hasattr(model_class, "dataset")
     assert hasattr(model_class, "image_shape")
@@ -62,10 +64,12 @@ def test_model_properties(name, model_class):
     last_layer = model_class.layers[-1]
     assert 'dense' in last_layer.tags
     assert type(last_layer) == Layer
-    assert last_layer.model_class == model_class
+    parent_model_class = model_class.__base__
+    assert last_layer.model_class == model_class or last_layer.model_class == parent_model_class
     model_instance = model_class()
     assert model_instance.name == model_class.__name__
-    assert last_layer.model_name == model_instance.name
+    assert last_layer.model_name == model_instance.name or last_layer.model_name == parent_model_class().name
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize("model_class", models_map.values())

@@ -37,7 +37,7 @@ except:
         'prior importing this module.')
   raise
 
-import ctypes
+import ctypes.util
 from ctypes import pointer
 import os
 

@@ -175,7 +175,7 @@ class Model():
   def create_input(self, t_input=None, forget_xy_shape=True):
     """Create input tensor."""
     if t_input is None:
-      t_input = tf.placeholder(tf.float32, self.image_shape)
+      t_input = tf.compat.v1.placeholder(tf.float32, self.image_shape)
     t_prep_input = t_input
     if len(t_prep_input.shape) == 3:
       t_prep_input = tf.expand_dims(t_prep_input, 0)
@@ -189,7 +189,7 @@ class Model():
 
   def import_graph(self, t_input=None, scope='import', forget_xy_shape=True, input_map=None):
     """Import model GraphDef into the current graph."""
-    graph = tf.get_default_graph()
+    graph = tf.compat.v1.get_default_graph()
     assert graph.unique_name(scope, False) == scope, (
         'Scope "%s" already exists. Provide explicit scope names when '
         'importing multiple instances of the model.') % scope
@@ -231,7 +231,7 @@ class Model():
   @staticmethod
   def suggest_save_args(graph_def=None):
     if graph_def is None:
-      graph_def = tf.get_default_graph().as_graph_def()
+      graph_def = tf.compat.v1.get_default_graph().as_graph_def()
     gdhelper = model_util.GraphDefHelper(graph_def)
     inferred_info = dict.fromkeys(("input_name", "image_shape", "output_names", "image_value_range"))
     node_shape = lambda n: [dim.size for dim in n.attr['shape'].shape.dim]

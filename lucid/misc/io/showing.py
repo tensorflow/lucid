@@ -329,7 +329,7 @@ def _strip_consts(graph_def, max_const_size=32):
     This is mostly a utility function for graph(), and also originates here:
     https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/deepdream/deepdream.ipynb
     """
-    strip_def = tf.GraphDef()
+    strip_def = tf.compat.v1.GraphDef()
     for n0 in graph_def.node:
         n = strip_def.node.add()
         n.MergeFrom(n0)

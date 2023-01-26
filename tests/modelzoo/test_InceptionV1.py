@@ -29,7 +29,7 @@ def test_InceptionV1_model_download():
 def test_InceptionV1_graph_import():
     model = InceptionV1()
     model.import_graph()
-    nodes = tf.get_default_graph().as_graph_def().node
+    nodes = tf.compat.v1.get_default_graph().as_graph_def().node
     node_names = set(node.name for node in nodes)
     for layer_name in important_layer_names:
         assert "import/" + layer_name + "_pre_relu" in node_names
