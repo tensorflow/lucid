@@ -342,6 +342,7 @@ def _strip_consts(graph_def, max_const_size=32):
 
 
 def graph(graph_def, max_const_size=32):
+    log.warning("showing.graph is deprecated, replace it with tensorboard and its jupyter magic extensions.")
     """Visualize a TensorFlow graph.
 
     This function was originally found in this notebook (also Apache licensed):

@@ -210,6 +210,16 @@ class Model():
     return T
 
   def show_graph(self):
+    log.warning(
+      '''
+show_graph does no longer work with TF 2, use tensorboard and its jupyter magic extensions:
+Example:
+  %load_ext tensorboard
+  model = ...
+  with tf.compat.v1.Graph().as_default():
+      tf.compat.v1.summary.FileWriter('logs/train', graph=model.graph_def).close()
+  %tensorboard --logdir logs/train
+      ''')
     if self.graph_def is None:
       raise Exception("Model.show_graph(): Must load graph def before showing it.")
     showing.graph(self.graph_def)

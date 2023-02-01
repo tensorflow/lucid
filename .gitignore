@@ -6,6 +6,7 @@ dist
 .pytest_cache
 *.egg-info
 .ipynb_checkpoints
+/notebooks/logs/
 coverage.txt
 .coverage
 lucidenv
@@ -31,3 +32,4 @@ tests/fixtures/generated_outputs/
 
 lucid/scratch/js/package-lock.json
 lucid/scratch/js/yarn.lock
+
