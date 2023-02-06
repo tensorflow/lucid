@@ -25,7 +25,7 @@ def create_session(target='', timeout_sec=10):
   when having multiple python sessions sharing the same GPU.
   '''
   graph = tf.Graph()
-  config = tf.ConfigProto()
+  config = tf.compat.v1.ConfigProto()
   config.gpu_options.allow_growth = True
   config.operation_timeout_in_ms = int(timeout_sec*1000)
-  return tf.InteractiveSession(target=target, graph=graph, config=config)
+  return tf.compat.v1.InteractiveSession(target=target, graph=graph, config=config)

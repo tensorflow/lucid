@@ -24,6 +24,8 @@ def test_integration(decorrelate, fft):
     )
     start_image = rendering[0]
     end_image = rendering[-1]
+    assert (start_image != end_image).any()
+
     objective_f = objectives.neuron("mixed3a", 177)
     param_f = lambda: param.image(64, decorrelate=decorrelate, fft=fft)
     rendering = render.render_vis(
@@ -50,8 +52,8 @@ def arbitrary_channels_to_rgb(*args, **kwargs):
 @pytest.mark.slow
 def test_integration_any_channels():
     inceptionv1 = InceptionV1()
-    objectives_f = [objectives.deepdream("mixed4a_pre_relu"), 
-                objectives.channel("mixed4a_pre_relu", 360), 
+    objectives_f = [objectives.deepdream("mixed4a_pre_relu"),
+                objectives.channel("mixed4a_pre_relu", 360),
                 objectives.neuron("mixed3a", 177)]
     params_f = [lambda: param.grayscale_image_rgb(128),
                 lambda: arbitrary_channels_to_rgb(128, channels=10)]

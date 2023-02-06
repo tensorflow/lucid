@@ -24,7 +24,7 @@ def mean_l2_loss(g1, g2):
 
 class StyleLoss(object):
   """Image Style Loss.
-  
+
   A variant of style component of Artistic Image Style Transfer loss,
   mainly inspired by [1].
 
@@ -36,7 +36,7 @@ class StyleLoss(object):
                style_func=gram_style,
                loss_func=mean_l1_loss):
     """Initilize style loss.
-    
+
     Args:
       style_layers: List of tensors that are used to compute statistics that
         define a style.
@@ -50,7 +50,7 @@ class StyleLoss(object):
     """
     self.input_grams = [style_func(s) for s in style_layers]
     self.ema = None
-    
+
     if ema_decay is not None:
       # creating moving average versions of input Gram matrices
       self.ema = tf.train.ExponentialMovingAverage(decay=ema_decay)
@@ -64,7 +64,7 @@ class StyleLoss(object):
                                 for g in self.input_grams]
     else:
       self.effective_grams = self.input_grams
-    
+
     self.target_vars = [tf.Variable(tf.zeros_like(g), trainable=False)
                         for g in self.input_grams]
     self.style_losses = [loss_func(g, gv)
@@ -73,18 +73,18 @@ class StyleLoss(object):
 
   def set_style(self, input_feeds):
     """Set target style variables.
-    
-    Expected usage: 
+
+    Expected usage:
       style_loss = StyleLoss(style_layers)
       ...
       init_op = tf.global_variables_initializer()
       init_op.run()
-      
+
       feeds = {... session.run() 'feeds' argument that will make 'style_layers'
                tensors evaluate to activation values of style image...}
       style_loss.set_style(feeds)  # this must be called after 'init_op.run()'
     """
-    sess = tf.get_default_session()
+    sess = tf.compat.v1.get_default_session()
     computed = sess.run(self.input_grams, input_feeds)
     for v, g in zip(self.target_vars, computed):
       v.load(g)

@@ -35,4 +35,4 @@ warnings.filterwarnings("ignore", module="tensorflow.core.platform.cpu_feature_g
 seed = 0
 
 # Set the lucid version - setup.py imports this value!
-__version__ = "0.3.10"
+__version__ = "0.3.11"

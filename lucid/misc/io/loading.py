@@ -126,7 +126,7 @@ def _load_text(handle, split=False, encoding="utf-8"):
 def _load_graphdef_protobuf(handle, **kwargs):
     """Load GraphDef from a binary proto file."""
     # as_graph_def
-    graph_def = tf.GraphDef.FromString(handle.read())
+    graph_def = tf.compat.v1.GraphDef.FromString(handle.read())
 
     # check if this is a lucid-saved model
     # metadata = modelzoo.util.extract_metadata(graph_def)

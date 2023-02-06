@@ -5,7 +5,8 @@ dist
 .tox
 .pytest_cache
 *.egg-info
-notebooks/.ipynb_checkpoints
+.ipynb_checkpoints
+/notebooks/logs/
 coverage.txt
 .coverage
 lucidenv
@@ -13,6 +14,7 @@ lucid-env
 .idea
 .vscode
 .mypy_cache
+.python-version
 
 pip-selfcheck.json
 
@@ -23,9 +25,11 @@ bin
 include
 lib
 share
+venv*/
 
 tests/fixtures/generated_outputs/
 
 
 lucid/scratch/js/package-lock.json
 lucid/scratch/js/yarn.lock
+

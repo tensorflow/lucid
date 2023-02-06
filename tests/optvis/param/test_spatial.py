@@ -22,16 +22,16 @@ def test_image():
 @pytest.mark.parametrize("param", [pixel_image, fft_image, laplacian_pyramid_image])
 def test_param_can_fit_image(param, test_image, maxsteps=1000):
     shape = (1,) + test_image.shape
-    with tf.Session() as sess:
+    with tf.compat.v1.Session() as sess:
         image_param_t = param(shape)
         image_t = to_valid_rgb(image_param_t)
         loss_t = tf.reduce_mean((image_t - test_image) ** 2)
         dist_t = tf.reduce_mean(tf.abs(image_t - test_image))
 
-        optimizer = tf.train.AdamOptimizer(0.05)
+        optimizer = tf.compat.v1.train.AdamOptimizer(0.05)
         optimize_op = optimizer.minimize(loss_t)
 
-        tf.global_variables_initializer().run()
+        tf.compat.v1.global_variables_initializer().run()
         for step in range(maxsteps):
             mean_distance, _ = sess.run([dist_t, optimize_op])
             if mean_distance < 0.01:
@@ -58,6 +58,6 @@ def test_bilinearly_sampled_image():
     uv = np.float32((tests[:, :2] + 0.5) / [w, h])  # normalize UVs
     expected = tests[:, 2:]
 
-    with tf.Session() as sess:
+    with tf.compat.v1.Session() as sess:
         output, = sess.run([bilinearly_sampled_image(img, uv)])
         assert np.abs(output - expected).max() < 1e-8

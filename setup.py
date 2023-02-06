@@ -23,8 +23,8 @@ test_deps = ["future", "twine", "pytest", "pytest-mock", "python-coveralls"]
 
 extras = {
     "test": test_deps,
-    "tf": ["tensorflow>=1.6.0"],
-    "tf_gpu": ["tensorflow-gpu>=1.6.0"],
+    "tf": ["tensorflow"],
+    "tf_gpu": ["tensorflow-gpu"],
 }
 
 setup(
@@ -52,7 +52,6 @@ setup(
         "optimization",
     ],
     install_requires=[
-        "numpy<=1.19",
         "scipy",
         "scikit-learn",
         "umap-learn",
@@ -65,6 +64,8 @@ setup(
         "filelock",
         "cachetools",
         "more-itertools",
+        "tf_slim",
+        "tensorflow_addons",
     ],
     setup_requires=["pytest-runner"],
     tests_require=test_deps,

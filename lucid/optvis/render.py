@@ -86,16 +86,17 @@ def render_vis(model, objective_f, param_f=None, optimizer=None,
     multiple channel visualizations stacked on top of each other.
   """
 
-  with tf.Graph().as_default() as graph, tf.Session() as sess:
+  with tf.Graph().as_default() as graph, tf.compat.v1.Session() as sess:
+    # print(f'render vis graph: {graph}')
 
     if use_fixed_seed:  # does not mean results are reproducible, see Args doc
-      tf.set_random_seed(0)
+        tf.compat.v1.set_random_seed(0)
 
     T = make_vis_T(model, objective_f, param_f, optimizer, transforms,
                    relu_gradient_override)
     print_objective_func = make_print_objective_func(print_objectives, T)
     loss, vis_op, t_image = T("loss"), T("vis_op"), T("input")
-    tf.global_variables_initializer().run()
+    tf.compat.v1.global_variables_initializer().run()
 
     images = []
     try:
@@ -167,8 +168,8 @@ def make_vis_T(model, objective_f, param_f=None, optimizer=None,
   transform_f = make_transform_f(transforms)
   optimizer = make_optimizer(optimizer, [])
 
-  global_step = tf.train.get_or_create_global_step()
-  init_global_step = tf.variables_initializer([global_step])
+  global_step = tf.compat.v1.train.get_or_create_global_step()
+  init_global_step = tf.compat.v1.variables_initializer([global_step])
   init_global_step.run()
 
   if relu_gradient_override:
@@ -221,7 +222,7 @@ def make_t_image(param_f):
   if not isinstance(t_image, tf.Tensor):
     raise TypeError("param_f should produce a Tensor, but instead created a "
                    + str(type(t_image)) )
-  elif t_image.graph != tf.get_default_graph():
+  elif t_image.graph != tf.compat.v1.get_default_graph():
     raise TypeError("""param_f produced a t_image tensor belonging to a graph
                      that isn't the default graph for rendering. Did you
                      accidentally use render_vis when you meant to use
@@ -239,15 +240,15 @@ def make_transform_f(transforms):
 
 def make_optimizer(optimizer, args):
   if optimizer is None:
-    return tf.train.AdamOptimizer(0.05)
+    return tf.compat.v1.train.AdamOptimizer(0.05)
   elif callable(optimizer):
     return optimizer(*args)
-  elif isinstance(optimizer, tf.train.Optimizer):
+  elif isinstance(optimizer, tf.compat.v1.train.Optimizer):
     return optimizer
   else:
     raise ("Could not convert optimizer argument to usable optimizer. "
            "Needs to be one of None, function from (graph, sess) to "
-           "optimizer, or tf.train.Optimizer instance.")
+           "optimizer, or tf.compat.v1.train.Optimizer instance.")
 
 
 def import_model(model, t_image, t_image_raw=None, scope="import", input_map=None):

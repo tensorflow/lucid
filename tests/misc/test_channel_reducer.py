@@ -17,4 +17,6 @@ def test_channel_reducer_trivial():
 
     assert reduced.shape == (10, 10, 2)
     # the hope here is that this was reduced to use only the first channel
-    assert np.sum(reduced[:, :, 1]) == 0
+    # the reduced matrix should be all 0s, but in some python / tf configurations
+    # the reduced array as some spurios small values
+    assert np.sum(reduced[:, :, 1]) <= 1.e-12
